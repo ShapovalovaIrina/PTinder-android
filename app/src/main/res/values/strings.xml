@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">PTinder</string>
+    <string name="login_1">Заведи себе нового друга!</string>
+    <string name="login_2">Чтобы начать, нажми кнопку ниже</string>
+    <string name="notification_hint">Уведомления</string>
+    <string name="menu_hint">Меню</string>
+</resources>
