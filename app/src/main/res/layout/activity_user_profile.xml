@@ -2,30 +2,187 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/user_profile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".UserProfileActivity">
+    tools:context=".activity.UserProfileActivity">
 
-    <TextView
-        android:id="@+id/id_user"
-        android:layout_width="244dp"
-        android:layout_height="73dp"
-        android:text="TextView" />
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/top_app_bar_user_profile"
+        style="@style/Widget.MaterialComponents.Toolbar.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#99C87F16"
+        app:menu="@menu/top_app_bar"
+        app:navigationIcon="@drawable/baseline_menu_white_18"
+        app:title="Профиль"/>
 
-    <TextView
-        android:id="@+id/info_user"
-        android:layout_width="244dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="102dp"
-        android:layout_marginTop="149dp"
-        android:layout_marginEnd="251dp"
-        android:layout_marginBottom="49dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/email_user"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/user_profile_linear_2"
+        android:orientation="vertical">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/add_to_favourite_card"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerHorizontal="true"
+                android:elevation="10dp"
+                app:cardCornerRadius="50dp"
+                android:layout_toLeftOf="@id/user_icon_card"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp">
+
+                <ImageView
+                    android:id="@+id/add_to_favourite"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="center"
+                    android:src="@drawable/baseline_grade_black_18" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/user_icon_card"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:elevation="10dp"
+                app:cardCornerRadius="100dp">
+
+                <ImageView
+                    android:id="@+id/user_icon"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/baseline_account_circle_24" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/ask_for_contact_card"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerHorizontal="true"
+                android:elevation="10dp"
+                app:cardCornerRadius="50dp"
+                android:layout_toRightOf="@id/user_icon_card"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="15dp">
+
+                <ImageView
+                    android:id="@+id/ask_for_contact"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="center"
+                    android:src="@drawable/baseline_contact_page_black_18" />
+            </androidx.cardview.widget.CardView>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="User name"
+            android:fontFamily="sans-serif"
+            android:textSize="20dp"
+            android:paddingBottom="5dp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp">
+
+            <ImageView
+                android:id="@+id/location_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/location"
+                android:paddingRight="10dp"
+                android:src="@drawable/baseline_place_black_18" />
+
+            <TextView
+                android:id="@+id/location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="Location"
+                android:fontFamily="sans-serif-light"
+                android:textSize="15dp"/>
+        </RelativeLayout>
+
+        <View style="@style/Divider.Horizontal"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp">
+
+            <ImageView
+                android:id="@+id/phone_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/user_phone"
+                android:paddingRight="10dp"
+                android:src="@drawable/baseline_call_black_18" />
+
+            <TextView
+                android:id="@+id/user_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="phone number"
+                android:fontFamily="sans-serif"
+                android:textSize="15dp"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="10dp">
+
+            <ImageView
+                android:id="@+id/email_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/user_email"
+                android:paddingRight="10dp"
+                android:src="@drawable/baseline_email_black_18" />
+
+            <TextView
+                android:id="@+id/user_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="email"
+                android:fontFamily="sans-serif"
+                android:textSize="15dp"/>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/user_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="User info"
+            android:fontFamily="sans-serif"
+            android:textSize="15dp"
+            android:paddingBottom="5dp"/>
+
+        <Button
+            android:id="@+id/show_pets"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Посмотреть питомцев"
+            android:textColor="#858585" />
+    </LinearLayout>
 </LinearLayout>
