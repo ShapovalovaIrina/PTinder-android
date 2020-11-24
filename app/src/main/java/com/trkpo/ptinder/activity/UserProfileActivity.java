@@ -1,11 +1,11 @@
 package com.trkpo.ptinder.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,8 +17,14 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.trkpo.ptinder.R;
+import com.trkpo.ptinder.adapter.PetCardAdapter;
+import com.trkpo.ptinder.pojo.PetInfo;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 public class UserProfileActivity extends AppCompatActivity {
     TextView info;
@@ -27,22 +33,20 @@ public class UserProfileActivity extends AppCompatActivity {
     TextView location;
     TextView phone;
     TextView email;
+    private RecyclerView petCardRecycleView;
+    PetCardAdapter petCardAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_profile);
+        setContentView(R.layout.user_profile_with_pets);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        toolBarLayout.setTitle(getTitle());
 
         initUserInfo();
-
-        Button showPets = findViewById(R.id.show_pets);
-        showPets.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(UserProfileActivity.this, PetsActivity.class);
-                startActivity(intent);
-            }
-        });
+        initRecycleView();
     }
 
     private void showInfo(String googleId) {
@@ -81,5 +85,28 @@ public class UserProfileActivity extends AppCompatActivity {
             email.setText(signInAccount.getEmail());
             showInfo(signInAccount.getId());
         }
+    }
+
+    private void initRecycleView() {
+        petCardRecycleView = findViewById(R.id.pet_cards_recycle_view);
+        petCardRecycleView.setLayoutManager(new LinearLayoutManager(this));
+
+        petCardAdapter = new PetCardAdapter();
+        petCardRecycleView.setAdapter(petCardAdapter);
+
+        loadPets();
+    }
+
+    private void loadPets() {
+        Collection<PetInfo> pets = getPets();
+        petCardAdapter.setItems(pets);
+    }
+
+    private Collection<PetInfo> getPets(){
+        return Arrays.asList(
+                new PetInfo("Симба", "Котик :3", "1 год"),
+                new PetInfo("Мотя", "Котик :3", "2 года"),
+                new PetInfo("Рэя", "Котик :3", "3 года")
+        );
     }
 }
