@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     tools:context=".activity.UserProfileActivity">
 
@@ -174,15 +174,15 @@
             android:text="User info"
             android:fontFamily="sans-serif"
             android:textSize="15dp"
-            android:paddingBottom="5dp"/>
+            android:paddingBottom="20dp"/>
 
-        <Button
-            android:id="@+id/show_pets"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Посмотреть питомцев"
-            android:textColor="#858585" />
+            android:gravity="center"
+            android:text="Ваши питомцы"
+            android:fontFamily="sans-serif"
+            android:textSize="20dp"
+            android:paddingBottom="5dp"/>
     </LinearLayout>
 </LinearLayout>
