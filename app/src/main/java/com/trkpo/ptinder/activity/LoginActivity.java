@@ -1,4 +1,4 @@
-package com.trkpo.ptinder;
+package com.trkpo.ptinder.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +26,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.trkpo.ptinder.R;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -46,8 +47,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
 
-        MaterialToolbar topAppBar = findViewById(R.id.topAppBar);
-
         mAuth = FirebaseAuth.getInstance();
         createRequest();
 
@@ -61,24 +60,6 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     signIn();
                 }
-            }
-        });
-
-        topAppBar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "Click navigation", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        topAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                if (menuItem.getItemId() == R.id.notification) {
-                    Toast.makeText(getApplicationContext(), "Click notification", Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-                return false;
             }
         });
     }
