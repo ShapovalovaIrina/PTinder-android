@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group
+        android:id="@+id/main_group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_user_profile"
+            android:icon="@drawable/baseline_account_circle_24"
+            android:title="@string/menu_user_profile"/>
+        <item
+            android:id="@+id/nav_search"
+            android:icon="?android:attr/actionModeWebSearchDrawable"
+            android:title="@string/menu_search" />
+        <item
+            android:id="@+id/nav_favourite"
+            android:icon="@drawable/baseline_favorite_24"
+            android:title="@string/menu_favourite" />
+        <item
+            android:id="@+id/nav_feed"
+            android:icon="@drawable/baseline_email_24"
+            android:title="@string/menu_feed" />
+    </group>
+
+    <group
+        android:id="@+id/support_group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@android:drawable/ic_menu_help"
+            android:title="@string/menu_help" />
+    </group>
+</menu>

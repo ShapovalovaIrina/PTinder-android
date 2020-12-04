@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_user_profile">
+
+    <fragment
+        android:id="@+id/nav_user_profile"
+        android:name="com.trkpo.ptinder.ui.UserProfileFragment"
+        android:label="@string/menu_user_profile"
+        tools:layout="@layout/fragment_user_profile" />
+
+    <fragment
+        android:id="@+id/nav_search"
+        android:name="com.trkpo.ptinder.ui.SearchFragment"
+        android:label="@string/menu_search"
+        tools:layout="@layout/fragment_search" />
+
+    <fragment
+        android:id="@+id/nav_favourite"
+        android:name="com.trkpo.ptinder.ui.FavouriteFragment"
+        android:label="@string/menu_favourite"
+        tools:layout="@layout/fragment_favourite" />
+
+    <fragment
+        android:id="@+id/nav_feed"
+        android:name="com.trkpo.ptinder.ui.FeedFragment"
+        android:label="@string/menu_feed"
+        tools:layout="@layout/fragment_feed" />
+
+</navigation>

@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".activity.UserProfileActivity"
-    tools:showIn="@layout/user_profile_with_pets">
+    tools:showIn="@layout/fragment_user_profile">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pet_cards_recycle_view"

@@ -4,18 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    tools:context=".activity.UserProfileActivity">
-
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/top_app_bar_user_profile"
-        style="@style/Widget.MaterialComponents.Toolbar.Primary"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#99C87F16"
-        app:menu="@menu/top_app_bar"
-        app:navigationIcon="@drawable/baseline_menu_white_18"
-        app:title="Профиль"/>
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,62 +15,34 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="10dp"
+            android:paddingTop="20dp"
             android:paddingBottom="10dp">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/add_to_favourite_card"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_centerHorizontal="true"
-                android:elevation="10dp"
-                app:cardCornerRadius="50dp"
-                android:layout_toLeftOf="@id/user_icon_card"
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="15dp">
+                android:layout_marginRight="20dp"
+                android:layout_toLeftOf="@id/user_icon"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/baseline_grade_24" />
 
-                <ImageView
-                    android:id="@+id/add_to_favourite"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="center"
-                    android:src="@drawable/baseline_grade_black_18" />
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/user_icon_card"
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/user_icon"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_centerHorizontal="true"
-                android:elevation="10dp"
-                app:cardCornerRadius="100dp">
+                android:scaleType="centerCrop"
+                android:src="@drawable/cat" />
 
-                <ImageView
-                    android:id="@+id/user_icon"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/baseline_account_circle_24" />
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/ask_for_contact_card"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_centerHorizontal="true"
-                android:elevation="10dp"
-                app:cardCornerRadius="50dp"
-                android:layout_toRightOf="@id/user_icon_card"
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="15dp">
-
-                <ImageView
-                    android:id="@+id/ask_for_contact"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="center"
-                    android:src="@drawable/baseline_contact_page_black_18" />
-            </androidx.cardview.widget.CardView>
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@id/user_icon"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/baseline_contact_page_24" />
         </RelativeLayout>
 
         <TextView
