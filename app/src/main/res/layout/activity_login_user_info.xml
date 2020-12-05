@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_user_info_activity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF9E3"
+    tools:context=".activity.LoginUserInfoActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:paddingTop="40sp"
+            android:paddingLeft="30sp"
+            android:paddingRight="30sp"
+            android:shadowColor="#0E0E0E"
+            android:fontFamily="sans-serif-light"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:text="@string/login_enter_info" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:paddingTop="40sp"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:shadowColor="#0E0E0E"
+            android:fontFamily="sans-serif-light"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:text="@string/login_city_1"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-thin"
+            android:includeFontPadding="false"
+            android:paddingTop="10sp"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:shadowColor="#0E0E0E"
+            android:text="@string/login_city_2"
+            android:textColor="#000000"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/editPersonCity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:ems="10"
+            android:hint="@string/login_city_3"
+            android:inputType="text" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:paddingTop="40sp"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:shadowColor="#0E0E0E"
+            android:fontFamily="sans-serif-light"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:text="@string/login_gender_1"/>
+
+
+        <RadioGroup
+            android:id="@+id/radio_group_gender"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_button_female"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingEnd="30dp"
+                android:fontFamily="sans-serif-light"
+                android:text="@string/gender_female" />
+
+            <RadioButton
+                android:id="@+id/radio_button_male"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingEnd="30dp"
+                android:fontFamily="sans-serif-light"
+                android:text="@string/gender_male" />
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:paddingTop="40sp"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:shadowColor="#0E0E0E"
+            android:fontFamily="sans-serif-light"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:text="@string/login_phone_1"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-thin"
+            android:includeFontPadding="false"
+            android:paddingTop="10sp"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:shadowColor="#0E0E0E"
+            android:text="@string/login_phone_2"
+            android:textColor="#000000"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/editPersonPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:ems="10"
+            android:hint="@string/login_phone_3"
+            android:inputType="phone" />
+
+        <Button
+            android:id="@+id/login_submit_button"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/login_button_submit"
+            android:textColor="#B3000000" />
+    </LinearLayout>
+</ScrollView>

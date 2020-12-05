@@ -17,4 +17,15 @@
     <string name="menu_favourite">Избранные питомцы</string>
     <string name="menu_feed">Лента новостей</string>
     <string name="menu_help">Помощь</string>
+    <string name="login_enter_info">Чтобы продолжить, введите следующую информацию</string>
+    <string name="login_city_1">Ваш город *</string>
+    <string name="login_city_2">Данная информацию нужна, чтобы находить людей в одном городе</string>
+    <string name="login_city_3">Город</string>
+    <string name="login_phone_1">Ваш номер телефона</string>
+    <string name="login_phone_2">Данная информацию не является обязательной, позже ее можно изменить в личном кабинете</string>
+    <string name="login_phone_3">Телефон</string>
+    <string name="login_button_submit">Подтвердить</string>
+    <string name="gender_male">Мужской</string>
+    <string name="gender_female">Женский</string>
+    <string name="login_gender_1">Ваш пол *</string>
 </resources>

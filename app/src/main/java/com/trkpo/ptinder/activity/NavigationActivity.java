@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -66,10 +65,7 @@ public class NavigationActivity extends AppCompatActivity {
             TextView username = view.findViewById(R.id.username_nav_header);
             CircleImageView  user_icon = view.findViewById(R.id.user_icon_nav_header);
 //            if (signInAccount.getPhotoUrl() != null) { user_icon.setImageURI(signInAccount.getPhotoUrl()); }
-            if (username != null)
-                username.setText(signInAccount.getDisplayName());
-            else
-                Toast.makeText(this, "username is null", Toast.LENGTH_SHORT).show();
+            username.setText(signInAccount.getDisplayName());
         }
     }
 }
