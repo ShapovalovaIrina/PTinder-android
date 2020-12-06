@@ -1,7 +1,10 @@
 package com.trkpo.ptinder.ui;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +24,23 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.material.snackbar.Snackbar;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
 import com.trkpo.ptinder.pojo.PetInfo;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+
+import static com.trkpo.ptinder.config.Constants.PETS_PATH;
+import static com.trkpo.ptinder.config.Constants.SERVER_PATH;
+import static com.trkpo.ptinder.config.Constants.USERS_PATH;
 
 public class UserProfileFragment extends Fragment {
 
@@ -39,6 +53,7 @@ public class UserProfileFragment extends Fragment {
     private TextView email;
     private RecyclerView petCardRecycleView;
     private PetCardAdapter petCardAdapter;
+    private String googleId;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -59,7 +74,7 @@ public class UserProfileFragment extends Fragment {
     private void showInfo(String googleId) {
         if (activity != null) {
             RequestQueue queue = Volley.newRequestQueue(activity);
-            String url = "http://192.168.0.102:8080/ptinder/users/google/" + googleId;
+            String url = USERS_PATH + "/google/" + googleId;
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                     new Response.Listener<String>() {
@@ -86,6 +101,7 @@ public class UserProfileFragment extends Fragment {
             phone.setText("Ваш телефон");
             email.setText(signInAccount.getEmail());
             showInfo(signInAccount.getId());
+            googleId = signInAccount.getId();
         }
     }
 
@@ -100,15 +116,51 @@ public class UserProfileFragment extends Fragment {
     }
 
     private void loadPets() {
-        Collection<PetInfo> pets = getPets();
-        petCardAdapter.setItems(pets);
+        RequestQueue queue = Volley.newRequestQueue(activity);
+        String url = PETS_PATH + "/owner/" + googleId;
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            petCardAdapter.setItems(getPetsFromJSON(response));
+                        } catch (JSONException e) {
+                            Snackbar.make(root.findViewById(R.id.user_icon), e.toString(), Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Snackbar.make(root.findViewById(R.id.user_info), error.toString(), Snackbar.LENGTH_SHORT).show();
+            }
+        });
+        queue.add(stringRequest);
     }
 
-    private Collection<PetInfo> getPets(){
-        return Arrays.asList(
-                new PetInfo("Симба", "Котик :3", "1 год"),
-                new PetInfo("Мотя", "Котик :3", "2 года"),
-                new PetInfo("Рэя", "Котик :3", "3 года")
-        );
+    private Collection<PetInfo> getPetsFromJSON(String jsonString) throws JSONException {
+        Collection<PetInfo> pets = new ArrayList<>();
+        JSONArray jArray = new JSONArray(jsonString);
+        for (int i = 0; i < jArray.length(); i++) {
+            JSONObject jsonObject = jArray.getJSONObject(i);
+            String name = jsonObject.getString("name");
+            String age = String.valueOf(jsonObject.getInt("age"));
+            String breed = jsonObject.getString("breed");
+            String gender = jsonObject.getString("gender");
+            String purpose = jsonObject.getString("purpose");
+            String comment = jsonObject.getString("comment");
+            PetInfo petInfo = new PetInfo(name, breed, age, gender, purpose, comment);
+
+            JSONArray images = jsonObject.getJSONArray("petPhotos");
+            if (images != null && images.length() > 0) {
+                //  Set first photo as icon
+                String imageStr = images.getJSONObject(0).getString("photo");
+                byte[] imageBytes = Base64.decode(imageStr, Base64.DEFAULT);
+                Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                petInfo.setIcon(image);
+            }
+            pets.add(petInfo);
+        }
+        return pets;
     }
 }

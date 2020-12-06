@@ -3,6 +3,7 @@ package com.trkpo.ptinder.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,22 +19,33 @@ import java.util.List;
 public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHolder> {
     private List<PetInfo> petsList = new ArrayList<>();
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView petName;
         private TextView petBreed;
         private TextView petAge;
+        private ImageView petImage;
 
         public ViewHolder(View itemView) {
             super(itemView);
             this.petName = itemView.findViewById(R.id.card_pet_name);
             this.petBreed = itemView.findViewById(R.id.card_pet_breed);
             this.petAge = itemView.findViewById(R.id.card_pet_age);
+            this.petImage = itemView.findViewById(R.id.card_pet_image);
+            itemView.setOnClickListener(this);
         }
 
         public void bind(PetInfo petInfo) {
-            petName.setText(petInfo.getPetName());
-            petBreed.setText(petInfo.getPetBreed());
-            petAge.setText(petInfo.getPetAge());
+            petName.setText(petInfo.getName());
+            petBreed.setText(petInfo.getBreed());
+            petAge.setText(petInfo.getAge());
+            if (petInfo.getIcon() != null) {
+                petImage.setImageBitmap(petInfo.getIcon());
+            }
+        }
+
+        @Override
+        public void onClick(View v) {
+            // open pet
         }
     }
 
