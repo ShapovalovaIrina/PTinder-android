@@ -1,39 +1,78 @@
 package com.trkpo.ptinder.pojo;
 
+import android.graphics.Bitmap;
+
 public class PetInfo {
-    private String petName;
-    private String petBreed;
-    private String petAge;
-//    Set to url?
-//    private int petIcon;
-//    private int petGender;
-    public PetInfo(String petName, String petBreed, String petAge) {
-        this.petName = petName;
-        this.petBreed = petBreed;
-        this.petAge = petAge;
+    private String name;
+    private String breed;
+    private String age;
+    private String gender;
+    private String purpose;
+    private String comment;
+    private Bitmap icon;
+
+    public PetInfo(String name, String breed, String age, String gender, String purpose, String comment) {
+        this.name = name;
+        this.breed = breed;
+        this.age = age;
+        this.gender = gender;
+        this.purpose = purpose;
+        this.comment = comment;
     }
 
-    public String getPetName() {
-        return petName;
+    public String getName() {
+        return name;
     }
 
-    public void setPetName(String petName) {
-        this.petName = petName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getPetBreed() {
-        return petBreed;
+    public String getBreed() {
+        return breed;
     }
 
-    public void setPetBreed(String petBreed) {
-        this.petBreed = petBreed;
+    public void setBreed(String breed) {
+        this.breed = breed;
     }
 
-    public String getPetAge() {
-        return petAge;
+    public String getAge() {
+        return age;
     }
 
-    public void setPetAge(String petAge) {
-        this.petAge = petAge;
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getPurpose() {
+        return purpose;
+    }
+
+    public void setPurpose(String gender) {
+        this.purpose = purpose;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public Bitmap getIcon() {
+        return icon;
+    }
+
+    public void setIcon(Bitmap icon) {
+        this.icon = icon;
     }
 }
