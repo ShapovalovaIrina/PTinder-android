@@ -1,6 +1,7 @@
 package com.trkpo.ptinder.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +29,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.trkpo.ptinder.R;
+import com.trkpo.ptinder.activity.PetRegistrationActivity;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
 import com.trkpo.ptinder.pojo.PetInfo;
 
@@ -53,6 +56,7 @@ public class UserProfileFragment extends Fragment {
     private RecyclerView petCardRecycleView;
     private PetCardAdapter petCardAdapter;
     private String googleId;
+    private Button addPetBtn;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -62,6 +66,14 @@ public class UserProfileFragment extends Fragment {
         location = root.findViewById(R.id.location);
         phone = root.findViewById(R.id.user_phone);
         email = root.findViewById(R.id.user_email);
+
+        addPetBtn = root.findViewById(R.id.add_pet);
+        addPetBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), PetRegistrationActivity.class));
+            }
+        });
 
         initUserInfo();
         initRecycleView();
