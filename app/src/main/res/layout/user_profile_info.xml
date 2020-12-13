@@ -128,16 +128,6 @@
         </RelativeLayout>
 
         <TextView
-            android:id="@+id/user_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="User info"
-            android:fontFamily="sans-serif"
-            android:textSize="15dp"
-            android:paddingBottom="20dp"/>
-
-        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
