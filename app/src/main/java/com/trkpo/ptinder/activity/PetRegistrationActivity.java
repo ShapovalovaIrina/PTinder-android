@@ -1,8 +1,14 @@
 package com.trkpo.ptinder.activity;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -25,6 +31,8 @@ import com.trkpo.ptinder.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
@@ -36,6 +44,10 @@ public class PetRegistrationActivity extends AppCompatActivity {
     private Spinner petGender;
     private Spinner petType;
     private String googleId;
+
+    private Bitmap imageBitmap;
+
+    static final int GALLERY_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +68,12 @@ public class PetRegistrationActivity extends AppCompatActivity {
         }
     }
 
+    private byte[] getByteArrayfromBitmap(Bitmap bitmap) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 0, bos);
+        return bos.toByteArray();
+    }
+
     public void onSavePetClick(View view) {
         JSONObject requestObject = new JSONObject();
         JSONObject jsonBodyWithPet = new JSONObject();
@@ -64,6 +82,11 @@ public class PetRegistrationActivity extends AppCompatActivity {
             jsonBodyWithPet.put("age", petAge.getText());
             jsonBodyWithPet.put("gender", translateGender((String) petGender.getSelectedItem()));
             jsonBodyWithPet.put("type", translateType((String) petType.getSelectedItem()));
+            if (imageBitmap != null) {
+                byte[] imageBytes = getByteArrayfromBitmap(imageBitmap);
+                String imageStr = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+                jsonBodyWithPet.put("photo", imageStr);
+            }
             requestObject.put("googleId", googleId);
             requestObject.put("pet", jsonBodyWithPet);
         } catch (JSONException e) {
@@ -144,8 +167,32 @@ public class PetRegistrationActivity extends AppCompatActivity {
     }
 
     private String translateGender(String gender) {
-        return gender.equals("Мужской") ? "male" : "female";
+        return gender.equals("Мужской") ? "MALE" : "FEMALE";
     }
 
+    public void onDownloadImgClick(View view) {
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        photoPickerIntent.setType("image/*");
+        startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+
+        ImageView imageView = (ImageView) findViewById(R.id.pet_icon);
+
+        switch (requestCode) {
+            case GALLERY_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    Uri selectedImage = imageReturnedIntent.getData();
+                    try {
+                        imageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    imageView.setImageBitmap(imageBitmap);
+                }
+        }
+    }
 }
