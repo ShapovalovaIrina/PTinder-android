@@ -35,9 +35,9 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
         }
 
         public void bind(PetInfo petInfo) {
-            petName.setText(petInfo.getName());
-            petBreed.setText(petInfo.getBreed());
-            petAge.setText(petInfo.getAge());
+            petName.setText(petInfo.getName() != null ? petInfo.getName() : "");
+            petBreed.setText(petInfo.getBreed() != null ? petInfo.getBreed() : "");
+            petAge.setText(petInfo.getAge() != null ? petInfo.getAge() : "");
             if (petInfo.getIcon() != null) {
                 petImage.setImageBitmap(petInfo.getIcon());
             }

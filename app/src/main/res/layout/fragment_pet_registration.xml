@@ -9,13 +9,12 @@
         android:id="@+id/user_profile_linear_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingTop="5dp">
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="50dp"
+            android:paddingTop="30dp"
             android:paddingEnd="20dp">
 
             <EditText
@@ -25,7 +24,7 @@
                 android:layout_centerHorizontal="true"
                 android:ems="12"
                 android:inputType="textPersonName"
-                android:text="@string/enter_pet_name" />
+                android:hint="@string/enter_pet_name" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -117,7 +116,7 @@
                 android:layout_height="wrap_content"
                 android:ems="12"
                 android:inputType="textPersonName"
-                android:text="Введите породу"
+                android:hint="Введите породу"
                 tools:layout_editor_absoluteX="27dp"
                 tools:layout_editor_absoluteY="122dp" />
         </RelativeLayout>
@@ -160,7 +159,9 @@
                 android:ems="10"
                 android:fontFamily="sans-serif"
                 android:gravity="start|top"
-                android:text="Комментарий"
+                android:lines="3"
+                android:maxLength="500"
+                android:hint="Комментарий"
                 android:textSize="15dp"
             android:inputType="textMultiLine" />
         </RelativeLayout>
@@ -176,16 +177,9 @@
                 android:id="@+id/pet_icon"
                 android:layout_width="134dp"
                 android:layout_height="140dp"
-                tools:srcCompat="@drawable/paw" />
-
-            <Button
-                android:id="@+id/download_img"
-                android:layout_width="170dp"
-                android:layout_height="69dp"
-                android:layout_marginStart="17dp"
-                android:layout_toEndOf="@id/pet_icon"
-                android:onClick="onDownloadImgClick"
-                android:text="Загрузить изображение" />
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/no_photo" />
 
         </RelativeLayout>
 

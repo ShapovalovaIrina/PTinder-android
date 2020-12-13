@@ -1,7 +1,6 @@
 package com.trkpo.ptinder.ui;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -16,6 +15,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,7 +30,6 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.trkpo.ptinder.R;
-import com.trkpo.ptinder.activity.PetRegistrationActivity;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
 import com.trkpo.ptinder.pojo.PetInfo;
 
@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
-import static com.trkpo.ptinder.config.Constants.SERVER_PATH;
 import static com.trkpo.ptinder.config.Constants.USERS_PATH;
 
 public class UserProfileFragment extends Fragment {
@@ -71,7 +70,8 @@ public class UserProfileFragment extends Fragment {
         addPetBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), PetRegistrationActivity.class));
+                NavController navController = Navigation.findNavController(v);
+                navController.navigate(R.id.nav_pet_registration);
             }
         });
 
@@ -161,7 +161,7 @@ public class UserProfileFragment extends Fragment {
             JSONObject jsonObject = jArray.getJSONObject(i);
             String name = jsonObject.getString("name");
             String age = String.valueOf(jsonObject.getInt("age"));
-            String breed = jsonObject.getString("breed");
+            String breed = jsonObject.getString("animalType");
             String gender = jsonObject.getString("gender");
             String purpose = jsonObject.getString("purpose");
             String comment = jsonObject.getString("comment");

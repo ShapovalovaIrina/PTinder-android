@@ -9,7 +9,11 @@
         android:id="@+id/nav_user_profile"
         android:name="com.trkpo.ptinder.ui.UserProfileFragment"
         android:label="@string/menu_user_profile"
-        tools:layout="@layout/fragment_user_profile" />
+        tools:layout="@layout/fragment_user_profile" >
+        <action
+            android:id="@+id/action_nav_user_profile_to_nav_pet_registration"
+            app:destination="@id/nav_pet_registration" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_search"
@@ -28,5 +32,14 @@
         android:name="com.trkpo.ptinder.ui.FeedFragment"
         android:label="@string/menu_feed"
         tools:layout="@layout/fragment_feed" />
+    <fragment
+        android:id="@+id/nav_pet_registration"
+        android:name="com.trkpo.ptinder.ui.PetRegistrationFragment"
+        android:label="Новый питомец"
+        tools:layout="@layout/fragment_pet_registration">
+        <action
+            android:id="@+id/action_nav_pet_registration_to_nav_user_profile"
+            app:destination="@id/nav_user_profile" />
+    </fragment>
 
 </navigation>
