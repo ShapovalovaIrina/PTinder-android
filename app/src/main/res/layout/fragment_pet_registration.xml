@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    tools:context=".ui.PetRegistrationFragment">
 
     <LinearLayout
         android:id="@+id/user_profile_linear_2"
@@ -11,202 +11,168 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <EditText
+            android:id="@+id/pet_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="40sp"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:ems="12"
+            android:inputType="textPersonName"
+            android:hint="@string/enter_pet_name" />
+
+
+        <EditText
+            android:id="@+id/pet_age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="40sp"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:ems="12"
+            android:inputType="number"
+            android:hint="Введите возраст"/>
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="30dp"
-            android:paddingEnd="20dp">
+            android:includeFontPadding="false"
+            android:paddingTop="40sp"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:shadowColor="#0E0E0E"
+            android:fontFamily="sans-serif-light"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:text="Пол"/>
 
-            <EditText
-                android:id="@+id/pet_name"
+
+        <RadioGroup
+            android:id="@+id/radio_group_gender_pet"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_button_female_pet"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:ems="12"
-                android:inputType="textPersonName"
-                android:hint="@string/enter_pet_name" />
-        </RelativeLayout>
+                android:layout_height="match_parent"
+                android:paddingEnd="30dp"
+                android:fontFamily="sans-serif-light"
+                android:text="@string/gender_female" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="70dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="20dp">
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="100dp"
-                android:layout_height="35dp"
-                android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/pet_age"
-                android:fontFamily="sans-serif"
-                android:text="Введите возраст"
-                android:textSize="15dp" />
-
-            <EditText
-                android:id="@+id/pet_age"
+            <RadioButton
+                android:id="@+id/radio_button_male_pet"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:ems="2"
-                android:inputType="number"
-                tools:layout_editor_absoluteX="27dp"
-                tools:layout_editor_absoluteY="177dp" />
-        </RelativeLayout>
+                android:layout_height="match_parent"
+                android:paddingEnd="30dp"
+                android:fontFamily="sans-serif-light"
+                android:text="@string/gender_male" />
+        </RadioGroup>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="70dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="20dp">
-
-            <TextView
-                android:id="@+id/textView10"
-                android:layout_width="30dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_toStartOf="@id/gender_spinner"
-                android:fontFamily="sans-serif"
-                android:text="Пол"
-                android:textSize="15dp" />
-
-            <Spinner
-                android:id="@+id/gender_spinner"
-                android:layout_width="175dp"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:entries="@array/petGender" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="70dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="20dp">
+            android:paddingTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
 
             <TextView
                 android:id="@+id/textView7"
-                android:layout_width="26dp"
-                android:layout_height="31dp"
-                android:layout_marginEnd="12dp"
-                android:layout_toStartOf="@id/type_spinner"
-                android:fontFamily="sans-serif"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
                 android:text="Тип"
-                android:textSize="15dp" />
+                android:fontFamily="sans-serif-light"
+                android:textColor="#000000"
+                android:textSize="20sp" />
 
             <Spinner
                 android:id="@+id/type_spinner"
-                android:layout_width="174dp"
-                android:layout_height="35dp"
-                android:layout_centerHorizontal="true" />
+                android:layout_marginLeft="20dp"
+                android:layout_width="200dp"
+                android:layout_height="match_parent" />
 
             <Button
                 android:id="@+id/add_type_btn"
                 android:layout_width="54dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_toEndOf="@id/type_spinner"
-                android:paddingStart="70dp"
+                android:layout_marginLeft="20dp"
+                style="?attr/materialButtonOutlinedStyle"
+                android:textColor="#B3000000"
                 android:text="+" />
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+
+        <EditText
+            android:id="@+id/pet_breed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="12"
+            android:inputType="textPersonName"
+            android:hint="Введите породу"
+            android:paddingTop="40sp"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="70dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="20dp">
-
-            <EditText
-                android:id="@+id/pet_breed"
-                android:layout_width="260dp"
-                android:layout_height="wrap_content"
-                android:ems="12"
-                android:inputType="textPersonName"
-                android:hint="Введите породу"
-                tools:layout_editor_absoluteX="27dp"
-                tools:layout_editor_absoluteY="122dp" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="70dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="20dp">
+            android:paddingTop="40sp"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp">
 
             <TextView
                 android:id="@+id/textView1"
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/purpose_spinner"
-                android:fontFamily="sans-serif"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:text="Цель"
-                android:textSize="15dp" />
+                android:fontFamily="sans-serif-light"
+                android:textColor="#000000"
+                android:textSize="20sp" />
 
             <Spinner
                 android:id="@+id/purpose_spinner"
-                android:layout_width="175dp"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
+                android:layout_width="200dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
                 android:entries="@array/petPurposes" />
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <EditText
+            android:id="@+id/comment"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="70dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="20dp">
+            android:ems="12"
+            android:fontFamily="sans-serif"
+            android:lines="3"
+            android:maxLength="500"
+            android:hint="Комментарий"
+            android:inputType="textMultiLine"
+            android:paddingTop="40sp"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"/>
 
-            <EditText
-                android:id="@+id/comment"
-                android:layout_width="260dp"
-                android:layout_height="100dp"
-                android:ems="10"
-                android:fontFamily="sans-serif"
-                android:gravity="start|top"
-                android:lines="3"
-                android:maxLength="500"
-                android:hint="Комментарий"
-                android:textSize="15dp"
-            android:inputType="textMultiLine" />
-        </RelativeLayout>
+        <ImageView
+            android:id="@+id/pet_icon"
+            android:layout_width="125dp"
+            android:layout_height="100dp"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:src="@drawable/no_photo" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="70dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="20dp">
-
-            <ImageView
-                android:id="@+id/pet_icon"
-                android:layout_width="125dp"
-                android:layout_height="100dp"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
-                android:src="@drawable/no_photo" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="70dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="20dp">
-
-            <Button
-                android:id="@+id/save_pet"
-                android:layout_width="289dp"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-
-                android:text="Сохранить" />
-        </RelativeLayout>
+         <Button
+             android:id="@+id/save_pet"
+             style="?attr/materialButtonOutlinedStyle"
+             android:textColor="#B3000000"
+             android:layout_width="289dp"
+             android:layout_height="wrap_content"
+             android:layout_marginLeft="20sp"
+             android:layout_marginRight="20sp"
+             android:text="Сохранить" />
     </LinearLayout>
-</LinearLayout>
+</ScrollView>

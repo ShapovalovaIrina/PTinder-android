@@ -59,6 +59,9 @@
         android:name="com.trkpo.ptinder.ui.PetProfileFragment"
         android:label="Информация о питомце"
         tools:layout="@layout/fragment_pet_profile" >
+        <action
+            android:id="@+id/action_nav_pet_profile_to_nav_user_profile"
+            app:destination="@id/nav_user_profile" />
     </fragment>
 
 </navigation>

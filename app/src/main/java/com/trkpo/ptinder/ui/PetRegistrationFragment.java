@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.trkpo.ptinder.R;
+import com.trkpo.ptinder.pojo.Gender;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,10 +54,13 @@ public class PetRegistrationFragment extends Fragment {
     private View root;
     private TextView petName;
     private TextView petAge;
-    private Spinner petGender;
     private TextView petBreed;
+    private TextView petComment;
+    private Gender petGender;
     private Spinner petType;
+    private Spinner petPurpose;
     private String googleId;
+    private RadioGroup rgGender;
 
     private Button savePetBtn;
     private Button addPetTypeBtn;
@@ -73,11 +78,29 @@ public class PetRegistrationFragment extends Fragment {
         petName = root.findViewById(R.id.pet_name);
         petAge = root.findViewById(R.id.pet_age);
         petBreed = root.findViewById(R.id.pet_breed);
-        petGender = root.findViewById(R.id.gender_spinner);
+        petComment = root.findViewById(R.id.comment);
+        rgGender = root.findViewById(R.id.radio_group_gender_pet);
         petType = root.findViewById(R.id.type_spinner);
+        petPurpose = root.findViewById(R.id.purpose_spinner);
         savePetBtn = root.findViewById(R.id.save_pet);
         addPetTypeBtn = root.findViewById(R.id.add_type_btn);
         petImage = root.findViewById(R.id.pet_icon);
+
+        rgGender.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.radio_button_female_pet:
+                        petGender = Gender.FEMALE;
+                        break;
+                    case R.id.radio_button_male_pet:
+                        petGender = Gender.MALE;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
         initUserInfo();
 
         final RequestQueue queue = Volley.newRequestQueue(activity);
@@ -143,9 +166,11 @@ public class PetRegistrationFragment extends Fragment {
                 try {
                     jsonBodyWithPet.put("name", petName.getText());
                     jsonBodyWithPet.put("age", petAge.getText());
-                    jsonBodyWithPet.put("gender", translateGender((String) petGender.getSelectedItem()));
+                    jsonBodyWithPet.put("gender", petGender);
                     jsonBodyWithPet.put("type", (String) petType.getSelectedItem());
                     jsonBodyWithPet.put("breed",  "" + petBreed.getText());
+                    jsonBodyWithPet.put("purpose", translatePurpose(petPurpose.getSelectedItem().toString()));
+                    jsonBodyWithPet.put("comment", petComment.getText());
                     if (imageBitmap != null) {
                         byte[] imageBytes = getByteArrayFromBitmap(imageBitmap);
                         String imageStr = Base64.encodeToString(imageBytes, Base64.DEFAULT);
@@ -232,10 +257,6 @@ public class PetRegistrationFragment extends Fragment {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 0, bos);
         return bos.toByteArray();
-    }
-
-    private String translateGender(String gender) {
-        return gender.equals("Мужской") ? "MALE" : "FEMALE";
     }
 
     private String translatePurpose(String purpose) {
