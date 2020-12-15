@@ -11,6 +11,8 @@
         android:id="@+id/pet_cards_recycle_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="10dp"/>
+        android:paddingTop="10dp"
+        tools:itemCount="2"
+        tools:listitem="@layout/pet_card" />
 
 </androidx.core.widget.NestedScrollView>

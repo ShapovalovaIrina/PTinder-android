@@ -1,5 +1,6 @@
 package com.trkpo.ptinder.adapter;
 
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.trkpo.ptinder.R;
@@ -20,6 +23,7 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
     private List<PetInfo> petsList = new ArrayList<>();
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private PetInfo petInfo;
         private TextView petName;
         private TextView petBreed;
         private TextView petAge;
@@ -35,17 +39,22 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
         }
 
         public void bind(PetInfo petInfo) {
+            this.petInfo = petInfo;
             petName.setText(petInfo.getName() != null ? petInfo.getName() : "");
             petBreed.setText(petInfo.getBreed() != null ? petInfo.getBreed() : "");
             petAge.setText(petInfo.getAge() != null ? petInfo.getAge() : "");
-            if (petInfo.getIcon() != null) {
-                petImage.setImageBitmap(petInfo.getIcon());
+            if (petInfo.getIconsAmount() != 0) {
+                /* Set first image as main */
+                petImage.setImageBitmap(petInfo.getIcons().get(0));
             }
         }
 
         @Override
         public void onClick(View v) {
-            // open pet
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("petInfo", petInfo);
+            NavController navController = Navigation.findNavController(v);
+            navController.navigate(R.id.action_nav_user_profile_to_nav_pet_profile, bundle);
         }
     }
 

@@ -13,6 +13,14 @@
         <action
             android:id="@+id/action_nav_user_profile_to_nav_pet_registration"
             app:destination="@id/nav_pet_registration" />
+        <action
+            android:id="@+id/action_nav_user_profile_to_nav_pet_profile"
+            app:destination="@id/nav_pet_profile"
+            app:enterAnim="@anim/fui_slide_in_right"
+            app:exitAnim="@anim/fui_slide_out_left"
+            app:popEnterAnim="@anim/fragment_fade_enter"
+            app:popExitAnim="@anim/fragment_fade_exit" />
+
     </fragment>
 
     <fragment
@@ -25,7 +33,11 @@
         android:id="@+id/nav_favourite"
         android:name="com.trkpo.ptinder.ui.FavouriteFragment"
         android:label="@string/menu_favourite"
-        tools:layout="@layout/fragment_favourite" />
+        tools:layout="@layout/fragment_favourite" >
+        <action
+            android:id="@+id/action_nav_favourite_to_nav_pet_profile"
+            app:destination="@id/nav_pet_profile" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_feed"
@@ -40,6 +52,13 @@
         <action
             android:id="@+id/action_nav_pet_registration_to_nav_user_profile"
             app:destination="@id/nav_user_profile" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_pet_profile"
+        android:name="com.trkpo.ptinder.ui.PetProfileFragment"
+        android:label="Информация о питомце"
+        tools:layout="@layout/fragment_pet_profile" >
     </fragment>
 
 </navigation>

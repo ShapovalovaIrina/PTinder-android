@@ -150,6 +150,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e("VOLLEY", "Making get request (is user exists): request error - " + error.toString());
+                Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
             }
         });
         queue.add(stringRequest);
