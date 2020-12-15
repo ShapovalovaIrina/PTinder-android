@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/fragment_pet_profile">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,112 +28,103 @@
                 android:textSize="30sp" />
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/full_pet_info_gender"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="20dp"
-                android:src="@mipmap/baseline_pets_black_36"/>
+                app:srcCompat="@drawable/male" />
         </LinearLayout>
 
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="15dp">
+            android:fontFamily="sans-serif"
+            android:text="@string/pet_type"
+            android:textSize="25dp"
+            android:textStyle="bold" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1" >
+        <TextView
+            android:id="@+id/full_pet_info_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:text="@string/pet_type_dog"
+            android:textSize="25dp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/pet_type"
-                    android:fontFamily="sans-serif"
-                    android:textSize="25dp"
-                    android:textStyle="bold"/>
+        <View style="@style/Divider.Horizontal.Long" />
 
-                <TextView
-                    android:id="@+id/full_pet_info_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-light"
-                    android:text="@string/pet_type_dog"
-                    android:textSize="25dp" />
-            </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:text="@string/pet_breed"
+            android:textSize="25dp"
+            android:textStyle="bold" />
 
-
-
-            <View style="@style/Divider.Vertical"/>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/pet_breed"
-                    android:fontFamily="sans-serif"
-                    android:textSize="25dp"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:id="@+id/full_pet_info_breed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/pet_breed_husky"
-                    android:fontFamily="sans-serif-light"
-                    android:textSize="25dp"/>
-            </LinearLayout>
+        <TextView
+            android:id="@+id/full_pet_info_breed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:text="@string/pet_breed_husky"
+            android:textSize="25dp" />
 
 
-            <View style="@style/Divider.Vertical"/>
+        <View style="@style/Divider.Horizontal.Long" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1" >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif"
+            android:text="@string/pet_age"
+            android:textSize="25dp"
+            android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/pet_age"
-                    android:fontFamily="sans-serif"
-                    android:textSize="25dp"
-                    android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/full_pet_info_age"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:text="@string/pet_age_1_year"
+            android:textSize="25dp" />
 
-                <TextView
-                    android:id="@+id/full_pet_info_age"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/pet_age_1_year"
-                    android:fontFamily="sans-serif-light"
-                    android:textSize="25dp"/>
-            </LinearLayout>
-        </LinearLayout>
+        <View style="@style/Divider.Horizontal.Long" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif"
+            android:text="@string/purpose"
+            android:textSize="25dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/full_pet_info_purpose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:text="@string/purpose_friendship"
+            android:textSize="25dp" />
 
         <TextView
             android:id="@+id/full_pet_info_comment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
-            android:text="@string/pet_info_text"
-            android:paddingBottom="15dp"/>
+            android:paddingTop="10dp"
+            android:paddingBottom="15dp"
+            android:text="@string/pet_info_text" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Информация о владельце"
             android:fontFamily="sans-serif"
+            android:paddingBottom="15dp"
+            android:text="Информация о владельце"
             android:textSize="30sp"
-            android:textStyle="bold"
-            android:paddingBottom="15dp"/>
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -142,11 +132,12 @@
             android:orientation="horizontal">
 
             <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/full_pet_info_owner_icon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:layout_marginRight="15dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/cat"
-                android:layout_marginRight="15dp"/>
+                android:src="@drawable/cat" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -154,16 +145,18 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/full_pet_info_owner_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif"
-                    android:text="David Miller"/>
+                    android:text="David Miller" />
 
                 <TextView
+                    android:id="@+id/full_pet_info_owner_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif"
-                    android:text="d.miller@gmail.com"/>
+                    android:text="d.miller@gmail.com" />
             </LinearLayout>
 
         </LinearLayout>

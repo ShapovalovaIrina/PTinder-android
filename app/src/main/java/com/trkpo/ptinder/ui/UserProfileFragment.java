@@ -39,7 +39,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
@@ -161,12 +160,13 @@ public class UserProfileFragment extends Fragment {
         JSONArray jArray = new JSONArray(jsonString);
         for (int i = 0; i < jArray.length(); i++) {
             JSONObject jsonObject = jArray.getJSONObject(i);
+            Log.e("VOLLEY", "Get pet in user profile: " + jsonObject.toString());
             Long id = jsonObject.getLong("petId");
             String name = jsonObject.getString("name");
-            String age = String.valueOf(jsonObject.getInt("age"));
-            String breed = form(jsonObject.getString("animalType"));
+            String age = formAge(jsonObject.getInt("age"));
+            String breed = jsonObject.getString("breed");
             String gender = jsonObject.getString("gender");
-            String animalType = jsonObject.getString("animalType");
+            String animalType = jsonObject.getJSONObject("animalType").getString("type");
             String purpose = jsonObject.getString("purpose");
             String comment = jsonObject.getString("comment");
             PetInfo petInfo = new PetInfo(id, name, breed, age, gender, animalType, purpose, comment);
@@ -180,11 +180,34 @@ public class UserProfileFragment extends Fragment {
                 petInfo.addIcon(image);
             }
             pets.add(petInfo);
+
+            JSONObject ownerInfo = jsonObject.getJSONObject("owner");
+            String ownerId = ownerInfo.getString("googleId");
+            String ownerName = ownerInfo.getString("firstName") + " " + ownerInfo.getString("lastName");
+            String ownerEmail = ownerInfo.getString("email");
+            petInfo.setOwnerInfo(ownerId, ownerName, ownerEmail);
         }
         return pets;
     }
 
     private String form(String animalType) {
         return animalType != null ? StringUtils.substringBetween(animalType, "\"type\":\"", "\"") : "";
+    }
+
+    private String formAge(Integer age) {
+        String year = "";
+        switch (age) {
+            case 1:
+                year = " год";
+                break;
+            case 2:
+            case 3:
+            case 4:
+                year = " года";
+                break;
+            default:
+                year = " лет";
+        }
+        return age + year;
     }
 }

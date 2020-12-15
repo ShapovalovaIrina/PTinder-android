@@ -17,16 +17,27 @@ public class PetInfo implements Serializable {
     private String comment;
     private List<Bitmap> icons;
 
+    private String ownerId;
+    private String ownerName;
+    private String ownerEmail;
+    private Bitmap ownerIcon;
+
     public PetInfo(Long id, String name, String breed, String age, String gender, String animalType, String purpose, String comment) {
         this.id = id;
-        this.name = name;
-        this.breed = breed;
-        this.age = age;
-        this.gender = gender;
-        this.animalType = animalType;
-        this.purpose = purpose;
-        this.comment = comment;
+        this.name = name.isEmpty() ? "-" : name;
+        this.breed = breed.isEmpty() ? "-" : breed;
+        this.age = age.isEmpty() ? "-" : age;
+        this.gender = gender.isEmpty() ? "-" : gender;
+        this.animalType = animalType.isEmpty() ? "-" : animalType;
+        this.purpose = purpose.isEmpty() ? "-" : purpose;
+        this.comment = comment.isEmpty() ? "-" : comment;
         this.icons = new ArrayList<>();
+    }
+
+    public void setOwnerInfo(String ownerId, String ownerName, String ownerEmail) {
+        this.ownerId = ownerId;
+        this.ownerName = ownerName;
+        this.ownerEmail = ownerEmail;
     }
 
     public Long getId() {
@@ -107,5 +118,17 @@ public class PetInfo implements Serializable {
 
     public void addIcon(Bitmap icon) {
         icons.add(icon);
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public String getOwnerEmail() {
+        return ownerEmail;
     }
 }
