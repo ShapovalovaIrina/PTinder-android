@@ -9,10 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -33,11 +35,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.trkpo.ptinder.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 
@@ -47,10 +53,12 @@ public class PetRegistrationFragment extends Fragment {
     private TextView petName;
     private TextView petAge;
     private Spinner petGender;
+    private TextView petBreed;
     private Spinner petType;
     private String googleId;
 
     private Button savePetBtn;
+    private Button addPetTypeBtn;
 
     private ImageView petImage;
 
@@ -64,11 +72,50 @@ public class PetRegistrationFragment extends Fragment {
         activity = getActivity();
         petName = root.findViewById(R.id.pet_name);
         petAge = root.findViewById(R.id.pet_age);
+        petBreed = root.findViewById(R.id.pet_breed);
         petGender = root.findViewById(R.id.gender_spinner);
         petType = root.findViewById(R.id.type_spinner);
         savePetBtn = root.findViewById(R.id.save_pet);
+        addPetTypeBtn = root.findViewById(R.id.add_type_btn);
         petImage = root.findViewById(R.id.pet_icon);
         initUserInfo();
+
+        final RequestQueue queue = Volley.newRequestQueue(activity);
+        final String url = PETS_PATH + "/types";
+        final List<String> types = new ArrayList<>();
+
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            adapter.addAll(getTypesFromJSON(response));
+                        } catch (JSONException e) {
+                            Log.e("VOLLEY", "Making get request (load pets): json error - " + e.toString());
+                            Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
+                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        queue.add(stringRequest);
+        petType.setAdapter(adapter);
+
+        addPetTypeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AnimalTypeDialogFragment.showOpenDialog(activity, adapter);
+            }
+        });
+        petType.setAdapter(adapter);
+
 
         petImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,12 +144,14 @@ public class PetRegistrationFragment extends Fragment {
                     jsonBodyWithPet.put("name", petName.getText());
                     jsonBodyWithPet.put("age", petAge.getText());
                     jsonBodyWithPet.put("gender", translateGender((String) petGender.getSelectedItem()));
-                    jsonBodyWithPet.put("type", translateType((String) petType.getSelectedItem()));
+                    jsonBodyWithPet.put("type", (String) petType.getSelectedItem());
+                    jsonBodyWithPet.put("breed",  "" + petBreed.getText());
                     if (imageBitmap != null) {
                         byte[] imageBytes = getByteArrayFromBitmap(imageBitmap);
                         String imageStr = Base64.encodeToString(imageBytes, Base64.DEFAULT);
                         jsonBodyWithPet.put("photo", imageStr);
                     }
+                    requestObject.put("type", (String) petType.getSelectedItem());
                     requestObject.put("googleId", googleId);
                     requestObject.put("pet", jsonBodyWithPet);
                 } catch (JSONException e) {
@@ -159,6 +208,19 @@ public class PetRegistrationFragment extends Fragment {
         return root;
     }
 
+    private Collection<String> getTypesFromJSON(String response) throws JSONException {
+        Collection<String> types = new ArrayList<>();
+        JSONArray jArray = new JSONArray(response);
+        for (int i = 0; i < jArray.length(); i++) {
+            JSONObject jsonObject = jArray.getJSONObject(i);
+            String name = jsonObject.getString("type");
+            types.add(name);
+        }
+        Log.i("TEST_INFO", "Got types in func " + types);
+
+        return types;
+    }
+
     private void initUserInfo() {
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(activity);
         if (signInAccount != null) {
@@ -170,34 +232,6 @@ public class PetRegistrationFragment extends Fragment {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 0, bos);
         return bos.toByteArray();
-    }
-
-    private String translateType(String type) {
-        if (type.equals("Кот")) {
-            return "CAT";
-        }
-        if (type.equals("Собака")) {
-            return "DOG";
-        }
-        if (type.equals("Рыбка")) {
-            return "FISH";
-        }
-        if (type.equals("Хомяк")) {
-            return "HAMSTER";
-        }
-        if (type.equals("Мышь")) {
-            return "MOUSE";
-        }
-        if (type.equals("Крыса")) {
-            return "RAT";
-        }
-        if (type.equals("Змея")) {
-            return "SNAKE";
-        }
-        if (type.equals("Попугай")) {
-            return "PARROT";
-        }
-        return "";
     }
 
     private String translateGender(String gender) {

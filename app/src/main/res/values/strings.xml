@@ -37,17 +37,6 @@
         <item>Женский</item>
     </string-array>
 
-    <string-array name="petTypes">
-        <item>Кот</item>
-        <item>Собака</item>
-        <item>Хомяк</item>
-        <item>Рыбка</item>
-        <item>Мышь</item>
-        <item>Крыса</item>
-        <item>Змея</item>
-        <item>Попугай</item>
-    </string-array>
-
     <string-array name="petPurposes">
         <item>Прогулка</item>
         <item>Вязка</item>
