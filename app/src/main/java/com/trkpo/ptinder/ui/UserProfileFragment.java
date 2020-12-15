@@ -9,11 +9,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,6 +33,7 @@ import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
 import com.trkpo.ptinder.pojo.PetInfo;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
-import static com.trkpo.ptinder.config.Constants.SERVER_PATH;
 import static com.trkpo.ptinder.config.Constants.USERS_PATH;
 
 public class UserProfileFragment extends Fragment {
@@ -53,6 +56,7 @@ public class UserProfileFragment extends Fragment {
     private RecyclerView petCardRecycleView;
     private PetCardAdapter petCardAdapter;
     private String googleId;
+    private Button addPetBtn;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -62,6 +66,15 @@ public class UserProfileFragment extends Fragment {
         location = root.findViewById(R.id.location);
         phone = root.findViewById(R.id.user_phone);
         email = root.findViewById(R.id.user_email);
+
+        addPetBtn = root.findViewById(R.id.add_pet);
+        addPetBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = Navigation.findNavController(v);
+                navController.navigate(R.id.nav_pet_registration);
+            }
+        });
 
         initUserInfo();
         initRecycleView();
@@ -149,7 +162,7 @@ public class UserProfileFragment extends Fragment {
             JSONObject jsonObject = jArray.getJSONObject(i);
             String name = jsonObject.getString("name");
             String age = String.valueOf(jsonObject.getInt("age"));
-            String breed = jsonObject.getString("breed");
+            String breed = form(jsonObject.getString("animalType"));
             String gender = jsonObject.getString("gender");
             String purpose = jsonObject.getString("purpose");
             String comment = jsonObject.getString("comment");
@@ -166,5 +179,9 @@ public class UserProfileFragment extends Fragment {
             pets.add(petInfo);
         }
         return pets;
+    }
+
+    private String form(String animalType) {
+        return animalType != null ? StringUtils.substringBetween(animalType, "\"type\":\"", "\"") : "";
     }
 }

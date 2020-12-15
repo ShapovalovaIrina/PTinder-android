@@ -5,6 +5,7 @@
     <string name="notification_hint">Уведомления</string>
     <string name="menu_hint">Меню</string>
     <string name="title_activity_navigation">NavigationActivity</string>
+    <string name="title_activity_pet_registration">PetRegistrationActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Username</string>
@@ -28,4 +29,19 @@
     <string name="gender_male">Мужской</string>
     <string name="gender_female">Женский</string>
     <string name="login_gender_1">Ваш пол *</string>
+    <string name="enter_pet_name">Введите кличку</string>
+    <string name="enter_pet_age">Введите возраст</string>
+
+    <string-array name="petGender">
+        <item>Мужской</item>
+        <item>Женский</item>
+    </string-array>
+
+    <string-array name="petPurposes">
+        <item>Прогулка</item>
+        <item>Вязка</item>
+        <item>Переливание крови</item>
+        <item>Дружба</item>
+    </string-array>
+
 </resources>
