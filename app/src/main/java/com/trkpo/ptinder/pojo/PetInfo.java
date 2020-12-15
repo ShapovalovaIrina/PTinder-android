@@ -2,22 +2,39 @@ package com.trkpo.ptinder.pojo;
 
 import android.graphics.Bitmap;
 
-public class PetInfo {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PetInfo implements Serializable {
+    private Long id;
     private String name;
     private String breed;
     private String age;
     private String gender;
+    private String animalType;
     private String purpose;
     private String comment;
-    private Bitmap icon;
+    private List<Bitmap> icons;
 
-    public PetInfo(String name, String breed, String age, String gender, String purpose, String comment) {
+    public PetInfo(Long id, String name, String breed, String age, String gender, String animalType, String purpose, String comment) {
+        this.id = id;
         this.name = name;
         this.breed = breed;
         this.age = age;
         this.gender = gender;
+        this.animalType = animalType;
         this.purpose = purpose;
         this.comment = comment;
+        this.icons = new ArrayList<>();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -52,6 +69,14 @@ public class PetInfo {
         this.gender = gender;
     }
 
+    public String getAnimalType() {
+        return animalType;
+    }
+
+    public void setAnimalType(String animalType) {
+        this.animalType = animalType;
+    }
+
     public String getPurpose() {
         return purpose;
     }
@@ -68,11 +93,19 @@ public class PetInfo {
         this.comment = comment;
     }
 
-    public Bitmap getIcon() {
-        return icon;
+    public List<Bitmap> getIcons() {
+        return icons;
     }
 
-    public void setIcon(Bitmap icon) {
-        this.icon = icon;
+    public int getIconsAmount() {
+        return icons.size();
+    }
+
+    public Bitmap getIcon(int i) {
+        return icons.get(i);
+    }
+
+    public void addIcon(Bitmap icon) {
+        icons.add(icon);
     }
 }

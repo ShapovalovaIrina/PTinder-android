@@ -39,6 +39,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
@@ -160,13 +161,15 @@ public class UserProfileFragment extends Fragment {
         JSONArray jArray = new JSONArray(jsonString);
         for (int i = 0; i < jArray.length(); i++) {
             JSONObject jsonObject = jArray.getJSONObject(i);
+            Long id = jsonObject.getLong("petId");
             String name = jsonObject.getString("name");
             String age = String.valueOf(jsonObject.getInt("age"));
             String breed = form(jsonObject.getString("animalType"));
             String gender = jsonObject.getString("gender");
+            String animalType = jsonObject.getString("animalType");
             String purpose = jsonObject.getString("purpose");
             String comment = jsonObject.getString("comment");
-            PetInfo petInfo = new PetInfo(name, breed, age, gender, purpose, comment);
+            PetInfo petInfo = new PetInfo(id, name, breed, age, gender, animalType, purpose, comment);
 
             JSONArray images = jsonObject.getJSONArray("petPhotos");
             if (images != null && images.length() > 0) {
@@ -174,7 +177,7 @@ public class UserProfileFragment extends Fragment {
                 String imageStr = images.getJSONObject(0).getString("photo");
                 byte[] imageBytes = Base64.decode(imageStr, Base64.DEFAULT);
                 Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                petInfo.setIcon(image);
+                petInfo.addIcon(image);
             }
             pets.add(petInfo);
         }

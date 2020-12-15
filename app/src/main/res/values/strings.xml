@@ -44,4 +44,12 @@
         <item>Дружба</item>
     </string-array>
 
+    <string name="pet_info_text">Hula is a super smart amazing dog with so much love to give. Hula is well trained knows all commands sit, heal, go to your bed, stay on your bed, go to your crate, paw she knows it all. Hula is very protective and so loving g she needs a experienced owner who keeps her in check and loves her. She loves to play with toys she is a great fetcher and will be the most loyal dog you will ever know. We require that you meet with our trainer and that you take 15 training sessions with our trainer. You will love our trainer he has been training for 30 years. Give Hula a chance to be your forever best friend. She was abandoned and given up and hit in the face and she has come through it all.</string>
+    <string name="pet_breed">Порода</string>
+    <string name="pet_breed_husky">Наски</string>
+    <string name="pet_age">Возраст</string>
+    <string name="pet_age_1_year">1 год</string>
+    <string name="pet_name">Pet name</string>
+    <string name="pet_type">Тип</string>
+    <string name="pet_type_dog">Собака</string>
 </resources>
