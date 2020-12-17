@@ -3,6 +3,8 @@ package com.trkpo.ptinder.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -32,6 +35,9 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.trkpo.ptinder.R;
@@ -47,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 
 public class PetRegistrationFragment extends Fragment {
@@ -142,17 +149,10 @@ public class PetRegistrationFragment extends Fragment {
         petImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
-
-//                Uri selectedImage = imageReturnedIntent.getData();
-//                try {
-//                    imageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-                petImage.setImageBitmap(imageBitmap);
+                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                photoPickerIntent.setType("image/png");
+                photoPickerIntent.putExtra(Intent.EXTRA_MIME_TYPES, "image/jpeg");
+                startActivityForResult(Intent.createChooser(photoPickerIntent, "ChooseFile"), GALLERY_REQUEST);
             }
 
         });
@@ -167,7 +167,7 @@ public class PetRegistrationFragment extends Fragment {
                     jsonBodyWithPet.put("age", petAge.getText());
                     jsonBodyWithPet.put("gender", petGender);
                     jsonBodyWithPet.put("type", (String) petType.getSelectedItem());
-                    jsonBodyWithPet.put("breed",  "" + petBreed.getText());
+                    jsonBodyWithPet.put("breed", "" + petBreed.getText());
                     jsonBodyWithPet.put("purpose", translatePurpose(petPurpose.getSelectedItem().toString()));
                     jsonBodyWithPet.put("comment", petComment.getText());
                     if (imageBitmap != null) {
@@ -230,6 +230,29 @@ public class PetRegistrationFragment extends Fragment {
         });
 
         return root;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == GALLERY_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Uri selectedImg = data.getData();
+                Glide.with(this)
+                        .asBitmap()
+                        .load(selectedImg)
+                        .into(new CustomTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(@NonNull Bitmap resource, Transition<? super Bitmap> transition) {
+                                petImage.setImageBitmap(resource);
+                                imageBitmap = resource;
+                            }
+
+                            @Override
+                            public void onLoadCleared(@Nullable Drawable placeholder) {
+                            }
+                        });
+            }
+        }
     }
 
     private Collection<String> getTypesFromJSON(String response) throws JSONException {

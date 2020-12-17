@@ -48,7 +48,6 @@ public class UserProfileFragment extends Fragment {
 
     private Activity activity;
     private View root;
-    private TextView info;
     private TextView username;
     private TextView location;
     private TextView phone;
