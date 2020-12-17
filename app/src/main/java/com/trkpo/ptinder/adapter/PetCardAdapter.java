@@ -41,7 +41,7 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
         public void bind(PetInfo petInfo) {
             this.petInfo = petInfo;
             petName.setText(petInfo.getName() != null ? petInfo.getName() : "");
-            petBreed.setText(petInfo.getBreed() != null ? petInfo.getBreed() : "");
+            petBreed.setText(petInfo.getAnimalType() != null ? petInfo.getAnimalType() : "");
             petAge.setText(petInfo.getAge() != null ? petInfo.getAge() : "");
             if (petInfo.getIconsAmount() != 0) {
                 /* Set first image as main */
@@ -54,7 +54,12 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
             Bundle bundle = new Bundle();
             bundle.putSerializable("petInfo", petInfo);
             NavController navController = Navigation.findNavController(v);
-            navController.navigate(R.id.action_nav_user_profile_to_nav_pet_profile, bundle);
+            if (petInfo.getDirection() == 1) {
+                navController.navigate(R.id.action_nav_user_profile_to_nav_pet_profile, bundle);
+            }
+            if (petInfo.getDirection() == 2) {
+                navController.navigate(R.id.action_nav_search_to_nav_pet_profile, bundle);
+            }
         }
     }
 

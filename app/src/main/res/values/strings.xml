@@ -38,6 +38,7 @@
     </string-array>
 
     <string-array name="petPurposes">
+        <item>-</item>
         <item>Прогулка</item>
         <item>Вязка</item>
         <item>Переливание крови</item>

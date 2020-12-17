@@ -105,7 +105,6 @@ public class PetRegistrationFragment extends Fragment {
 
         final RequestQueue queue = Volley.newRequestQueue(activity);
         final String url = PETS_PATH + "/types";
-        final List<String> types = new ArrayList<>();
 
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -271,6 +270,9 @@ public class PetRegistrationFragment extends Fragment {
         }
         if (purpose.equals("Дружба")) {
             return "FRIENDSHIP";
+        }
+        if (purpose.equals("-")) {
+            return "NOTHING";
         }
         return "";
     }
