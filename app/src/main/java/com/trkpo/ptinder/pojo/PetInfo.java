@@ -22,7 +22,11 @@ public class PetInfo implements Serializable {
     private String ownerEmail;
     private Bitmap ownerIcon;
 
-    public PetInfo(Long id, String name, String breed, String age, String gender, String animalType, String purpose, String comment) {
+    // if dir = 1, then we want to go from user profile fragment to pet card
+    // if dir = 2, then we want to go from search fragment to pet card
+    private int direction;
+
+    public PetInfo(Long id, String name, String breed, String age, String gender, String animalType, String purpose, String comment, int direction) {
         this.id = id;
         this.name = name.isEmpty() ? "-" : name;
         this.breed = breed.isEmpty() ? "-" : breed;
@@ -32,6 +36,7 @@ public class PetInfo implements Serializable {
         this.purpose = purpose.isEmpty() ? "-" : purpose;
         this.comment = comment.isEmpty() ? "-" : comment;
         this.icons = new ArrayList<>();
+        this.direction = direction;
     }
 
     public void setOwnerInfo(String ownerId, String ownerName, String ownerEmail) {
@@ -130,5 +135,13 @@ public class PetInfo implements Serializable {
 
     public String getOwnerEmail() {
         return ownerEmail;
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
     }
 }

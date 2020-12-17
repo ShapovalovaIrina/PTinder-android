@@ -27,7 +27,11 @@
         android:id="@+id/nav_search"
         android:name="com.trkpo.ptinder.ui.SearchFragment"
         android:label="@string/menu_search"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_nav_search_to_nav_pet_profile"
+            app:destination="@id/nav_pet_profile" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_favourite"
@@ -62,6 +66,9 @@
         <action
             android:id="@+id/action_nav_pet_profile_to_nav_user_profile"
             app:destination="@id/nav_user_profile" />
+        <action
+            android:id="@+id/action_nav_pet_profile_to_nav_search"
+            app:destination="@id/nav_search" />
     </fragment>
 
 </navigation>

@@ -160,16 +160,14 @@ public class UserProfileFragment extends Fragment {
         JSONArray jArray = new JSONArray(jsonString);
         for (int i = 0; i < jArray.length(); i++) {
             JSONObject jsonObject = jArray.getJSONObject(i);
-            Log.e("VOLLEY", "Get pet in user profile: " + jsonObject.toString());
             Long id = jsonObject.getLong("petId");
             String name = jsonObject.getString("name");
             String age = formAge(jsonObject.getInt("age"));
-            String breed = jsonObject.getString("breed");
             String gender = jsonObject.getString("gender");
             String animalType = jsonObject.getJSONObject("animalType").getString("type");
             String purpose = jsonObject.getString("purpose");
             String comment = jsonObject.getString("comment");
-            PetInfo petInfo = new PetInfo(id, name, breed, age, gender, animalType, purpose, comment);
+            PetInfo petInfo = new PetInfo(id, name, "", age, gender, animalType, purpose, comment, 1);
 
             JSONArray images = jsonObject.getJSONArray("petPhotos");
             if (images != null && images.length() > 0) {
@@ -188,10 +186,6 @@ public class UserProfileFragment extends Fragment {
             petInfo.setOwnerInfo(ownerId, ownerName, ownerEmail);
         }
         return pets;
-    }
-
-    private String form(String animalType) {
-        return animalType != null ? StringUtils.substringBetween(animalType, "\"type\":\"", "\"") : "";
     }
 
     private String formAge(Integer age) {

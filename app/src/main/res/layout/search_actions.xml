@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/user_profile_linear_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <ImageView
+                android:id="@+id/location_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/location_spinner"
+                android:paddingRight="10dp"
+                android:src="@drawable/baseline_place_black_18" />
+
+            <Spinner
+                android:id="@+id/location_spinner"
+                android:layout_width="175dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp">
+
+            <ImageView
+                android:id="@+id/sex_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/sex_buttons_group"
+                android:src="@drawable/gender" />
+
+            <RadioGroup
+                android:id="@+id/sex_buttons_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_m"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Мужской" />
+
+                <RadioButton
+                    android:id="@+id/radio_f"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Женский" />
+
+            </RadioGroup>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="10dp">
+
+            <ImageView
+                android:id="@+id/target_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/purpose_spinner"
+                android:paddingRight="10dp"
+                android:src="@drawable/target" />
+
+            <Spinner
+                android:id="@+id/purpose_spinner"
+                android:layout_width="175dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:entries="@array/petPurposes" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="10dp">
+
+            <ImageView
+                android:id="@+id/type_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/type_spinner"
+                android:paddingRight="10dp"
+                android:src="@drawable/doggo" />
+
+            <Spinner
+                android:id="@+id/type_spinner"
+                android:layout_width="175dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="10dp">
+
+            <ImageView
+                android:id="@+id/age_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/min_pet_age"
+                android:paddingRight="10dp"
+                android:src="@drawable/age" />
+
+            <EditText
+                android:id="@+id/min_pet_age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_toLeftOf="@id/tire"
+                android:ems="2"
+                android:inputType="number"
+                tools:layout_editor_absoluteX="27dp"
+                tools:layout_editor_absoluteY="177dp" />
+
+            <TextView
+                android:id="@+id/tire"
+                android:layout_width="24dp"
+                android:layout_height="42dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginEnd="-5dp"
+                android:layout_toStartOf="@id/max_pet_age"
+                android:fontFamily="sans-serif"
+                android:text="-"
+                android:textSize="48dp" />
+
+            <EditText
+                android:id="@+id/max_pet_age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:ems="2"
+                android:inputType="number"
+                tools:layout_editor_absoluteX="27dp"
+                tools:layout_editor_absoluteY="177dp" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Найти!" />
+
+
+    </LinearLayout>
+
+</LinearLayout>
