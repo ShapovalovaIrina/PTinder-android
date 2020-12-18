@@ -184,7 +184,7 @@ public class SearchFragment extends Fragment {
             String animalType = jsonObject.getJSONObject("animalType").getString("type");
             String purpose = jsonObject.getString("purpose");
             String comment = jsonObject.getString("comment");
-            PetInfo petInfo = new PetInfo(id, name, breed, age, gender, animalType, purpose, comment, 2);
+            PetInfo petInfo = new PetInfo(id, name, breed, age, gender, animalType, purpose, comment, 2, false);
 
             JSONArray images = jsonObject.getJSONArray("petPhotos");
             if (images != null && images.length() > 0) {

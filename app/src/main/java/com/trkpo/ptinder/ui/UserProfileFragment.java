@@ -24,6 +24,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -40,7 +41,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 import static com.trkpo.ptinder.config.Constants.USERS_PATH;
 
@@ -126,10 +129,40 @@ public class UserProfileFragment extends Fragment {
         petCardAdapter = new PetCardAdapter();
         petCardRecycleView.setAdapter(petCardAdapter);
 
-        loadPets();
+        loadFavouriteId();
     }
 
-    private void loadPets() {
+    private void loadFavouriteId() {
+        RequestQueue queue = Volley.newRequestQueue(activity);
+        String url = FAVOURITE_PATH + "/user/id/" + googleId;
+
+        JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            Log.d("VOLLEY", "Making get request (load favourite pets id): response - " + response.toString());
+                            List<Long> favouritePetsId = new ArrayList<>();
+                            for (int i = 0; i < response.length(); i++) {
+                                favouritePetsId.add(Long.valueOf(response.get(i).toString()));
+                            }
+                            loadPets(favouritePetsId);
+                        } catch (JSONException e) {
+                            Log.e("VOLLEY", "Making get request (load favourite pets id): json error - " + e.toString());
+                            Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("VOLLEY", "Making get request (load favourite pets id): request error - " + error.toString());
+                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        queue.add(stringRequest);
+    }
+
+    private void loadPets(final List<Long> favouritePetsId) {
         RequestQueue queue = Volley.newRequestQueue(activity);
         String url = PETS_PATH + "/owner/" + googleId;
 
@@ -138,7 +171,8 @@ public class UserProfileFragment extends Fragment {
                     @Override
                     public void onResponse(String response) {
                         try {
-                            petCardAdapter.setItems(getPetsFromJSON(response));
+                            Log.d("VOLLEY", "Making get request (load pets): response - " + response.toString());
+                            petCardAdapter.setItems(getPetsFromJSON(response, favouritePetsId));
                         } catch (JSONException e) {
                             Log.e("VOLLEY", "Making get request (load pets): json error - " + e.toString());
                             Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
@@ -154,7 +188,7 @@ public class UserProfileFragment extends Fragment {
         queue.add(stringRequest);
     }
 
-    private Collection<PetInfo> getPetsFromJSON(String jsonString) throws JSONException {
+    private Collection<PetInfo> getPetsFromJSON(String jsonString, List<Long> favouritePetsId) throws JSONException {
         Collection<PetInfo> pets = new ArrayList<>();
         JSONArray jArray = new JSONArray(jsonString);
         for (int i = 0; i < jArray.length(); i++) {
@@ -166,7 +200,8 @@ public class UserProfileFragment extends Fragment {
             String animalType = jsonObject.getJSONObject("animalType").getString("type");
             String purpose = jsonObject.getString("purpose");
             String comment = jsonObject.getString("comment");
-            PetInfo petInfo = new PetInfo(id, name, "", age, gender, animalType, purpose, comment, 1);
+            boolean isFavourite = favouritePetsId.contains(id);
+            PetInfo petInfo = new PetInfo(id, name, "", age, gender, animalType, purpose, comment, 1, isFavourite);
 
             JSONArray images = jsonObject.getJSONArray("petPhotos");
             if (images != null) {

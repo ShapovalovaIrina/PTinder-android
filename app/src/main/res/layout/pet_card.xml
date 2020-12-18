@@ -76,13 +76,14 @@
             </LinearLayout>
 
             <ImageView
+                android:id="@+id/card_pet_is_favourite"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_alignParentRight="true"
                 android:adjustViewBounds="false"
-                android:foreground="@drawable/baseline_favorite_24"
-                android:foregroundTint="#60424242"
-                android:scaleType="center" />
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/baseline_favorite_24"
+                app:tint="@color/checkColor"/>
         </RelativeLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
