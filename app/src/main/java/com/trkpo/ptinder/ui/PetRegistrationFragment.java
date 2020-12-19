@@ -3,6 +3,9 @@ package com.trkpo.ptinder.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -18,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -32,8 +36,14 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.synnapps.carouselview.CarouselView;
+import com.synnapps.carouselview.ImageClickListener;
+import com.synnapps.carouselview.ImageListener;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.pojo.Gender;
 
@@ -42,11 +52,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 
 public class PetRegistrationFragment extends Fragment {
@@ -65,9 +77,9 @@ public class PetRegistrationFragment extends Fragment {
     private Button savePetBtn;
     private Button addPetTypeBtn;
 
-    private ImageView petImage;
+    private CarouselView petImages;
 
-    private Bitmap imageBitmap;
+    private List<Bitmap> imagesBitmap = new ArrayList<>();
 
     static final int GALLERY_REQUEST = 1;
 
@@ -84,7 +96,15 @@ public class PetRegistrationFragment extends Fragment {
         petPurpose = root.findViewById(R.id.purpose_spinner);
         savePetBtn = root.findViewById(R.id.save_pet);
         addPetTypeBtn = root.findViewById(R.id.add_type_btn);
-        petImage = root.findViewById(R.id.pet_icon);
+        petImages = root.findViewById(R.id.carousel_view);
+        petImages.setPageCount(1);
+        petImages.setImageListener(new ImageListener() {
+            @Override
+            public void setImageForPosition(int position, ImageView imageView) {
+                imageView.setScaleType(ImageView.ScaleType.FIT_START);
+                imageView.setImageResource(R.drawable.no_photo);
+            }
+        });
 
         rgGender.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -138,43 +158,43 @@ public class PetRegistrationFragment extends Fragment {
         });
         petType.setAdapter(adapter);
 
-
-        petImage.setOnClickListener(new View.OnClickListener() {
+        petImages.setImageClickListener(new ImageClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            public void onClick(int position) {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
-
-//                Uri selectedImage = imageReturnedIntent.getData();
-//                try {
-//                    imageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-                petImage.setImageBitmap(imageBitmap);
+                String[] mimeTypes = {"image/jpeg", "image/png"};
+                photoPickerIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                startActivityForResult(Intent.createChooser(photoPickerIntent, "ChooseFile"), GALLERY_REQUEST);
             }
-
         });
 
         savePetBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 JSONObject requestObject = new JSONObject();
                 JSONObject jsonBodyWithPet = new JSONObject();
                 try {
                     jsonBodyWithPet.put("name", petName.getText());
-                    jsonBodyWithPet.put("age", petAge.getText());
+                    jsonBodyWithPet.put("age", Integer.parseInt(petAge.getText().toString()));
                     jsonBodyWithPet.put("gender", petGender);
                     jsonBodyWithPet.put("type", (String) petType.getSelectedItem());
-                    jsonBodyWithPet.put("breed",  "" + petBreed.getText());
+                    jsonBodyWithPet.put("breed", "" + petBreed.getText());
                     jsonBodyWithPet.put("purpose", translatePurpose(petPurpose.getSelectedItem().toString()));
                     jsonBodyWithPet.put("comment", petComment.getText());
-                    if (imageBitmap != null) {
-                        byte[] imageBytes = getByteArrayFromBitmap(imageBitmap);
-                        String imageStr = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-                        jsonBodyWithPet.put("photo", imageStr);
+
+                    JSONArray jsonWithPhotos = new JSONArray();
+                    if (imagesBitmap != null) {
+                        for (Bitmap image : imagesBitmap) {
+                            byte[] imageBytes = getByteArrayFromBitmap(image);
+                            String imageStr = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+                            JSONObject jsonPhoto = new JSONObject();
+                            jsonPhoto.put("photo", imageStr);
+                            jsonWithPhotos.put(jsonPhoto);
+                        }
                     }
+                    requestObject.put("photos", jsonWithPhotos);
                     requestObject.put("type", (String) petType.getSelectedItem());
                     requestObject.put("googleId", googleId);
                     requestObject.put("pet", jsonBodyWithPet);
@@ -191,11 +211,15 @@ public class PetRegistrationFragment extends Fragment {
                         @Override
                         public void onResponse(String response) {
                             Log.i("VOLLEY", response);
+                            NavController navController = Navigation.findNavController(v);
+                            navController.navigate(R.id.nav_user_profile);
                         }
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Log.e("VOLLEY", error.toString());
+                            NavController navController = Navigation.findNavController(v);
+                            navController.navigate(R.id.nav_user_profile);
                         }
                     }) {
                         @Override
@@ -224,12 +248,59 @@ public class PetRegistrationFragment extends Fragment {
                     };
                     queue.add(stringRequest);
                 }
-                NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.nav_user_profile);
             }
         });
 
         return root;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if ((requestCode == GALLERY_REQUEST) && (resultCode == RESULT_OK)) {
+            if (data != null) {
+                imagesBitmap.clear();
+                if (data.getClipData() != null) {
+                    if (data.getClipData().getItemCount() > 10) {
+                        Toast.makeText(activity, "You can not choose more than 10 images", Toast.LENGTH_SHORT).show();
+                    } else {
+                        for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+                            loadImage(data.getClipData().getItemAt(i).getUri());
+                        }
+                    }
+                } else {
+                    loadImage(data.getData());
+                }
+            }
+        }
+    }
+
+    private void loadImage(Uri selectedImg) {
+        Glide.with(this)
+                .downloadOnly()
+                .load(selectedImg)
+                .into(new CustomTarget<File>() {
+                    @Override
+                    public void onResourceReady(@NonNull File resource, Transition<? super File> transition) {
+                        long sizeInMb = resource.length() / 1024 / 1024;
+                        if (sizeInMb > 5) {
+                            Toast.makeText(activity, "Image size should not be more than 5 Mb", Toast.LENGTH_SHORT).show();
+                        } else {
+                            imagesBitmap.add(BitmapFactory.decodeFile(resource.getPath()));
+                            petImages.setPageCount(imagesBitmap.size());
+                            petImages.setImageListener(new ImageListener() {
+                                @Override
+                                public void setImageForPosition(int position, ImageView imageView) {
+                                    imageView.setScaleType(ImageView.ScaleType.FIT_START);
+                                    imageView.setImageBitmap(imagesBitmap.get(position));
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                    }
+                });
     }
 
     private Collection<String> getTypesFromJSON(String response) throws JSONException {
@@ -254,7 +325,7 @@ public class PetRegistrationFragment extends Fragment {
 
     private byte[] getByteArrayFromBitmap(Bitmap bitmap) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 0, bos);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
         return bos.toByteArray();
     }
 

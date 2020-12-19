@@ -48,7 +48,6 @@ public class UserProfileFragment extends Fragment {
 
     private Activity activity;
     private View root;
-    private TextView info;
     private TextView username;
     private TextView location;
     private TextView phone;
@@ -170,12 +169,13 @@ public class UserProfileFragment extends Fragment {
             PetInfo petInfo = new PetInfo(id, name, "", age, gender, animalType, purpose, comment, 1);
 
             JSONArray images = jsonObject.getJSONArray("petPhotos");
-            if (images != null && images.length() > 0) {
-                //  Set first photo as icon
-                String imageStr = images.getJSONObject(0).getString("photo");
-                byte[] imageBytes = Base64.decode(imageStr, Base64.DEFAULT);
-                Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                petInfo.addIcon(image);
+            if (images != null) {
+                for (int j = 0; j < images.length(); j++) {
+                    String imageStr = images.getJSONObject(j).getString("photo");
+                    byte[] imageBytes = Base64.decode(imageStr, Base64.DEFAULT);
+                    Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                    petInfo.addIcon(image);
+                }
             }
             pets.add(petInfo);
 
