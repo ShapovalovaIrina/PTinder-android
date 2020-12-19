@@ -82,8 +82,7 @@
                 android:layout_alignParentRight="true"
                 android:adjustViewBounds="false"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/baseline_favorite_24"
-                app:tint="@color/checkColor"/>
+                app:srcCompat="@drawable/baseline_favorite_24"/>
         </RelativeLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

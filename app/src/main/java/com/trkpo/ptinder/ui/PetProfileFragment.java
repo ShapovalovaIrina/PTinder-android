@@ -1,6 +1,7 @@
 package com.trkpo.ptinder.ui;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +13,23 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.pojo.PetInfo;
 
+import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
+
 public class PetProfileFragment extends Fragment {
     private PetInfo petInfo;
+    private FloatingActionButton favourite;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -34,6 +45,7 @@ public class PetProfileFragment extends Fragment {
         TextView petPurpose = root.findViewById(R.id.full_pet_info_purpose);
         TextView petComment = root.findViewById(R.id.full_pet_info_comment);
         ImageView petGender = root.findViewById(R.id.full_pet_info_gender);
+        favourite = root.findViewById(R.id.full_pet_info_favourite);
 
         petIcons.setPageCount(petInfo.getIconsAmount());
         petIcons.setImageListener(new ImageListener() {
@@ -71,6 +83,70 @@ public class PetProfileFragment extends Fragment {
             }
         });
 
+        setFavouriteColor();
+        favourite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (petInfo.isFavourite()) {
+                    deleteFromFavourite(view);
+                } else {
+                    addToFavourite(view);
+                }
+            }
+        });
+
         return root;
+    }
+
+    private void addToFavourite(View view) {
+        RequestQueue queue = Volley.newRequestQueue(view.getContext());
+        String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getOwnerId();
+
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("VOLLEY", "Success response (add to favourite). " +
+                                "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getOwnerId());
+                        petInfo.setFavourite(true);
+                        setFavouriteColor();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("VOLLEY", "Not Success response (add to favourite): " + error.toString());
+            }
+        });
+        queue.add(jsonObjectRequest);
+    }
+
+    private void deleteFromFavourite(View view) {
+        RequestQueue queue = Volley.newRequestQueue(view.getContext());
+        String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getOwnerId();
+
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.DELETE, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("VOLLEY", "Success response (delete from favourite)" +
+                                "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getOwnerId());
+                        petInfo.setFavourite(false);
+                        setFavouriteColor();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("VOLLEY", "Not Success response (delete from favourite): " + error.toString());
+            }
+        });
+        queue.add(jsonObjectRequest);
+    }
+
+    private void setFavouriteColor() {
+        if (petInfo.isFavourite()) {
+            favourite.setColorFilter(favourite.getContext().getResources().getColor(R.color.colorIsFavourite));
+        } else {
+            favourite.setColorFilter(favourite.getContext().getResources().getColor(R.color.colorNotFavourite));
+        }
     }
 }

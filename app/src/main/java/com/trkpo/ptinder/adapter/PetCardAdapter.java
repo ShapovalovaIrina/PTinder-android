@@ -1,9 +1,5 @@
 package com.trkpo.ptinder.adapter;
 
-import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.ColorFilter;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
@@ -22,18 +17,11 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.trkpo.ptinder.R;
-import com.trkpo.ptinder.activity.NavigationActivity;
 import com.trkpo.ptinder.pojo.PetInfo;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,20 +89,14 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
 
         private void addToFavourite(View view) {
             RequestQueue queue = Volley.newRequestQueue(view.getContext());
-            String url = FAVOURITE_PATH + "/" + petInfo.getId();
+            String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getOwnerId();
 
-            JSONObject postData = new JSONObject();
-            try {
-                postData.put("googleId", petInfo.getOwnerId());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, postData,
-                    new Response.Listener<JSONObject>() {
+            StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, url,
+                    new Response.Listener<String>() {
                         @Override
-                        public void onResponse(JSONObject response) {
-                            Log.d("VOLLEY", "Success response (add to favourite): " + response);
+                        public void onResponse(String response) {
+                            Log.d("VOLLEY", "Success response (add to favourite). " +
+                                    "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getOwnerId());
                             petInfo.setFavourite(true);
                             setFavouriteColor();
                         }
@@ -129,20 +111,14 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
 
         private void deleteFromFavourite(View view) {
             RequestQueue queue = Volley.newRequestQueue(view.getContext());
-            String url = FAVOURITE_PATH + "/" + petInfo.getId();
+            String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getOwnerId();
 
-            JSONObject postData = new JSONObject();
-            try {
-                postData.put("googleId", petInfo.getOwnerId());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, postData,
-                    new Response.Listener<JSONObject>() {
+            StringRequest jsonObjectRequest = new StringRequest(Request.Method.DELETE, url,
+                    new Response.Listener<String>() {
                         @Override
-                        public void onResponse(JSONObject response) {
-                            Log.d("VOLLEY", "Success response (delete from favourite): " + response);
+                        public void onResponse(String response) {
+                            Log.d("VOLLEY", "Success response (delete from favourite)" +
+                                    "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getOwnerId());
                             petInfo.setFavourite(false);
                             setFavouriteColor();
                         }
