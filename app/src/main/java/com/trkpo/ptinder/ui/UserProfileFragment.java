@@ -33,7 +33,6 @@ import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
 import com.trkpo.ptinder.pojo.PetInfo;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -161,12 +160,13 @@ public class UserProfileFragment extends Fragment {
             JSONObject jsonObject = jArray.getJSONObject(i);
             Long id = jsonObject.getLong("petId");
             String name = jsonObject.getString("name");
+            String breed = jsonObject.getString("breed");
             String age = formAge(jsonObject.getInt("age"));
             String gender = jsonObject.getString("gender");
             String animalType = jsonObject.getJSONObject("animalType").getString("type");
             String purpose = jsonObject.getString("purpose");
             String comment = jsonObject.getString("comment");
-            PetInfo petInfo = new PetInfo(id, name, "", age, gender, animalType, purpose, comment, 1);
+            PetInfo petInfo = new PetInfo(id, name, breed, age, gender, animalType, purpose, comment, 1);
 
             JSONArray images = jsonObject.getJSONArray("petPhotos");
             if (images != null) {
