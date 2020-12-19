@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -157,15 +158,29 @@
             android:layout_marginLeft="20sp"
             android:layout_marginRight="20sp"/>
 
-        <ImageView
-            android:id="@+id/pet_icon"
-            android:layout_width="125dp"
-            android:layout_height="100dp"
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="20sp"
             android:layout_marginRight="20sp"
-            android:src="@drawable/no_photo" />
+            android:text="Вы можете выбрать до 10 фотографий в формате png или jpeg размером до 5 Мб" />
 
-         <Button
+        <com.synnapps.carouselview.CarouselView
+            android:id="@+id/carousel_view"
+            android:layout_width="138dp"
+            android:layout_height="129dp"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            app:autoPlay="false"
+            app:fillColor="#FFFFFFFF"
+            app:pageColor="#00000000"
+            app:radius="6dp"
+            app:slideInterval="3000"
+            app:strokeColor="#FF777777"
+            app:strokeWidth="1dp" />
+
+        <Button
              android:id="@+id/save_pet"
              style="?attr/materialButtonOutlinedStyle"
              android:textColor="#B3000000"

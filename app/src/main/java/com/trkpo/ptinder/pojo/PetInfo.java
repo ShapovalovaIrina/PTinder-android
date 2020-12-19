@@ -113,6 +113,8 @@ public class PetInfo implements Serializable {
         return icons;
     }
 
+    public void setIcons(List<Bitmap> icons) {this.icons = icons;}
+
     public int getIconsAmount() {
         return icons.size();
     }
