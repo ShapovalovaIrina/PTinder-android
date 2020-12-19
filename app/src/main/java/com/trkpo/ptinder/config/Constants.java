@@ -7,5 +7,5 @@ public class Constants {
     public static final String PETS_PATH = SERVER_PATH + "/pets";
     public static final String SEARCH_PATH = SERVER_PATH + "/search";
     public static final String NEWS_PATH = SERVER_PATH + "/news";
-
+    public static final String FAVOURITE_PATH = SERVER_PATH + "/favourites";
 }

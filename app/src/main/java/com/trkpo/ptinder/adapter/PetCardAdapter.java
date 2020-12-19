@@ -1,6 +1,7 @@
 package com.trkpo.ptinder.adapter;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +13,22 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.pojo.PetInfo;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
+import static com.trkpo.ptinder.config.Constants.USERS_PATH;
 
 public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHolder> {
     private List<PetInfo> petsList = new ArrayList<>();
@@ -28,6 +39,7 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
         private TextView petBreed;
         private TextView petAge;
         private ImageView petImage;
+        private ImageView favourite;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -35,7 +47,19 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
             this.petBreed = itemView.findViewById(R.id.card_pet_breed);
             this.petAge = itemView.findViewById(R.id.card_pet_age);
             this.petImage = itemView.findViewById(R.id.card_pet_image);
-            itemView.setOnClickListener(this);
+            this.favourite = itemView.findViewById(R.id.card_pet_is_favourite);
+
+            petImage.setOnClickListener(this);
+            favourite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (petInfo.isFavourite()) {
+                        deleteFromFavourite(view);
+                    } else {
+                        addToFavourite(view);
+                    }
+                }
+            });
         }
 
         public void bind(PetInfo petInfo) {
@@ -47,6 +71,7 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
                 /* Set first image as main */
                 petImage.setImageBitmap(petInfo.getIcons().get(0));
             }
+            setFavouriteColor();
         }
 
         @Override
@@ -59,6 +84,58 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
             }
             if (petInfo.getDirection() == 2) {
                 navController.navigate(R.id.action_nav_search_to_nav_pet_profile, bundle);
+            }
+        }
+
+        private void addToFavourite(View view) {
+            RequestQueue queue = Volley.newRequestQueue(view.getContext());
+            String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getOwnerId();
+
+            StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Log.d("VOLLEY", "Success response (add to favourite). " +
+                                    "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getOwnerId());
+                            petInfo.setFavourite(true);
+                            setFavouriteColor();
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d("VOLLEY", "Not Success response (add to favourite): " + error.toString());
+                }
+            });
+            queue.add(jsonObjectRequest);
+        }
+
+        private void deleteFromFavourite(View view) {
+            RequestQueue queue = Volley.newRequestQueue(view.getContext());
+            String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getOwnerId();
+
+            StringRequest jsonObjectRequest = new StringRequest(Request.Method.DELETE, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Log.d("VOLLEY", "Success response (delete from favourite)" +
+                                    "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getOwnerId());
+                            petInfo.setFavourite(false);
+                            setFavouriteColor();
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d("VOLLEY", "Not Success response (delete from favourite): " + error.toString());
+                }
+            });
+            queue.add(jsonObjectRequest);
+        }
+
+        private void setFavouriteColor() {
+            if (petInfo.isFavourite()) {
+                favourite.setColorFilter(petImage.getContext().getResources().getColor(R.color.colorIsFavourite));
+            } else {
+                favourite.setColorFilter(petImage.getContext().getResources().getColor(R.color.colorNotFavourite));
             }
         }
     }
