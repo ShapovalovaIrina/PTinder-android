@@ -32,6 +32,7 @@ import static com.trkpo.ptinder.config.Constants.USERS_PATH;
 
 public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHolder> {
     private List<PetInfo> petsList = new ArrayList<>();
+    private boolean isFavouriteFragment = false;
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private PetInfo petInfo;
@@ -53,6 +54,10 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
             favourite.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if (petInfo.isFavourite() && isFavouriteFragment) {
+                        deletePetById(petInfo.getId());
+                    }
+
                     if (petInfo.isFavourite()) {
                         deleteFromFavourite(view);
                     } else {
@@ -84,6 +89,9 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
             }
             if (petInfo.getDirection() == 2) {
                 navController.navigate(R.id.action_nav_search_to_nav_pet_profile, bundle);
+            }
+            if (petInfo.getDirection() == 3) {
+                navController.navigate(R.id.action_nav_favourite_to_nav_pet_profile, bundle);
             }
         }
 
@@ -132,7 +140,7 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
         }
 
         private void setFavouriteColor() {
-            if (petInfo.isFavourite()) {
+            if (petInfo.isFavourite() || isFavouriteFragment) {
                 favourite.setColorFilter(petImage.getContext().getResources().getColor(R.color.colorIsFavourite));
             } else {
                 favourite.setColorFilter(petImage.getContext().getResources().getColor(R.color.colorNotFavourite));
@@ -166,5 +174,23 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
     public void clearItems() {
         petsList.clear();
         notifyDataSetChanged();
+    }
+
+    public void setFavouriteFragment(boolean isFavouriteFragment) {
+        this.isFavouriteFragment = isFavouriteFragment;
+    }
+
+    public void deletePetById(Long petId) {
+        int position = -1;
+        for (int i = 0; i < petsList.size(); i++) {
+            if (petsList.get(i).getId().equals(petId)) {
+                position = i;
+                break;
+            }
+        }
+        if (position != -1) {
+            petsList.remove(position);
+            notifyDataSetChanged();
+        }
     }
 }

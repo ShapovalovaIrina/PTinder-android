@@ -26,8 +26,11 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
 import com.trkpo.ptinder.pojo.PetInfo;
@@ -46,6 +49,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
+import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
 import static com.trkpo.ptinder.config.Constants.SEARCH_PATH;
 
 public class SearchFragment extends Fragment {
@@ -64,6 +68,8 @@ public class SearchFragment extends Fragment {
 
     private RecyclerView petCardRecycleView;
     private PetCardAdapter petCardAdapter;
+
+    private List<Long> favouritePetsId;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -85,6 +91,9 @@ public class SearchFragment extends Fragment {
         petCardAdapter = new PetCardAdapter();
         petCardRecycleView.setAdapter(petCardAdapter);
 
+        favouritePetsId = new ArrayList<>();
+        loadFavouriteId();
+
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         RequestQueue queue = Volley.newRequestQueue(activity);
@@ -99,7 +108,7 @@ public class SearchFragment extends Fragment {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
+                Log.e("VOLLEY", "Making get request (load address): request error - " + error.toString());
                 Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -229,7 +238,8 @@ public class SearchFragment extends Fragment {
             String animalType = jsonObject.getJSONObject("animalType").getString("type");
             String purpose = jsonObject.getString("purpose");
             String comment = jsonObject.getString("comment");
-            PetInfo petInfo = new PetInfo(id, name, breed, age, gender, animalType, purpose, comment, 2, false);
+            boolean isFavourite = favouritePetsId.contains(id);
+            PetInfo petInfo = new PetInfo(id, name, breed, age, gender, animalType, purpose, comment, 2, isFavourite);
 
             JSONArray images = jsonObject.getJSONArray("petPhotos");
             if (images != null && images.length() > 0) {
@@ -260,5 +270,34 @@ public class SearchFragment extends Fragment {
 
     private String encodeValue(String value) throws UnsupportedEncodingException {
         return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+    }
+
+    private void loadFavouriteId() {
+        RequestQueue queue = Volley.newRequestQueue(activity);
+        String googleId = GoogleSignIn.getLastSignedInAccount(activity).getId();
+        String url = FAVOURITE_PATH + "/user/id/" + googleId;
+
+        JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            Log.d("VOLLEY", "Making get request (load favourite pets id): response - " + response.toString());
+                            for (int i = 0; i < response.length(); i++) {
+                                favouritePetsId.add(Long.valueOf(response.get(i).toString()));
+                            }
+                        } catch (JSONException e) {
+                            Log.e("VOLLEY", "Making get request (load favourite pets id): json error - " + e.toString());
+                            Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("VOLLEY", "Making get request (load favourite pets id): request error - " + error.toString());
+                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        queue.add(stringRequest);
     }
 }
