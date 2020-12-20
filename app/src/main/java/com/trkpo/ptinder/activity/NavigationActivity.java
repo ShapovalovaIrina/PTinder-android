@@ -1,6 +1,7 @@
 package com.trkpo.ptinder.activity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.widget.TextView;
@@ -9,6 +10,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.navigation.NavigationView;
 import com.trkpo.ptinder.R;
+import com.trkpo.ptinder.config.PhotoTask;
 
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -18,7 +20,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import java.util.concurrent.ExecutionException;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.trkpo.ptinder.config.Constants.USER_ICON_URL;
 
 public class NavigationActivity extends AppCompatActivity {
 
@@ -63,8 +69,15 @@ public class NavigationActivity extends AppCompatActivity {
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         if (signInAccount != null) {
             TextView username = view.findViewById(R.id.username_nav_header);
-            CircleImageView  user_icon = view.findViewById(R.id.user_icon_nav_header);
-//            if (signInAccount.getPhotoUrl() != null) { user_icon.setImageURI(signInAccount.getPhotoUrl()); }
+            CircleImageView user_icon = view.findViewById(R.id.user_icon_nav_header);
+            if (signInAccount.getPhotoUrl() != null) {
+                try {
+                    USER_ICON_URL = signInAccount.getPhotoUrl().toString();
+                    user_icon.setImageBitmap(new PhotoTask().execute(signInAccount.getPhotoUrl().toString()).get());
+                } catch (ExecutionException | InterruptedException e) {
+                    Log.e("BITMAP", "Got error during bitmap parsing" + e.toString());
+                }
+            }
             username.setText(signInAccount.getDisplayName());
         }
     }
