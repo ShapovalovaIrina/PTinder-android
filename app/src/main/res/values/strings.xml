@@ -18,6 +18,7 @@
     <string name="menu_favourite">Избранные питомцы</string>
     <string name="menu_feed">Лента новостей</string>
     <string name="menu_settings">Настройки профиля</string>
+    <string name="menu_pet_settings">Настройки профиля питомца</string>
     <string name="menu_help">Помощь</string>
     <string name="login_enter_info">Чтобы продолжить, введите следующую информацию</string>
     <string name="login_city_1">Ваш город *</string>

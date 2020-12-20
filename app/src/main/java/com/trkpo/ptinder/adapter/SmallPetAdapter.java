@@ -37,6 +37,7 @@ public class SmallPetAdapter extends RecyclerView.Adapter<SmallPetAdapter.ViewHo
             this.petInfo = petInfo;
             petName.setText(petInfo.getName() != null ? petInfo.getName() : "");
             petBreed.setText(petInfo.getAnimalType() != null ? petInfo.getAnimalType() : "");
+            petName.setOnClickListener(this);
         }
 
         @Override
@@ -44,6 +45,7 @@ public class SmallPetAdapter extends RecyclerView.Adapter<SmallPetAdapter.ViewHo
             Bundle bundle = new Bundle();
             bundle.putSerializable("petInfo", petInfo);
             NavController navController = Navigation.findNavController(v);
+            navController.navigate(R.id.action_nav_settings_to_nav_pet_settings, bundle);
         }
 
     }
