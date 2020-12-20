@@ -30,6 +30,12 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.activity.LoginActivity;
 import com.trkpo.ptinder.adapter.SmallPetAdapter;
@@ -58,12 +64,12 @@ public class SettingsFragment extends Fragment {
     private RadioGroup gender;
     private Button updateUser;
     private Button deleteUser;
+    private Button logoutUser;
 
     private RecyclerView smallPetRecycleView;
     private SmallPetAdapter smallPetAdapter;
 
     private String googleId;
-
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -78,6 +84,7 @@ public class SettingsFragment extends Fragment {
         gender = root.findViewById(R.id.radio_group_gender_user);
         updateUser = root.findViewById(R.id.update_user);
         deleteUser = root.findViewById(R.id.delete_user);
+        logoutUser = root.findViewById(R.id.logout);
 
         initUserInfo();
         initRecycleView();
@@ -185,7 +192,31 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        logoutUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signOut();
+            }
+        });
+
         return root;
+    }
+
+    private void signOut() {
+        FirebaseAuth.getInstance().signOut();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(activity, gso);
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(activity, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Intent intent = new Intent(activity.getApplicationContext(),LoginActivity.class);
+                        startActivity(intent);
+                        activity.finish();
+                    }
+                });
     }
 
     private void initUserInfo() {

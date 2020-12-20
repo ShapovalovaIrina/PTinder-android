@@ -117,6 +117,16 @@
             android:textColor="#B3000000" />
 
         <Button
+            android:id="@+id/logout"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="289dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:text="Выйти из аккаунта"
+            android:textColor="#B3000000" />
+
+        <Button
             android:id="@+id/delete_user"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="289dp"
