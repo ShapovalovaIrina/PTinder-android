@@ -53,7 +53,11 @@
         android:id="@+id/nav_settings"
         android:name="com.trkpo.ptinder.ui.SettingsFragment"
         android:label="@string/menu_settings"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_nav_settings_to_nav_pet_settings"
+            app:destination="@id/nav_pet_settings" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_pet_registration"
@@ -77,5 +81,11 @@
             android:id="@+id/action_nav_pet_profile_to_nav_search"
             app:destination="@id/nav_search" />
     </fragment>
+
+    <fragment
+        android:id="@+id/nav_pet_settings"
+        android:name="com.trkpo.ptinder.ui.PetSettingsFragment"
+        android:label="@string/menu_pet_settings"
+        tools:layout="@layout/fragment_pet_settings" />
 
 </navigation>

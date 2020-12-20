@@ -275,8 +275,12 @@ public class SettingsFragment extends Fragment {
             JSONObject jsonObject = jArray.getJSONObject(i);
             Long id = jsonObject.getLong("petId");
             String name = jsonObject.getString("name");
+            String age = "" + jsonObject.getInt("age");
+            String gender = jsonObject.getString("gender");
             String animalType = jsonObject.getJSONObject("animalType").getString("type");
-            PetInfo petInfo = new PetInfo(id, name, "", "", "", animalType, "", "", 1, false);
+            String purpose = jsonObject.getString("purpose");
+            String comment = jsonObject.getString("comment");
+            PetInfo petInfo = new PetInfo(id, name, "", age, gender, animalType, purpose, comment, -1, false);
             pets.add(petInfo);
         }
         return pets;
