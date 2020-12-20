@@ -37,10 +37,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
+import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 import static com.trkpo.ptinder.config.Constants.SEARCH_PATH;
 
 public class SearchFragment extends Fragment {
@@ -101,6 +106,29 @@ public class SearchFragment extends Fragment {
         queue.add(stringRequest);
         addressSpinner.setAdapter(adapter);
 
+        final ArrayAdapter<String> typeAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        stringRequest = new StringRequest(Request.Method.GET, PETS_PATH + "/types",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.i("INFO", "GOT " + response);
+                        try {
+                            typeAdapter.addAll(getTypesFromJSON(response));
+                        } catch (JSONException e) {
+                            Log.e("JSON", "Got error during json parsing" + e.toString());
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("VOLLEY", "Making get request (load types): request error - " + error.toString());
+                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        queue.add(stringRequest);
+        typeSpinner.setAdapter(typeAdapter);
+
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,16 +136,22 @@ public class SearchFragment extends Fragment {
                 String gender = translateGender(radioGroup);
                 String purpose = translatePurpose("" + purposeSpinner.getSelectedItem());
                 String type = "" + (typeSpinner.getSelectedItem() != null ? typeSpinner.getSelectedItem() : "");
+                petCardAdapter.clearItems();
 
                 if (activity != null) {
                     RequestQueue queue = Volley.newRequestQueue(activity);
-                    String url = SEARCH_PATH
-                            + "?" + "address=" + address
-                            + "&" + "gender=" + gender
-                            + "&" + "purpose=" + purpose
-                            + "&" + "type=" + type
-                            + "&" + "minAge=" + minAge.getText()
-                            + "&" + "maxAge=" + maxAge.getText();
+                    String url = "";
+                    try {
+                        url = SEARCH_PATH
+                                + "?" + "address=" + encodeValue(address)
+                                + "&" + "gender=" + gender
+                                + "&" + "purpose=" + purpose
+                                + "&" + "type=" + type
+                                + "&" + "minAge=" + minAge.getText()
+                                + "&" + "maxAge=" + maxAge.getText();
+                    } catch (UnsupportedEncodingException e) {
+                        Log.e("ENCODING", "Got error during url encoding " + e.toString());
+                    }
 
                     StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                         @Override
@@ -141,6 +175,17 @@ public class SearchFragment extends Fragment {
         });
 
         return root;
+    }
+
+    private Collection<String> getTypesFromJSON(String response) throws JSONException {
+        List<String> types = new ArrayList<>();
+        types.add("-");
+        JSONArray jArray = new JSONArray(response);
+        for (int i = 0; i < jArray.length(); i++) {
+            JSONObject jsonObject = jArray.getJSONObject(i);
+            types.add((String) jsonObject.get("type"));
+        }
+        return types;
     }
 
     private String translateGender(RadioGroup gender) {
@@ -211,5 +256,9 @@ public class SearchFragment extends Fragment {
         response = response.replaceAll("]", "");
         list.addAll(Arrays.asList(response.split(",")));
         return list;
+    }
+
+    private String encodeValue(String value) throws UnsupportedEncodingException {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
     }
 }
