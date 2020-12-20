@@ -112,14 +112,14 @@ public class PetProfileFragment extends Fragment {
 
     private void addToFavourite(View view) {
         RequestQueue queue = Volley.newRequestQueue(view.getContext());
-        String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getOwnerId();
+        String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getCurrentUserId();
 
         StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.d("VOLLEY", "Success response (add to favourite). " +
-                                "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getOwnerId());
+                                "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getCurrentUserId());
                         petInfo.setFavourite(true);
                         setFavouriteColor();
                     }
@@ -134,14 +134,14 @@ public class PetProfileFragment extends Fragment {
 
     private void deleteFromFavourite(View view) {
         RequestQueue queue = Volley.newRequestQueue(view.getContext());
-        String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getOwnerId();
+        String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getCurrentUserId();
 
         StringRequest jsonObjectRequest = new StringRequest(Request.Method.DELETE, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.d("VOLLEY", "Success response (delete from favourite)" +
-                                "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getOwnerId());
+                                "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getCurrentUserId());
                         petInfo.setFavourite(false);
                         setFavouriteColor();
                     }
