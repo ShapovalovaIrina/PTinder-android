@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
+import com.trkpo.ptinder.config.PhotoTask;
 import com.trkpo.ptinder.pojo.PetInfo;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,15 +44,19 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 import static com.trkpo.ptinder.config.Constants.USERS_PATH;
+import static com.trkpo.ptinder.config.Constants.USER_ICON_URL;
 
 public class UserProfileFragment extends Fragment {
 
     private Activity activity;
     private View root;
+
+    private ImageView userIcon;
     private TextView username;
     private TextView location;
     private TextView phone;
@@ -64,6 +70,7 @@ public class UserProfileFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_user_profile, container, false);
         activity = getActivity();
+        userIcon = root.findViewById(R.id.user_icon);
         username = root.findViewById(R.id.username);
         location = root.findViewById(R.id.location);
         phone = root.findViewById(R.id.user_phone);
@@ -78,6 +85,11 @@ public class UserProfileFragment extends Fragment {
             }
         });
 
+        try {
+            userIcon.setImageBitmap(new PhotoTask().execute(USER_ICON_URL).get());
+        } catch (ExecutionException | InterruptedException e) {
+            Log.e("BITMAP", "Got error during bitmap parsing" + e.toString());
+        }
         initUserInfo();
         initRecycleView();
 

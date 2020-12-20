@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.SearchFragment">
+    tools:context=".ui.SettingsFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
@@ -23,11 +23,11 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:toolbarId="@+id/toolbar">
 
-            <include layout="@layout/search_actions" />
+            <include layout="@layout/user_settings" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/pets_list" />
+    <include layout="@layout/small_pets_list" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

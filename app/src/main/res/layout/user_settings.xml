@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".ui.SettingsFragment">
+
+    <LinearLayout
+        android:id="@+id/user_profile_linear_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/user_first_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:ems="12"
+            android:hint="Имя"
+            android:paddingTop="40sp" />
+
+        <EditText
+            android:id="@+id/user_last_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:ems="12"
+            android:hint="Фамилия"
+            android:paddingTop="40sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:fontFamily="sans-serif-light"
+            android:includeFontPadding="false"
+            android:paddingTop="40sp"
+            android:shadowColor="#0E0E0E"
+            android:text="Пол"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+
+        <RadioGroup
+            android:id="@+id/radio_group_gender_user"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:orientation="horizontal"
+            android:paddingTop="10dp">
+
+            <RadioButton
+                android:id="@+id/radio_button_female_user"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fontFamily="sans-serif-light"
+                android:paddingEnd="30dp"
+                android:text="@string/gender_female" />
+
+            <RadioButton
+                android:id="@+id/radio_button_male_user"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fontFamily="sans-serif-light"
+                android:paddingEnd="30dp"
+                android:text="@string/gender_male" />
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/user_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:ems="12"
+            android:hint="Почта"
+            android:inputType="textEmailAddress"
+            android:paddingTop="40sp" />
+
+        <EditText
+            android:id="@+id/user_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:ems="12"
+            android:hint="Телефон"
+            android:inputType="phone"
+            android:paddingTop="40sp" />
+
+        <EditText
+            android:id="@+id/user_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:ems="12"
+            android:fontFamily="sans-serif"
+            android:hint="Адрес"
+            android:inputType="textCapWords"
+            android:paddingTop="40sp" />
+
+        <Button
+            android:id="@+id/update_user"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="289dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:text="Сохранить"
+            android:textColor="#B3000000" />
+
+        <Button
+            android:id="@+id/delete_user"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="289dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:text="Удалить профиль"
+            android:textColor="#B3000000" />
+    </LinearLayout>
+
+</ScrollView>
