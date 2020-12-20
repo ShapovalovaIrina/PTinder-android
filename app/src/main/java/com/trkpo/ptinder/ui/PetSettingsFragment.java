@@ -134,17 +134,17 @@ public class PetSettingsFragment extends Fragment {
                     jsonBodyWithPet.put("purpose", translatePurpose(petPurpose.getSelectedItem().toString()));
                     jsonBodyWithPet.put("comment", petComment.getText());
 
-                    JSONArray jsonWithPhotos = new JSONArray();
-                    if (imagesBitmap != null) {
-                        for (Bitmap image : imagesBitmap) {
-                            byte[] imageBytes = getByteArrayFromBitmap(image);
-                            String imageStr = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-                            JSONObject jsonPhoto = new JSONObject();
-                            jsonPhoto.put("photo", imageStr);
-                            jsonWithPhotos.put(jsonPhoto);
-                        }
-                    }
-                    requestObject.put("photos", jsonWithPhotos);
+//                    JSONArray jsonWithPhotos = new JSONArray();
+//                    if (imagesBitmap != null) {
+//                        for (Bitmap image : imagesBitmap) {
+//                            byte[] imageBytes = getByteArrayFromBitmap(image);
+//                            String imageStr = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+//                            JSONObject jsonPhoto = new JSONObject();
+//                            jsonPhoto.put("photo", imageStr);
+//                            jsonWithPhotos.put(jsonPhoto);
+//                        }
+//                    }
+//                    requestObject.put("photos", jsonWithPhotos);
                     requestObject.put("type", (String) petType.getSelectedItem());
                     requestObject.put("googleId", "");
                     requestObject.put("pet", jsonBodyWithPet);
