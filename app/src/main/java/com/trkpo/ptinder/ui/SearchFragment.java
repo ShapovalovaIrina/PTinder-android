@@ -226,6 +226,7 @@ public class SearchFragment extends Fragment {
     }
 
     private Collection<PetInfo> getPetsFromJSON(String jsonString) throws JSONException {
+        String googleId = GoogleSignIn.getLastSignedInAccount(activity).getId();
         Collection<PetInfo> pets = new ArrayList<>();
         JSONArray jArray = new JSONArray(jsonString);
         for (int i = 0; i < jArray.length(); i++) {
@@ -250,6 +251,15 @@ public class SearchFragment extends Fragment {
                 petInfo.addIcon(image);
             }
             pets.add(petInfo);
+
+            JSONObject ownerInfo = jsonObject.getJSONObject("owner");
+            String ownerId = ownerInfo.getString("googleId");
+            String ownerName = ownerInfo.getString("firstName") + " " + ownerInfo.getString("lastName");
+            String ownerEmail = ownerInfo.getString("email");
+            String ownerIconURL = ownerInfo.getString("photoUrl");
+            petInfo.setOwnerInfo(ownerId, ownerName, ownerEmail, ownerIconURL);
+
+            petInfo.setCurrentUserInfo(googleId);
         }
         return pets;
     }

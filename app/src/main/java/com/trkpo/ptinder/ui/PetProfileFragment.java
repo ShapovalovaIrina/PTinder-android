@@ -23,9 +23,15 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 import com.trkpo.ptinder.R;
+import com.trkpo.ptinder.config.PhotoTask;
 import com.trkpo.ptinder.pojo.PetInfo;
 
+import java.util.concurrent.ExecutionException;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+
 import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
+import static com.trkpo.ptinder.config.Constants.USER_ICON_URL;
 
 public class PetProfileFragment extends Fragment {
     private PetInfo petInfo;
@@ -94,6 +100,12 @@ public class PetProfileFragment extends Fragment {
                 }
             }
         });
+
+        try {
+            ownerIcon.setImageBitmap(new PhotoTask().execute(petInfo.getOwnerIconURL()).get());
+        } catch (ExecutionException | InterruptedException e) {
+            Log.e("BITMAP", "Got error during bitmap parsing" + e.toString());
+        }
 
         return root;
     }
