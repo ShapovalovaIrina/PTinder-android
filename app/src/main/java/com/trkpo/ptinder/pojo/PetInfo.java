@@ -18,10 +18,12 @@ public class PetInfo implements Serializable {
     private List<Bitmap> icons;
     private boolean isFavourite;
 
+    private String currentUserId;
+
     private String ownerId;
     private String ownerName;
     private String ownerEmail;
-    private Bitmap ownerIcon;
+    private String ownerIconURL;
 
     // if dir = 1, then we want to go from user profile fragment to pet card
     // if dir = 2, then we want to go from search fragment to pet card
@@ -42,10 +44,15 @@ public class PetInfo implements Serializable {
         this.isFavourite = isFavourite;
     }
 
-    public void setOwnerInfo(String ownerId, String ownerName, String ownerEmail) {
+    public void setCurrentUserInfo(String currentUserId) {
+        this.currentUserId = currentUserId;
+    }
+
+    public void setOwnerInfo(String ownerId, String ownerName, String ownerEmail, String ownerIconURL) {
         this.ownerId = ownerId;
         this.ownerName = ownerName;
         this.ownerEmail = ownerEmail;
+        this.ownerIconURL = ownerIconURL;
     }
 
     public Long getId() {
@@ -156,5 +163,21 @@ public class PetInfo implements Serializable {
 
     public void setFavourite(boolean favourite) {
         isFavourite = favourite;
+    }
+
+    public String getOwnerIconURL() {
+        return ownerIconURL;
+    }
+
+    public void setOwnerIconURL(String ownerIconURL) {
+        this.ownerIconURL = ownerIconURL;
+    }
+
+    public String getCurrentUserId() {
+        return currentUserId;
+    }
+
+    public void setCurrentUserId(String currentUserId) {
+        this.currentUserId = currentUserId;
     }
 }

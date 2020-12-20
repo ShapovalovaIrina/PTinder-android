@@ -122,7 +122,10 @@ public class FavouriteFragment extends Fragment {
             String ownerId = ownerInfo.getString("googleId");
             String ownerName = ownerInfo.getString("firstName") + " " + ownerInfo.getString("lastName");
             String ownerEmail = ownerInfo.getString("email");
-            petInfo.setOwnerInfo(ownerId, ownerName, ownerEmail);
+            String ownerIconURL = ownerInfo.getString("photoUrl");
+            petInfo.setOwnerInfo(ownerId, ownerName, ownerEmail, ownerIconURL);
+
+            petInfo.setCurrentUserInfo(googleId);
         }
         return pets;
     }

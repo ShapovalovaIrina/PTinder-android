@@ -20,15 +20,18 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.trkpo.ptinder.R;
+import com.trkpo.ptinder.config.PhotoTask;
 import com.trkpo.ptinder.pojo.PetInfo;
 
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
 import static com.trkpo.ptinder.config.Constants.USERS_PATH;
+import static com.trkpo.ptinder.config.Constants.USER_ICON_URL;
 
 public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHolder> {
     private List<PetInfo> petsList = new ArrayList<>();
@@ -97,14 +100,14 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
 
         private void addToFavourite(View view) {
             RequestQueue queue = Volley.newRequestQueue(view.getContext());
-            String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getOwnerId();
+            String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getCurrentUserId();
 
             StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, url,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
                             Log.d("VOLLEY", "Success response (add to favourite). " +
-                                    "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getOwnerId());
+                                    "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getCurrentUserId());
                             petInfo.setFavourite(true);
                             setFavouriteColor();
                         }
@@ -119,14 +122,14 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
 
         private void deleteFromFavourite(View view) {
             RequestQueue queue = Volley.newRequestQueue(view.getContext());
-            String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getOwnerId();
+            String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getCurrentUserId();
 
             StringRequest jsonObjectRequest = new StringRequest(Request.Method.DELETE, url,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
                             Log.d("VOLLEY", "Success response (delete from favourite)" +
-                                    "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getOwnerId());
+                                    "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getCurrentUserId());
                             petInfo.setFavourite(false);
                             setFavouriteColor();
                         }

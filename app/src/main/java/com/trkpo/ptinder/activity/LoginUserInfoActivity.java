@@ -88,6 +88,7 @@ public class LoginUserInfoActivity extends AppCompatActivity {
             postData.put("number", phone);
             postData.put("address", city);
             postData.put("email", signInAccount.getEmail());
+            postData.put("photoUrl", signInAccount.getPhotoUrl());
             postData.put("contactInfoPublic", true);
             postData.put("googleId", signInAccount.getId());
         } catch (JSONException e) {
