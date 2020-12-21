@@ -206,13 +206,14 @@ public class UserProfileFragment extends Fragment {
             JSONObject jsonObject = jArray.getJSONObject(i);
             Long id = jsonObject.getLong("petId");
             String name = jsonObject.getString("name");
+            String breed = jsonObject.getString("breed");
             String age = formAge(jsonObject.getInt("age"));
             String gender = jsonObject.getString("gender");
             String animalType = jsonObject.getJSONObject("animalType").getString("type");
             String purpose = jsonObject.getString("purpose");
             String comment = jsonObject.getString("comment");
             boolean isFavourite = favouritePetsId.contains(id);
-            PetInfo petInfo = new PetInfo(id, name, "", age, gender, animalType, purpose, comment, 1, isFavourite);
+            PetInfo petInfo = new PetInfo(id, name, breed, age, gender, animalType, purpose, comment, 1, isFavourite);
 
             JSONArray images = jsonObject.getJSONArray("petPhotos");
             if (images != null) {

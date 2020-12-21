@@ -1,24 +1,26 @@
 package com.trkpo.ptinder.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.navigation.NavigationView;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.config.PhotoTask;
-
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import java.util.concurrent.ExecutionException;
 
@@ -55,6 +57,18 @@ public class NavigationActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.top_app_bar, menu);
+        final Activity activity = this;
+        menu.findItem(R.id.notification).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("googleId", signInAccount.getId());
+                NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
+                navController.navigate(R.id.nav_notifications, bundle);
+                return false;
+            }
+        });
         return true;
     }
 
