@@ -96,6 +96,9 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
             if (petInfo.getDirection() == 3) {
                 navController.navigate(R.id.action_nav_favourite_to_nav_pet_profile, bundle);
             }
+            if (petInfo.getDirection() == 4) {
+                navController.navigate(R.id.action_nav_other_user_profile_to_nav_pet_profile, bundle);
+            }
         }
 
         private void addToFavourite(View view) {

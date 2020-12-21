@@ -18,6 +18,15 @@
             android:paddingTop="20dp"
             android:paddingBottom="10dp">
 
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="20dp"
+                android:layout_toLeftOf="@id/user_icon"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/baseline_grade_24" />
+
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/user_icon"
                 android:layout_width="100dp"
@@ -25,6 +34,15 @@
                 android:layout_centerHorizontal="true"
                 android:scaleType="centerCrop"
                 android:src="@drawable/cat" />
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@id/user_icon"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/baseline_contact_page_24" />
         </RelativeLayout>
 
         <TextView
@@ -63,9 +81,11 @@
         <View style="@style/Divider.Horizontal"/>
 
         <RelativeLayout
+            android:id="@+id/other_user_profile_phone_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="10dp">
+            android:paddingTop="10dp"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/phone_icon"
@@ -86,10 +106,12 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/other_user_profile_email_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="5dp"
-            android:paddingBottom="10dp">
+            android:paddingBottom="10dp"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/email_icon"
@@ -113,21 +135,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Ваши питомцы"
+            android:text="Питомцы пользователя"
             android:fontFamily="sans-serif"
             android:textSize="20dp"
+            android:paddingTop="10dp"
             android:paddingBottom="5dp"/>
-
-        <Button
-            android:id="@+id/add_pet"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:textColor="#B3000000"
-            android:text="Добавить питомца!" />
     </LinearLayout>
 
 </LinearLayout>

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,54 +51,48 @@ import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 import static com.trkpo.ptinder.config.Constants.USERS_PATH;
 import static com.trkpo.ptinder.config.Constants.USER_ICON_URL;
 
-public class UserProfileFragment extends Fragment {
+public class OtherUserProfileFragment extends Fragment {
 
     private Activity activity;
     private View root;
 
+    private String currentUserGoogleId;
+
+    private String userGoogleId;
     private ImageView userIcon;
     private TextView username;
     private TextView location;
+    private String userImageUrl;
     private TextView phone;
     private TextView email;
+    private RelativeLayout phoneLayout;
+    private RelativeLayout emailLayout;
     private RecyclerView petCardRecycleView;
     private PetCardAdapter petCardAdapter;
-    private String googleId;
-    private Button addPetBtn;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_user_profile, container, false);
+        root = inflater.inflate(R.layout.fragment_other_user_profile, container, false);
         activity = getActivity();
         userIcon = root.findViewById(R.id.user_icon);
         username = root.findViewById(R.id.username);
         location = root.findViewById(R.id.location);
         phone = root.findViewById(R.id.user_phone);
         email = root.findViewById(R.id.user_email);
+        phoneLayout = root.findViewById(R.id.other_user_profile_phone_layout);
+        emailLayout = root.findViewById(R.id.other_user_profile_email_layout);
 
-        addPetBtn = root.findViewById(R.id.add_pet);
-        addPetBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.nav_pet_registration);
-            }
-        });
+        currentUserGoogleId = GoogleSignIn.getLastSignedInAccount(activity).getId();
 
-        try {
-            userIcon.setImageBitmap(new PhotoTask().execute(USER_ICON_URL).get());
-        } catch (ExecutionException | InterruptedException e) {
-            Log.e("BITMAP", "Got error during bitmap parsing" + e.toString());
-        }
         initUserInfo();
         initRecycleView();
 
         return root;
     }
 
-    private void showInfo(String googleId) {
+    private void showInfo() {
         RequestQueue queue = Volley.newRequestQueue(activity);
-        String url = USERS_PATH + "/" + googleId;
+        String url = USERS_PATH + "/" + userGoogleId;
 
         JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
@@ -106,11 +101,21 @@ public class UserProfileFragment extends Fragment {
                         try {
                             username.setText(jsonResponse.getString("firstName") + " " + jsonResponse.getString("lastName"));
                             location.setText(jsonResponse.getString("address"));
-                            email.setText(jsonResponse.getString("email"));
-                            if (!jsonResponse.getString("number").equals("")) {
-                                phone.setText(jsonResponse.getString("number"));
-                            } else {
-                                phone.setText("-");
+                            try {
+                                userIcon.setImageBitmap(new PhotoTask().execute(jsonResponse.getString("photoUrl")).get());
+                            } catch (ExecutionException | InterruptedException e) {
+                                Log.e("BITMAP", "Got error during bitmap parsing" + e.toString());
+                            }
+                            boolean isContactInfoPublic = jsonResponse.getBoolean("contactInfoPublic");
+                            if (isContactInfoPublic) {
+                                email.setText(jsonResponse.getString("email"));
+                                if (!jsonResponse.getString("number").equals("")) {
+                                    phone.setText(jsonResponse.getString("number"));
+                                } else {
+                                    phone.setText("-");
+                                }
+                                emailLayout.setVisibility(View.VISIBLE);
+                                phoneLayout.setVisibility(View.VISIBLE);
                             }
                         } catch (JSONException e) {
                             Log.e("VOLLEY", "Making get request (get user by google id): json error - " + e.toString());
@@ -126,11 +131,8 @@ public class UserProfileFragment extends Fragment {
     }
 
     private void initUserInfo() {
-        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(activity);
-        if (signInAccount != null) {
-            showInfo(signInAccount.getId());
-            googleId = signInAccount.getId();
-        }
+        userGoogleId = getArguments().getString("googleId");
+        showInfo();
     }
 
     private void initRecycleView() {
@@ -145,7 +147,7 @@ public class UserProfileFragment extends Fragment {
 
     private void loadFavouriteId() {
         RequestQueue queue = Volley.newRequestQueue(activity);
-        String url = FAVOURITE_PATH + "/user/id/" + googleId;
+        String url = FAVOURITE_PATH + "/user/id/" + currentUserGoogleId;
 
         JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
@@ -175,7 +177,7 @@ public class UserProfileFragment extends Fragment {
 
     private void loadPets(final List<Long> favouritePetsId) {
         RequestQueue queue = Volley.newRequestQueue(activity);
-        String url = PETS_PATH + "/owner/" + googleId;
+        String url = PETS_PATH + "/owner/" + userGoogleId;
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -212,7 +214,7 @@ public class UserProfileFragment extends Fragment {
             String purpose = jsonObject.getString("purpose");
             String comment = jsonObject.getString("comment");
             boolean isFavourite = favouritePetsId.contains(id);
-            PetInfo petInfo = new PetInfo(id, name, "", age, gender, animalType, purpose, comment, 1, isFavourite);
+            PetInfo petInfo = new PetInfo(id, name, "", age, gender, animalType, purpose, comment, 4, isFavourite);
 
             JSONArray images = jsonObject.getJSONArray("petPhotos");
             if (images != null) {
@@ -232,7 +234,7 @@ public class UserProfileFragment extends Fragment {
             String ownerIconURL = ownerInfo.getString("photoUrl");
             petInfo.setOwnerInfo(ownerId, ownerName, ownerEmail, ownerIconURL);
 
-            petInfo.setCurrentUserInfo(googleId);
+            petInfo.setCurrentUserInfo(currentUserGoogleId);
         }
         return pets;
     }
@@ -254,3 +256,4 @@ public class UserProfileFragment extends Fragment {
         return age + year;
     }
 }
+

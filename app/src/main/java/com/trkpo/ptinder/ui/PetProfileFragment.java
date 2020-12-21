@@ -85,7 +85,7 @@ public class PetProfileFragment extends Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("googleId", petInfo.getOwnerId());
                 NavController navController = Navigation.findNavController(view);
-                navController.navigate(R.id.action_nav_pet_profile_to_nav_user_profile, bundle);
+                navController.navigate(R.id.action_nav_pet_profile_to_nav_other_user_profile, bundle);
             }
         });
 

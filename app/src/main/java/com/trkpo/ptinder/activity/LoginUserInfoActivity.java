@@ -89,7 +89,7 @@ public class LoginUserInfoActivity extends AppCompatActivity {
             postData.put("address", city);
             postData.put("email", signInAccount.getEmail());
             postData.put("photoUrl", signInAccount.getPhotoUrl());
-            postData.put("contactInfoPublic", true);
+            postData.put("contactInfoPublic", false);
             postData.put("googleId", signInAccount.getId());
         } catch (JSONException e) {
             e.printStackTrace();

@@ -28,6 +28,7 @@ public class PetInfo implements Serializable {
     // if dir = 1, then we want to go from user profile fragment to pet card
     // if dir = 2, then we want to go from search fragment to pet card
     // if dir = 3, then we want to go from favourite fragment to pet card
+    // if dir = 4, then we want to go from other user profile fragment to pet card
     private int direction;
 
     public PetInfo(Long id, String name, String breed, String age, String gender, String animalType, String purpose, String comment, int direction, boolean isFavourite) {
