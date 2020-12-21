@@ -15,12 +15,17 @@
             app:destination="@id/nav_pet_registration" />
         <action
             android:id="@+id/action_nav_user_profile_to_nav_pet_profile"
-            app:destination="@id/nav_pet_profile"
-            app:enterAnim="@anim/fui_slide_in_right"
-            app:exitAnim="@anim/fui_slide_out_left"
-            app:popEnterAnim="@anim/fragment_fade_enter"
-            app:popExitAnim="@anim/fragment_fade_exit" />
+            app:destination="@id/nav_pet_profile" />
+    </fragment>
 
+    <fragment
+        android:id="@+id/nav_other_user_profile"
+        android:name="com.trkpo.ptinder.ui.OtherUserProfileFragment"
+        android:label="Пользователь"
+        tools:layout="@layout/fragment_user_profile" >
+        <action
+            android:id="@+id/action_nav_other_user_profile_to_nav_pet_profile"
+            app:destination="@id/nav_pet_profile" />
     </fragment>
 
     <fragment
@@ -75,11 +80,8 @@
         android:label="Информация о питомце"
         tools:layout="@layout/fragment_pet_profile" >
         <action
-            android:id="@+id/action_nav_pet_profile_to_nav_user_profile"
-            app:destination="@id/nav_user_profile" />
-        <action
-            android:id="@+id/action_nav_pet_profile_to_nav_search"
-            app:destination="@id/nav_search" />
+            android:id="@+id/action_nav_pet_profile_to_nav_other_user_profile"
+            app:destination="@id/nav_other_user_profile" />
     </fragment>
 
     <fragment
