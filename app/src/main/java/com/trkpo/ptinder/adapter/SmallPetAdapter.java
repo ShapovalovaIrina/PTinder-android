@@ -43,7 +43,7 @@ public class SmallPetAdapter extends RecyclerView.Adapter<SmallPetAdapter.ViewHo
         @Override
         public void onClick(View v) {
             Bundle bundle = new Bundle();
-            bundle.putSerializable("petInfo", petInfo);
+            bundle.putSerializable("petId", petInfo.getId());
             NavController navController = Navigation.findNavController(v);
             navController.navigate(R.id.action_nav_settings_to_nav_pet_settings, bundle);
         }
