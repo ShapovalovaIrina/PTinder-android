@@ -30,7 +30,6 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
 import com.trkpo.ptinder.pojo.PetInfo;
@@ -48,8 +47,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
+import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 import static com.trkpo.ptinder.config.Constants.SEARCH_PATH;
 
 public class SearchFragment extends Fragment {
@@ -233,7 +232,7 @@ public class SearchFragment extends Fragment {
             JSONObject jsonObject = jArray.getJSONObject(i);
             Long id = jsonObject.getLong("petId");
             String name = jsonObject.getString("name");
-            String age = String.valueOf(jsonObject.getInt("age"));
+            String age = jsonObject.getString("age");
             String breed = form(jsonObject.getString("animalType"));
             String gender = jsonObject.getString("gender");
             String animalType = jsonObject.getJSONObject("animalType").getString("type");
