@@ -328,17 +328,18 @@ public class OtherUserProfileFragment extends Fragment {
             String purpose = jsonObject.getString("purpose");
             String comment = jsonObject.getString("comment");
             boolean isFavourite = favouritePetsId.contains(id);
-            PetInfo petInfo = new PetInfo(id, name, "", age, gender, animalType, purpose, comment, 4, isFavourite);
 
+            List<Bitmap> icons = new ArrayList<>();
             JSONArray images = jsonObject.getJSONArray("petPhotos");
             if (images != null) {
                 for (int j = 0; j < images.length(); j++) {
                     String imageStr = images.getJSONObject(j).getString("photo");
                     byte[] imageBytes = Base64.decode(imageStr, Base64.DEFAULT);
                     Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                    petInfo.addIcon(image);
+                    icons.add(image);
                 }
             }
+            PetInfo petInfo = new PetInfo(id, name, "", age, gender, animalType, purpose, comment, icons, 4, isFavourite);
             pets.add(petInfo);
 
             JSONObject ownerInfo = jsonObject.getJSONObject("owner");

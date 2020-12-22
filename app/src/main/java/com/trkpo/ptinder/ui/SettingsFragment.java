@@ -2,7 +2,10 @@ package com.trkpo.ptinder.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +35,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,6 +50,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 import static com.trkpo.ptinder.config.Constants.USERS_PATH;
@@ -306,12 +309,25 @@ public class SettingsFragment extends Fragment {
             JSONObject jsonObject = jArray.getJSONObject(i);
             Long id = jsonObject.getLong("petId");
             String name = jsonObject.getString("name");
+            String breed = jsonObject.getString("breed");
             String age = "" + jsonObject.getInt("age");
             String gender = jsonObject.getString("gender");
             String animalType = jsonObject.getJSONObject("animalType").getString("type");
             String purpose = jsonObject.getString("purpose");
             String comment = jsonObject.getString("comment");
-            PetInfo petInfo = new PetInfo(id, name, "", age, gender, animalType, purpose, comment, -1, false);
+
+            List<Bitmap> icons = new ArrayList<>();
+            JSONArray images = jsonObject.getJSONArray("petPhotos");
+            if (images != null) {
+                for (int j = 0; j < images.length(); j++) {
+                    String imageStr = images.getJSONObject(j).getString("photo");
+                    byte[] imageBytes = Base64.decode(imageStr, Base64.DEFAULT);
+                    Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                    icons.add(image);
+                }
+            }
+
+            PetInfo petInfo = new PetInfo(id, name, breed, age, gender, animalType, purpose, comment, icons, -1, false);
             pets.add(petInfo);
         }
         return pets;

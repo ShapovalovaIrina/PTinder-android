@@ -31,7 +31,7 @@ public class PetInfo implements Serializable {
     // if dir = 4, then we want to go from other user profile fragment to pet card
     private int direction;
 
-    public PetInfo(Long id, String name, String breed, String age, String gender, String animalType, String purpose, String comment, int direction, boolean isFavourite) {
+    public PetInfo(Long id, String name, String breed, String age, String gender, String animalType, String purpose, String comment, List<Bitmap> icons, int direction, boolean isFavourite) {
         this.id = id;
         this.name = name.isEmpty() ? "-" : name;
         this.breed = breed.isEmpty() ? "-" : breed;
@@ -40,7 +40,7 @@ public class PetInfo implements Serializable {
         this.animalType = animalType.isEmpty() ? "-" : animalType;
         this.purpose = purpose.isEmpty() ? "-" : purpose;
         this.comment = comment.isEmpty() ? "-" : comment;
-        this.icons = new ArrayList<>();
+        this.icons = new ArrayList<>(icons);
         this.direction = direction;
         this.isFavourite = isFavourite;
     }
@@ -124,7 +124,9 @@ public class PetInfo implements Serializable {
         return icons;
     }
 
-    public void setIcons(List<Bitmap> icons) {this.icons = icons;}
+    public void setIcons(List<Bitmap> icons) {
+        this.icons = icons;
+    }
 
     public int getIconsAmount() {
         return icons.size();

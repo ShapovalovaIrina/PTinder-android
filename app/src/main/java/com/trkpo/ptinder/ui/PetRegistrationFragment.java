@@ -96,15 +96,6 @@ public class PetRegistrationFragment extends Fragment {
         petPurpose = root.findViewById(R.id.purpose_spinner);
         savePetBtn = root.findViewById(R.id.save_pet);
         addPetTypeBtn = root.findViewById(R.id.add_type_btn);
-        petImages = root.findViewById(R.id.carousel_view);
-        petImages.setPageCount(1);
-        petImages.setImageListener(new ImageListener() {
-            @Override
-            public void setImageForPosition(int position, ImageView imageView) {
-                imageView.setScaleType(ImageView.ScaleType.FIT_START);
-                imageView.setImageResource(R.drawable.no_photo);
-            }
-        });
 
         rgGender.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -158,6 +149,15 @@ public class PetRegistrationFragment extends Fragment {
         });
         petType.setAdapter(adapter);
 
+        petImages = root.findViewById(R.id.carousel_view);
+        petImages.setImageListener(new ImageListener() {
+            @Override
+            public void setImageForPosition(int position, ImageView imageView) {
+                imageView.setScaleType(ImageView.ScaleType.FIT_START);
+                imageView.setImageResource(R.drawable.no_photo);
+            }
+        });
+        petImages.setPageCount(1);
         petImages.setImageClickListener(new ImageClickListener() {
             @Override
             public void onClick(int position) {
@@ -258,6 +258,13 @@ public class PetRegistrationFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if ((requestCode == GALLERY_REQUEST) && (resultCode == RESULT_OK)) {
             if (data != null) {
+                petImages.setImageListener(new ImageListener() {
+                    @Override
+                    public void setImageForPosition(int position, ImageView imageView) {
+                        imageView.setScaleType(ImageView.ScaleType.FIT_START);
+                        imageView.setImageBitmap(imagesBitmap.get(position));
+                    }
+                });
                 imagesBitmap.clear();
                 if (data.getClipData() != null) {
                     if (data.getClipData().getItemCount() > 10) {
@@ -287,13 +294,6 @@ public class PetRegistrationFragment extends Fragment {
                         } else {
                             imagesBitmap.add(BitmapFactory.decodeFile(resource.getPath()));
                             petImages.setPageCount(imagesBitmap.size());
-                            petImages.setImageListener(new ImageListener() {
-                                @Override
-                                public void setImageForPosition(int position, ImageView imageView) {
-                                    imageView.setScaleType(ImageView.ScaleType.FIT_START);
-                                    imageView.setImageBitmap(imagesBitmap.get(position));
-                                }
-                            });
                         }
                     }
 
