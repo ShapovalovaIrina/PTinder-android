@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -43,6 +44,7 @@ public class NotificationsFragment extends Fragment {
     private View root;
     private String googleId;
     private RecyclerView notificationCardRecycleView;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private NotificationCardAdapter notificationCardAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -50,6 +52,14 @@ public class NotificationsFragment extends Fragment {
         root = inflater.inflate(R.layout.fragment_notifications, container, false);
         activity = getActivity();
         googleId = (String) getArguments().getSerializable("googleId");
+        swipeRefreshLayout = root.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadNotifications();
+                Toast.makeText(getContext(), "Refresh", Toast.LENGTH_SHORT).show();
+            }
+        });
         initRecycleView();
         return root;
     }
@@ -67,12 +77,13 @@ public class NotificationsFragment extends Fragment {
     private void loadNotifications() {
         RequestQueue queue = Volley.newRequestQueue(activity);
 
-        String requestUrl = NOTIFICATIONS_PATH + "\\" + googleId;
+        String requestUrl = NOTIFICATIONS_PATH + "/" + googleId;
         StringRequest stringRequest = new StringRequest(Request.Method.GET, requestUrl,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         try {
+                            Log.d("VOLLEY", "Get notifications: " + response);
                             notificationCardAdapter.setItems(getNotificationsFromJSON(response));
                         } catch (JSONException e) {
                             Log.e("VOLLEY", "Making get request (load notifications): json error - " + e.toString());
@@ -99,7 +110,9 @@ public class NotificationsFragment extends Fragment {
             String id = jsonNotification.getString("id");
             String text = jsonNotification.getString("text");
             boolean isRead = jsonNotification.getBoolean("read");
-            notifications.add(new Notification(id, title, text, isRead));
+            String addresseeGoogleId = jsonNotification.getJSONObject("addressee").getString("googleId");
+            String addresseeFromGoogleId = jsonNotification.getString("addresseeFromId");
+            notifications.add(new Notification(id, title, text, isRead, addresseeGoogleId, addresseeFromGoogleId));
         }
         return notifications;
     }

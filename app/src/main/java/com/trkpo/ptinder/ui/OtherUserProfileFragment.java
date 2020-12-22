@@ -47,6 +47,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static com.trkpo.ptinder.config.Constants.CONTACT_PATH;
 import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 import static com.trkpo.ptinder.config.Constants.SUBSCRIPTION_PATH;
@@ -62,6 +63,7 @@ public class OtherUserProfileFragment extends Fragment {
     private String userGoogleId;
     private ImageView userIcon;
     private ImageView userSubscribe;
+    private ImageView requestUserContacts;
     private TextView username;
     private TextView location;
     private String userImageUrl;
@@ -86,6 +88,7 @@ public class OtherUserProfileFragment extends Fragment {
         phoneLayout = root.findViewById(R.id.other_user_profile_phone_layout);
         emailLayout = root.findViewById(R.id.other_user_profile_email_layout);
         userSubscribe = root.findViewById(R.id.user_subscribe);
+        requestUserContacts = root.findViewById(R.id.request_for_user_contacts);
 
         currentUserGoogleId = GoogleSignIn.getLastSignedInAccount(activity).getId();
 
@@ -94,86 +97,120 @@ public class OtherUserProfileFragment extends Fragment {
         userSubscribe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JSONObject requestObject = new JSONObject();
                 if (!isSubscr) {
-                    try {
-                        requestObject.put("googleId", userGoogleId);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    final String requestBody = requestObject.toString();
-
-                    if (activity != null) {
-                        RequestQueue queue = Volley.newRequestQueue(activity);
-
-                        StringRequest stringRequest = new StringRequest(Request.Method.POST, SUBSCRIPTION_PATH + "/" + currentUserGoogleId, new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                Log.i("SUBSCRIPTION", "Successfully subscribed on user " + userGoogleId);
-                                isSubscr = true;
-                            }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.e("VOLLEY", error.toString());
-                            }
-                        }) {
-                            @Override
-                            public String getBodyContentType() {
-                                return "application/json; charset=utf-8";
-                            }
-
-                            @Override
-                            public byte[] getBody() throws AuthFailureError {
-                                try {
-                                    return requestBody == null ? null : requestBody.getBytes("utf-8");
-                                } catch (UnsupportedEncodingException uee) {
-                                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
-                                    return null;
-                                }
-                            }
-
-                            @Override
-                            protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                                String responseString = "";
-                                if (response != null) {
-                                    responseString = String.valueOf(response.statusCode);
-                                }
-                                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
-                            }
-                        };
-                        queue.add(stringRequest);
-                        userSubscribe.setColorFilter(userIcon.getContext().getResources().getColor(R.color.colorIsSubscribed));
-                    }
-                    isSubscr = true;
+                    subscribeOnUser();
                 } else {
                     if (activity != null) {
-                        RequestQueue queue = Volley.newRequestQueue(activity);
-                        String url = SUBSCRIPTION_PATH + "/" + currentUserGoogleId + "/" + userGoogleId;
-
-                        StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url,
-                                new Response.Listener<String>() {
-                                    @Override
-                                    public void onResponse(String response) {
-                                        isSubscr = false;
-                                    }
-                                }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.d("VOLLEY", "Not Success response (delete from favourite): " + error.toString());
-                            }
-                        });
-                        queue.add(stringRequest);
-                        isSubscr = false;
-                        userSubscribe.setColorFilter(userIcon.getContext().getResources().getColor(R.color.colorNotFavourite));
+                        unsubscribeOnUser();
                     }
                 }
+            }
+        });
+
+        requestUserContacts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requestUserContacts();
             }
         });
 
         initRecycleView();
 
         return root;
+    }
+
+    private void requestUserContacts() {
+        RequestQueue queue = Volley.newRequestQueue(activity);
+        String url = CONTACT_PATH + "/request/" + currentUserGoogleId + "/" + userGoogleId;
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("VOLLEY", "Success response (request user info) from " + currentUserGoogleId + " to " + userGoogleId);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("VOLLEY", "Not Success response (request user info): " + error.toString());
+            }
+        });
+        queue.add(stringRequest);
+    }
+
+    private void subscribeOnUser() {
+        JSONObject requestObject = new JSONObject();
+        try {
+            requestObject.put("googleId", userGoogleId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        final String requestBody = requestObject.toString();
+
+        if (activity != null) {
+            RequestQueue queue = Volley.newRequestQueue(activity);
+
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, SUBSCRIPTION_PATH + "/" + currentUserGoogleId, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.i("SUBSCRIPTION", "Successfully subscribed on user " + userGoogleId);
+                    isSubscr = true;
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("VOLLEY", error.toString());
+                }
+            }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json; charset=utf-8";
+                }
+
+                @Override
+                public byte[] getBody() throws AuthFailureError {
+                    try {
+                        return requestBody == null ? null : requestBody.getBytes("utf-8");
+                    } catch (UnsupportedEncodingException uee) {
+                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                        return null;
+                    }
+                }
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    String responseString = "";
+                    if (response != null) {
+                        responseString = String.valueOf(response.statusCode);
+                    }
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+            };
+            queue.add(stringRequest);
+            userSubscribe.setColorFilter(userIcon.getContext().getResources().getColor(R.color.colorIsSubscribed));
+        }
+        isSubscr = true;
+    }
+
+    private void unsubscribeOnUser() {
+        RequestQueue queue = Volley.newRequestQueue(activity);
+        String url = SUBSCRIPTION_PATH + "/" + currentUserGoogleId + "/" + userGoogleId;
+
+        StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        isSubscr = false;
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("VOLLEY", "Not Success response (delete from favourite): " + error.toString());
+            }
+        });
+        queue.add(stringRequest);
+        isSubscr = false;
+        userSubscribe.setColorFilter(userIcon.getContext().getResources().getColor(R.color.colorNotFavourite));
     }
 
     private void checkSubscription() {

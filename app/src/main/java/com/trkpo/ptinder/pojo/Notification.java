@@ -5,12 +5,17 @@ public class Notification {
     private String title;
     private String text;
     private boolean isRead;
+    private String addresseeGoogleId;
+    private String addresseeFromGoogleId;
 
-    public Notification(String id, String title, String text, boolean isRead) {
+    public Notification(String id, String title, String text, boolean isRead, String addresseeGoogleId, String addresseeFromGoogleId) {
         this.id = id;
         this.title = title;
         this.text = text;
         this.isRead = isRead;
+        this.addresseeGoogleId = addresseeGoogleId;
+        this.addresseeFromGoogleId = addresseeFromGoogleId;
+
     }
 
     public String getTitle() {
@@ -43,5 +48,21 @@ public class Notification {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getAddresseeGoogleId() {
+        return addresseeGoogleId;
+    }
+
+    public void setAddresseeGoogleId(String addresseeGoogleId) {
+        this.addresseeGoogleId = addresseeGoogleId;
+    }
+
+    public String getAddresseeFromGoogleId() {
+        return addresseeFromGoogleId;
+    }
+
+    public void setAddresseeFromGoogleId(String addresseeFromGoogleId) {
+        this.addresseeFromGoogleId = addresseeFromGoogleId;
     }
 }

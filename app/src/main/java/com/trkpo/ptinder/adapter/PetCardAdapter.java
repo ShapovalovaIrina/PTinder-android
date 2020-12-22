@@ -117,7 +117,7 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Log.d("VOLLEY", "Not Success response (add to favourite): " + error.toString());
+                    Log.e("VOLLEY", "Not Success response (add to favourite): " + error.toString());
                 }
             });
             queue.add(jsonObjectRequest);
@@ -139,7 +139,7 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Log.d("VOLLEY", "Not Success response (delete from favourite): " + error.toString());
+                    Log.e("VOLLEY", "Not Success response (delete from favourite): " + error.toString());
                 }
             });
             queue.add(jsonObjectRequest);

@@ -10,6 +10,7 @@ public class Constants {
     public static final String FAVOURITE_PATH = SERVER_PATH + "/favourites";
     public static final String NOTIFICATIONS_PATH = SERVER_PATH + "/notifications";
     public static final String SUBSCRIPTION_PATH = SERVER_PATH + "/subscribe";
+    public static final String CONTACT_PATH = SERVER_PATH + "/contacts";
 
     public static String USER_ICON_URL;
 }

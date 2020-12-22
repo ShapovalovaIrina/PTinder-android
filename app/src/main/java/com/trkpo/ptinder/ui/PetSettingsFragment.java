@@ -162,6 +162,7 @@ public class PetSettingsFragment extends Fragment {
                         @Override
                         public void onResponse(String response) {
                             Log.i("VOLLEY", response);
+                            Toast.makeText(getContext(), "Successfully update pet", Toast.LENGTH_LONG).show();
                         }
                     }, new Response.ErrorListener() {
                         @Override
