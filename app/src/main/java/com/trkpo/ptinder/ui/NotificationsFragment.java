@@ -13,10 +13,14 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.trkpo.ptinder.R;
@@ -27,6 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -91,9 +96,10 @@ public class NotificationsFragment extends Fragment {
         for (int i = 0; i < jArray.length(); i++) {
             JSONObject jsonNotification = jArray.getJSONObject(i);
             String title = jsonNotification.getString("type");
+            String id = jsonNotification.getString("id");
             String text = jsonNotification.getString("text");
             boolean isRead = jsonNotification.getBoolean("read");
-            notifications.add(new Notification(title, text, isRead));
+            notifications.add(new Notification(id, title, text, isRead, googleId));
         }
         return notifications;
     }
