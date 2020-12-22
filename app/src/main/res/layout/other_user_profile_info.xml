@@ -19,6 +19,7 @@
             android:paddingBottom="10dp">
 
             <ImageView
+                android:id="@+id/user_subscribe"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_centerVertical="true"

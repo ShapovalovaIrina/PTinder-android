@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -17,21 +16,22 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
 import com.trkpo.ptinder.config.PhotoTask;
@@ -41,6 +41,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -48,8 +49,8 @@ import java.util.concurrent.ExecutionException;
 
 import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
+import static com.trkpo.ptinder.config.Constants.SUBSCRIPTION_PATH;
 import static com.trkpo.ptinder.config.Constants.USERS_PATH;
-import static com.trkpo.ptinder.config.Constants.USER_ICON_URL;
 
 public class OtherUserProfileFragment extends Fragment {
 
@@ -60,6 +61,7 @@ public class OtherUserProfileFragment extends Fragment {
 
     private String userGoogleId;
     private ImageView userIcon;
+    private ImageView userSubscribe;
     private TextView username;
     private TextView location;
     private String userImageUrl;
@@ -69,6 +71,8 @@ public class OtherUserProfileFragment extends Fragment {
     private RelativeLayout emailLayout;
     private RecyclerView petCardRecycleView;
     private PetCardAdapter petCardAdapter;
+
+    private boolean isSubscr;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -81,13 +85,122 @@ public class OtherUserProfileFragment extends Fragment {
         email = root.findViewById(R.id.user_email);
         phoneLayout = root.findViewById(R.id.other_user_profile_phone_layout);
         emailLayout = root.findViewById(R.id.other_user_profile_email_layout);
+        userSubscribe = root.findViewById(R.id.user_subscribe);
 
         currentUserGoogleId = GoogleSignIn.getLastSignedInAccount(activity).getId();
 
         initUserInfo();
+
+        userSubscribe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                JSONObject requestObject = new JSONObject();
+                if (!isSubscr) {
+                    try {
+                        requestObject.put("googleId", userGoogleId);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    final String requestBody = requestObject.toString();
+
+                    if (activity != null) {
+                        RequestQueue queue = Volley.newRequestQueue(activity);
+
+                        StringRequest stringRequest = new StringRequest(Request.Method.POST, SUBSCRIPTION_PATH + "/" + currentUserGoogleId, new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                Log.i("SUBSCRIPTION", "Successfully subscribed on user " + userGoogleId);
+                                isSubscr = true;
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.e("VOLLEY", error.toString());
+                            }
+                        }) {
+                            @Override
+                            public String getBodyContentType() {
+                                return "application/json; charset=utf-8";
+                            }
+
+                            @Override
+                            public byte[] getBody() throws AuthFailureError {
+                                try {
+                                    return requestBody == null ? null : requestBody.getBytes("utf-8");
+                                } catch (UnsupportedEncodingException uee) {
+                                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                                    return null;
+                                }
+                            }
+
+                            @Override
+                            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                                String responseString = "";
+                                if (response != null) {
+                                    responseString = String.valueOf(response.statusCode);
+                                }
+                                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                            }
+                        };
+                        queue.add(stringRequest);
+                        userSubscribe.setColorFilter(userIcon.getContext().getResources().getColor(R.color.colorIsSubscribed));
+                    }
+                    isSubscr = true;
+                } else {
+                    if (activity != null) {
+                        RequestQueue queue = Volley.newRequestQueue(activity);
+                        String url = SUBSCRIPTION_PATH + "/" + currentUserGoogleId + "/" + userGoogleId;
+
+                        StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url,
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        isSubscr = false;
+                                    }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d("VOLLEY", "Not Success response (delete from favourite): " + error.toString());
+                            }
+                        });
+                        queue.add(stringRequest);
+                        isSubscr = false;
+                        userSubscribe.setColorFilter(userIcon.getContext().getResources().getColor(R.color.colorNotFavourite));
+                    }
+                }
+            }
+        });
+
         initRecycleView();
 
         return root;
+    }
+
+    private void checkSubscription() {
+        if (activity != null) {
+            RequestQueue queue = Volley.newRequestQueue(activity);
+            String url = SUBSCRIPTION_PATH + "/check/" + currentUserGoogleId + "/" + userGoogleId;
+
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            isSubscr = response.contains("true");
+                            if (isSubscr) {
+                                userSubscribe.setColorFilter(userIcon.getContext().getResources().getColor(R.color.colorIsSubscribed));
+                            } else {
+                                userSubscribe.setColorFilter(userIcon.getContext().getResources().getColor(R.color.colorNotFavourite));
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
+                    Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+            queue.add(stringRequest);
+        }
     }
 
     private void showInfo() {
@@ -132,6 +245,7 @@ public class OtherUserProfileFragment extends Fragment {
 
     private void initUserInfo() {
         userGoogleId = getArguments().getString("googleId");
+        checkSubscription();
         showInfo();
     }
 
