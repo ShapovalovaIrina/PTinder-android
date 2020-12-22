@@ -56,6 +56,7 @@ public class UserProfileFragment extends Fragment {
     private View root;
 
     private ImageView userIcon;
+    private ImageView settingsIcon;
     private TextView username;
     private TextView location;
     private TextView phone;
@@ -74,6 +75,7 @@ public class UserProfileFragment extends Fragment {
         location = root.findViewById(R.id.location);
         phone = root.findViewById(R.id.user_phone);
         email = root.findViewById(R.id.user_email);
+        settingsIcon = root.findViewById(R.id.settings_icon);
 
         addPetBtn = root.findViewById(R.id.add_pet);
         addPetBtn.setOnClickListener(new View.OnClickListener() {
@@ -91,6 +93,14 @@ public class UserProfileFragment extends Fragment {
         }
         initUserInfo();
         initRecycleView();
+
+        settingsIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = Navigation.findNavController(v);
+                navController.navigate(R.id.nav_settings);
+            }
+        });
 
         return root;
     }
