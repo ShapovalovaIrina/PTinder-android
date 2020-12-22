@@ -38,6 +38,8 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageClickListener;
 import com.synnapps.carouselview.ImageListener;
@@ -96,6 +98,8 @@ public class PetSettingsFragment extends Fragment {
         updatePet = root.findViewById(R.id.update_pet);
         deletePet = root.findViewById(R.id.delete_pet);
 
+        initUserInfo();
+
         petImages = root.findViewById(R.id.carousel_view);
         petImages.setImageListener(new ImageListener() {
             @Override
@@ -143,7 +147,7 @@ public class PetSettingsFragment extends Fragment {
                     }
                     requestObject.put("photos", jsonWithPhotos);
                     requestObject.put("type", (String) petType.getSelectedItem());
-                    requestObject.put("googleId", "");
+                    requestObject.put("googleId", googleId);
                     requestObject.put("pet", jsonBodyWithPet);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -386,5 +390,12 @@ public class PetSettingsFragment extends Fragment {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
         return bos.toByteArray();
+    }
+
+    private void initUserInfo() {
+        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(activity);
+        if (signInAccount != null) {
+            googleId = signInAccount.getId();
+        }
     }
 }
