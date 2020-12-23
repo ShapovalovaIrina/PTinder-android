@@ -359,6 +359,7 @@ public class OtherUserProfileFragment extends Fragment {
             JSONObject jsonObject = jArray.getJSONObject(i);
             Long id = jsonObject.getLong("petId");
             String name = jsonObject.getString("name");
+            String breed = jsonObject.getString("breed");
             String age = formAge(jsonObject.getInt("age"));
             String gender = jsonObject.getString("gender");
             String animalType = jsonObject.getJSONObject("animalType").getString("type");
@@ -376,7 +377,7 @@ public class OtherUserProfileFragment extends Fragment {
                     icons.add(image);
                 }
             }
-            PetInfo petInfo = new PetInfo(id, name, "", age, gender, animalType, purpose, comment, icons, 4, isFavourite);
+            PetInfo petInfo = new PetInfo(id, name, breed, age, gender, animalType, purpose, comment, icons, 4, isFavourite);
             pets.add(petInfo);
 
             JSONObject ownerInfo = jsonObject.getJSONObject("owner");
