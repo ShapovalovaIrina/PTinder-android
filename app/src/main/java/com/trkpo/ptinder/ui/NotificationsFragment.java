@@ -99,7 +99,7 @@ public class NotificationsFragment extends Fragment {
             String id = jsonNotification.getString("id");
             String text = jsonNotification.getString("text");
             boolean isRead = jsonNotification.getBoolean("read");
-            notifications.add(new Notification(id, title, text, isRead, googleId));
+            notifications.add(new Notification(id, title, text, isRead));
         }
         return notifications;
     }
