@@ -233,7 +233,7 @@ public class SearchFragment extends Fragment {
             Long id = jsonObject.getLong("petId");
             String name = jsonObject.getString("name");
             String age = jsonObject.getString("age");
-            String breed = form(jsonObject.getString("animalType"));
+            String breed = jsonObject.getString("breed");
             String gender = jsonObject.getString("gender");
             String animalType = jsonObject.getJSONObject("animalType").getString("type");
             String purpose = jsonObject.getString("purpose");
