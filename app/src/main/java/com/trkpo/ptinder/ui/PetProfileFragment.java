@@ -76,9 +76,7 @@ public class PetProfileFragment extends Fragment {
 
         ImageView ownerIcon = root.findViewById(R.id.full_pet_info_owner_icon);
         TextView ownerName = root.findViewById(R.id.full_pet_info_owner_name);
-        TextView ownerEmail = root.findViewById(R.id.full_pet_info_owner_email);
         ownerName.setText(petInfo.getOwnerName());
-        ownerEmail.setText(petInfo.getOwnerEmail());
         ownerIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -150,13 +150,6 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif"
                     android:text="David Miller" />
-
-                <TextView
-                    android:id="@+id/full_pet_info_owner_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif"
-                    android:text="d.miller@gmail.com" />
             </LinearLayout>
 
         </LinearLayout>
