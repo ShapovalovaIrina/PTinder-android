@@ -1,6 +1,5 @@
 package com.trkpo.ptinder.adapter;
 
-import android.app.Activity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,26 +9,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.pojo.Notification;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,67 +58,23 @@ public class NotificationCardAdapter extends RecyclerView.Adapter<NotificationCa
                 @Override
                 public void onClick(View v) {
                     RequestQueue queue = Volley.newRequestQueue(v.getContext());
-                    JSONObject requestObject = new JSONObject();
-                    JSONArray jsonWithIds = new JSONArray();
-                    if (notifications != null) {
-                        for (Notification n : notifications) {
-                            JSONObject jsonNotificationId = new JSONObject();
-                            try {
-                                jsonNotificationId.put("id", n.getId());
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            jsonWithIds.put(jsonNotificationId);
+                    String url = NOTIFICATIONS_PATH + "/" + notificationInfo.getId();
+
+                    StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, url,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    Log.d("VOLLEY", "Success response (read notification). " +
+                                            "Notification id: " + notificationInfo.getId());
+                                }
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.d("VOLLEY", "Not Success response (read notification) " + error.toString());
                         }
-                    }
-                    try {
-                        requestObject.put("list", jsonWithIds);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    final String requestBody = requestObject.toString();
-                    Log.i("HERE", "f " + requestBody);
-
-                    if (notifications != null) {
-                        StringRequest readNotifReq = new StringRequest(Request.Method.POST,
-                                NOTIFICATIONS_PATH + "/" + notifications.get(0).getGoogleId(),
-                                new Response.Listener<String>() {
-                                    @Override
-                                    public void onResponse(String response) {
-                                        Log.i("VOLLEY", response);
-                                    }
-                                }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.e("VOLLEY", error.toString());
-                            }
-                        }) {
-                            @Override
-                            public String getBodyContentType() {
-                                return "application/json; charset=utf-8";
-                            }
-
-                            @Override
-                            public byte[] getBody() throws AuthFailureError {
-                                try {
-                                    return requestBody == null ? null : requestBody.getBytes("utf-8");
-                                } catch (UnsupportedEncodingException uee) {
-                                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
-                                    return null;
-                                }
-                            }
-
-                            @Override
-                            protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                                String responseString = "";
-                                if (response != null) {
-                                    responseString = String.valueOf(response.statusCode);
-                                }
-                                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
-                            }
-                        };
-                        queue.add(readNotifReq);
-                    }
+                    });
+                    queue.add(jsonObjectRequest);
+                    btnsLayout.setVisibility(View.INVISIBLE);
                 }
             });
         }

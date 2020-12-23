@@ -5,14 +5,12 @@ public class Notification {
     private String title;
     private String text;
     private boolean isRead;
-    private String googleId;
 
-    public Notification(String id, String title, String text, boolean isRead, String googleId) {
+    public Notification(String id, String title, String text, boolean isRead) {
         this.id = id;
         this.title = title;
         this.text = text;
         this.isRead = isRead;
-        this.googleId = googleId;
     }
 
     public String getTitle() {
@@ -45,13 +43,5 @@ public class Notification {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getGoogleId() {
-        return googleId;
-    }
-
-    public void setGoogleId(String googleId) {
-        this.googleId = googleId;
     }
 }
