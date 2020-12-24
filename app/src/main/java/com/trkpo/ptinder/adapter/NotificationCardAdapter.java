@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
@@ -21,6 +22,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.pojo.Notification;
+import com.trkpo.ptinder.utils.Connection;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -95,6 +97,10 @@ public class NotificationCardAdapter extends RecyclerView.Adapter<NotificationCa
         }
 
         private void markAsRead(View view) {
+            if (!Connection.hasConnection(view.getContext())) {
+                Toast.makeText(view.getContext(), "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+                return;
+            }
             RequestQueue queue = Volley.newRequestQueue(view.getContext());
             String url = NOTIFICATIONS_PATH + "/" + notificationInfo.getId();
 
@@ -116,6 +122,10 @@ public class NotificationCardAdapter extends RecyclerView.Adapter<NotificationCa
         }
 
         private void responseUserContacts(View view) {
+            if (!Connection.hasConnection(view.getContext())) {
+                Toast.makeText(view.getContext(), "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+                return;
+            }
             RequestQueue queue = Volley.newRequestQueue(view.getContext());
             String url = CONTACT_PATH + "/response/" +
                     notificationInfo.getAddresseeGoogleId() + "/" +

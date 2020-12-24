@@ -21,12 +21,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.pojo.Gender;
+import com.trkpo.ptinder.utils.Connection;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.trkpo.ptinder.config.Constants.PETS_PATH;
-import static com.trkpo.ptinder.config.Constants.SERVER_PATH;
 import static com.trkpo.ptinder.config.Constants.USERS_PATH;
 
 public class LoginUserInfoActivity extends AppCompatActivity {
@@ -75,6 +74,10 @@ public class LoginUserInfoActivity extends AppCompatActivity {
     }
 
     private void postUserInfo() {
+        if (!Connection.hasConnection(this)) {
+            Toast.makeText(this, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = USERS_PATH;
 

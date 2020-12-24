@@ -24,6 +24,7 @@ import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.FeedCardAdapter;
 import com.trkpo.ptinder.config.FeedTask;
 import com.trkpo.ptinder.pojo.Feed;
+import com.trkpo.ptinder.utils.Connection;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,6 +65,10 @@ public class FeedFragment extends Fragment {
     }
 
     private void loadFeeds() {
+        if (!Connection.hasConnection(activity)) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
         RequestQueue queue = Volley.newRequestQueue(activity);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, NEWS_PATH,

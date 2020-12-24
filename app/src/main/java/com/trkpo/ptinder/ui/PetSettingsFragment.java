@@ -45,6 +45,7 @@ import com.synnapps.carouselview.ImageClickListener;
 import com.synnapps.carouselview.ImageListener;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.pojo.PetInfo;
+import com.trkpo.ptinder.utils.Connection;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -124,6 +125,10 @@ public class PetSettingsFragment extends Fragment {
         updatePet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!Connection.hasConnection(activity)) {
+                    Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 JSONObject requestObject = new JSONObject();
                 JSONObject jsonBodyWithPet = new JSONObject();
                 try {
@@ -162,7 +167,9 @@ public class PetSettingsFragment extends Fragment {
                         @Override
                         public void onResponse(String response) {
                             Log.i("VOLLEY", response);
-                            Toast.makeText(getContext(), "Successfully update pet", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Информация о питомце успешно обновлена", Toast.LENGTH_LONG).show();
+                            NavController navController = Navigation.findNavController(root);
+                            navController.navigateUp();
                         }
                     }, new Response.ErrorListener() {
                         @Override
@@ -202,12 +209,19 @@ public class PetSettingsFragment extends Fragment {
         deletePet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!Connection.hasConnection(activity)) {
+                    Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 RequestQueue queue = Volley.newRequestQueue(activity);
                 final String requestBody = "";
                 StringRequest stringRequest = new StringRequest(Request.Method.DELETE, PETS_PATH + "/" + petInfo.getId(), new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.i("volley", response);
+                        Toast.makeText(getContext(), "Питомец был успешно удален.", Toast.LENGTH_LONG).show();
+                        NavController navController = Navigation.findNavController(root);
+                        navController.navigateUp();
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -240,8 +254,6 @@ public class PetSettingsFragment extends Fragment {
                     }
                 };
                 queue.add(stringRequest);
-                NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.nav_settings);
             }
         });
 
@@ -291,6 +303,10 @@ public class PetSettingsFragment extends Fragment {
     }
 
     private void loadPet(Long petId) {
+        if (!Connection.hasConnection(activity)) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
         RequestQueue queue = Volley.newRequestQueue(activity);
         String url = PETS_PATH + "/" + petId;
 
