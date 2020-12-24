@@ -363,7 +363,7 @@ public class OtherUserProfileFragment extends Fragment {
             String age = formAge(jsonObject.getInt("age"));
             String gender = jsonObject.getString("gender");
             String animalType = jsonObject.getJSONObject("animalType").getString("type");
-            String purpose = jsonObject.getString("purpose");
+            String purpose = formatPurpose(jsonObject.getString("purpose"));
             String comment = jsonObject.getString("comment");
             boolean isFavourite = favouritePetsId.contains(id);
 
@@ -407,6 +407,27 @@ public class OtherUserProfileFragment extends Fragment {
                 year = " лет";
         }
         return age + year;
+    }
+
+    private String formatPurpose(String purpose) {
+        switch (purpose) {
+            case "NOTHING":
+                purpose = "Не указана";
+                break;
+            case "WALKING":
+                purpose = "Прогулка";
+                break;
+            case "FRIENDSHIP":
+                purpose = "Дружба";
+                break;
+            case "DONORSHIP":
+                purpose = "Переливание крови";
+                break;
+            case "BREEDING":
+                purpose = "Вязка";
+                break;
+        }
+        return purpose;
     }
 }
 

@@ -53,14 +53,26 @@ public class PetProfileFragment extends Fragment {
         ImageView petGender = root.findViewById(R.id.full_pet_info_gender);
         favourite = root.findViewById(R.id.full_pet_info_favourite);
 
-        petIcons.setPageCount(petInfo.getIconsAmount());
-        petIcons.setImageListener(new ImageListener() {
-            @Override
-            public void setImageForPosition(int position, ImageView imageView) {
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                imageView.setImageBitmap(petInfo.getIcon(position));
-            }
-        });
+        if (petInfo.getIconsAmount() > 0) {
+            petIcons.setPageCount(petInfo.getIconsAmount());
+            petIcons.setImageListener(new ImageListener() {
+                @Override
+                public void setImageForPosition(int position, ImageView imageView) {
+                    imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    imageView.setImageBitmap(petInfo.getIcon(position));
+                }
+            });
+        } else {
+            /* Set default image */
+            petIcons.setPageCount(1);
+            petIcons.setImageListener(new ImageListener() {
+                @Override
+                public void setImageForPosition(int position, ImageView imageView) {
+                    imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    imageView.setImageResource(R.drawable.cat);
+                }
+            });
+        }
         if (petInfo.getGender().equals("MALE"))
             petGender.setImageResource(R.drawable.male);
         else if (petInfo.getGender().equals("FEMALE"))
