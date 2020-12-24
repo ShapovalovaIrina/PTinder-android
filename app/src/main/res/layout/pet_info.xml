@@ -139,19 +139,14 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/cat" />
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/full_pet_info_owner_name"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/full_pet_info_owner_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif"
-                    android:text="David Miller" />
-            </LinearLayout>
-
+                android:layout_height="match_parent"
+                android:textSize="20sp"
+                android:gravity="left|center"
+                android:fontFamily="sans-serif"
+                android:text="David Miller" />
         </LinearLayout>
 
     </LinearLayout>
