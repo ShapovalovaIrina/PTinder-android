@@ -96,4 +96,10 @@
         android:label="@string/menu_pet_settings"
         tools:layout="@layout/fragment_pet_settings" />
 
+    <fragment
+        android:id="@+id/nav_help"
+        android:name="com.trkpo.ptinder.ui.HelpFragment"
+        android:label="Помощь"
+        tools:layout="@layout/fragment_help" />
+
 </navigation>
