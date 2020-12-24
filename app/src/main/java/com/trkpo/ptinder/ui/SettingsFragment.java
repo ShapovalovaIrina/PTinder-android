@@ -42,6 +42,7 @@ import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.activity.LoginActivity;
 import com.trkpo.ptinder.adapter.SmallPetAdapter;
 import com.trkpo.ptinder.pojo.PetInfo;
+import com.trkpo.ptinder.utils.Connection;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -96,6 +97,10 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (activity != null) {
+                    if (!Connection.hasConnection(activity)) {
+                        Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     RequestQueue queue = Volley.newRequestQueue(activity);
                     JSONObject jsonObject = new JSONObject();
                     try {
@@ -153,6 +158,10 @@ public class SettingsFragment extends Fragment {
         deleteUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!Connection.hasConnection(activity)) {
+                    Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 RequestQueue queue = Volley.newRequestQueue(activity);
                 final String requestBody = "";
                 StringRequest stringRequest = new StringRequest(Request.Method.DELETE, USERS_PATH + "/" + googleId, new Response.Listener<String>() {
@@ -241,6 +250,10 @@ public class SettingsFragment extends Fragment {
     }
 
     private void showInfo(String googleId) {
+        if (!Connection.hasConnection(activity)) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
         RequestQueue queue = Volley.newRequestQueue(activity);
         String url = USERS_PATH + "/" + googleId;
 
@@ -278,6 +291,10 @@ public class SettingsFragment extends Fragment {
     }
 
     private void loadPets() {
+        if (!Connection.hasConnection(activity)) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
         RequestQueue queue = Volley.newRequestQueue(activity);
         String url = PETS_PATH + "/owner/" + googleId;
 

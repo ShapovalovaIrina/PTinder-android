@@ -46,6 +46,7 @@ import com.synnapps.carouselview.ImageClickListener;
 import com.synnapps.carouselview.ImageListener;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.pojo.Gender;
+import com.trkpo.ptinder.utils.Connection;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -114,32 +115,9 @@ public class PetRegistrationFragment extends Fragment {
         });
         initUserInfo();
 
-        final RequestQueue queue = Volley.newRequestQueue(activity);
-        final String url = PETS_PATH + "/types";
-
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            adapter.addAll(getTypesFromJSON(response));
-                        } catch (JSONException e) {
-                            Log.e("VOLLEY", "Making get request (load pets): json error - " + e.toString());
-                            Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
-                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        queue.add(stringRequest);
-        petType.setAdapter(adapter);
+        setTypes(adapter);
 
         addPetTypeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,6 +151,10 @@ public class PetRegistrationFragment extends Fragment {
         savePetBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
+                if (!Connection.hasConnection(activity)) {
+                    Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 JSONObject requestObject = new JSONObject();
                 JSONObject jsonBodyWithPet = new JSONObject();
                 try {
@@ -212,14 +194,14 @@ public class PetRegistrationFragment extends Fragment {
                         public void onResponse(String response) {
                             Log.i("VOLLEY", response);
                             NavController navController = Navigation.findNavController(v);
-                            navController.navigate(R.id.nav_user_profile);
+                            navController.navigateUp();
                         }
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Log.e("VOLLEY", error.toString());
                             NavController navController = Navigation.findNavController(v);
-                            navController.navigate(R.id.nav_user_profile);
+                            navController.navigateUp();
                         }
                     }) {
                         @Override
@@ -252,6 +234,36 @@ public class PetRegistrationFragment extends Fragment {
         });
 
         return root;
+    }
+
+    private void setTypes(final ArrayAdapter<String> adapter) {
+        if (!Connection.hasConnection(activity)) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        final RequestQueue queue = Volley.newRequestQueue(activity);
+        final String url = PETS_PATH + "/types";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            adapter.addAll(getTypesFromJSON(response));
+                        } catch (JSONException e) {
+                            Log.e("VOLLEY", "Making get request (load pets): json error - " + e.toString());
+                            Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
+                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        queue.add(stringRequest);
+        petType.setAdapter(adapter);
     }
 
     @Override

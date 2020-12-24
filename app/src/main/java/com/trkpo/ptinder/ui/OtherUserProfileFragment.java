@@ -36,6 +36,7 @@ import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
 import com.trkpo.ptinder.config.PhotoTask;
 import com.trkpo.ptinder.pojo.PetInfo;
+import com.trkpo.ptinder.utils.Connection;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -120,6 +121,10 @@ public class OtherUserProfileFragment extends Fragment {
     }
 
     private void requestUserContacts() {
+        if (!Connection.hasConnection(activity)) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
         RequestQueue queue = Volley.newRequestQueue(activity);
         String url = CONTACT_PATH + "/request/" + currentUserGoogleId + "/" + userGoogleId;
 
@@ -139,6 +144,10 @@ public class OtherUserProfileFragment extends Fragment {
     }
 
     private void subscribeOnUser() {
+        if (!Connection.hasConnection(activity)) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
         JSONObject requestObject = new JSONObject();
         try {
             requestObject.put("googleId", userGoogleId);
@@ -193,6 +202,10 @@ public class OtherUserProfileFragment extends Fragment {
     }
 
     private void unsubscribeOnUser() {
+        if (!Connection.hasConnection(activity)) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
         RequestQueue queue = Volley.newRequestQueue(activity);
         String url = SUBSCRIPTION_PATH + "/" + currentUserGoogleId + "/" + userGoogleId;
 
@@ -215,6 +228,10 @@ public class OtherUserProfileFragment extends Fragment {
 
     private void checkSubscription() {
         if (activity != null) {
+            if (!Connection.hasConnection(activity)) {
+                Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+                return;
+            }
             RequestQueue queue = Volley.newRequestQueue(activity);
             String url = SUBSCRIPTION_PATH + "/check/" + currentUserGoogleId + "/" + userGoogleId;
 
@@ -241,6 +258,10 @@ public class OtherUserProfileFragment extends Fragment {
     }
 
     private void showInfo() {
+        if (!Connection.hasConnection(activity)) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
         RequestQueue queue = Volley.newRequestQueue(activity);
         String url = USERS_PATH + "/" + userGoogleId;
 
@@ -297,6 +318,10 @@ public class OtherUserProfileFragment extends Fragment {
     }
 
     private void loadFavouriteId() {
+        if (!Connection.hasConnection(activity)) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
         RequestQueue queue = Volley.newRequestQueue(activity);
         String url = FAVOURITE_PATH + "/user/id/" + currentUserGoogleId;
 
@@ -327,6 +352,10 @@ public class OtherUserProfileFragment extends Fragment {
     }
 
     private void loadPets(final List<Long> favouritePetsId) {
+        if (!Connection.hasConnection(activity)) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
         RequestQueue queue = Volley.newRequestQueue(activity);
         String url = PETS_PATH + "/owner/" + userGoogleId;
 

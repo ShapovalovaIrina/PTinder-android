@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -21,6 +22,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.trkpo.ptinder.R;
+import com.trkpo.ptinder.utils.Connection;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,6 +45,10 @@ public class AnimalTypeDialogFragment {
         builder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                if (!Connection.hasConnection(context)) {
+                    Toast.makeText(context, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 adapter.clear();
                 JSONObject requestObject = new JSONObject();
                 try {

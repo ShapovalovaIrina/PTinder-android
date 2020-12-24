@@ -26,6 +26,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
 import com.trkpo.ptinder.pojo.PetInfo;
+import com.trkpo.ptinder.utils.Connection;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,6 +66,10 @@ public class FavouriteFragment extends Fragment {
     }
 
     private void loadPets() {
+        if (!Connection.hasConnection(activity)) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
         RequestQueue queue = Volley.newRequestQueue(activity);
         String url = FAVOURITE_PATH + "/user/full/" + googleId;
 

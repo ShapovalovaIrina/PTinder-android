@@ -1,5 +1,6 @@
 package com.trkpo.ptinder.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +32,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.trkpo.ptinder.R;
+import com.trkpo.ptinder.utils.Connection;
 
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 import static com.trkpo.ptinder.config.Constants.USERS_PATH;
@@ -40,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+    private Activity activity;
 
     @Override
     public void onStart() {
@@ -52,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
+        this.activity = this;
 
         mAuth = FirebaseAuth.getInstance();
         createRequest();
@@ -59,6 +63,10 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!Connection.hasConnection(activity)) {
+                    Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 if (currentUser != null) {
                     isUserExists();
                 } else {
@@ -125,6 +133,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void isUserExists() {
+        if (!Connection.hasConnection(this)) {
+            Toast.makeText(this, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
         if (signInAccount == null) return;
         String googleId = signInAccount.getId();

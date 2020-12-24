@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
@@ -22,6 +23,7 @@ import com.android.volley.toolbox.Volley;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.config.PhotoTask;
 import com.trkpo.ptinder.pojo.PetInfo;
+import com.trkpo.ptinder.utils.Connection;
 
 
 import java.util.ArrayList;
@@ -102,6 +104,10 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
         }
 
         private void addToFavourite(View view) {
+            if (!Connection.hasConnection(view.getContext())) {
+                Toast.makeText(view.getContext(), "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+                return;
+            }
             RequestQueue queue = Volley.newRequestQueue(view.getContext());
             String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getCurrentUserId();
 
@@ -124,6 +130,10 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
         }
 
         private void deleteFromFavourite(View view) {
+            if (!Connection.hasConnection(view.getContext())) {
+                Toast.makeText(view.getContext(), "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+                return;
+            }
             RequestQueue queue = Volley.newRequestQueue(view.getContext());
             String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getCurrentUserId();
 

@@ -27,6 +27,7 @@ import com.android.volley.toolbox.Volley;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.NotificationCardAdapter;
 import com.trkpo.ptinder.pojo.Notification;
+import com.trkpo.ptinder.utils.Connection;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,6 +76,10 @@ public class NotificationsFragment extends Fragment {
     }
 
     private void loadNotifications() {
+        if (!Connection.hasConnection(activity)) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
         RequestQueue queue = Volley.newRequestQueue(activity);
 
         String requestUrl = NOTIFICATIONS_PATH + "/" + googleId;
