@@ -1,10 +1,7 @@
 package com.trkpo.ptinder.ui;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,8 +29,8 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
-import com.trkpo.ptinder.pojo.PetInfo;
 import com.trkpo.ptinder.utils.Connection;
+import com.trkpo.ptinder.utils.PetInfoUtils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -55,6 +52,8 @@ import static com.trkpo.ptinder.config.Constants.SEARCH_PATH;
 public class SearchFragment extends Fragment {
     private Activity activity;
     private View root;
+
+    String googleId;
 
     private Spinner addressSpinner;
     private Spinner typeSpinner;
@@ -91,6 +90,8 @@ public class SearchFragment extends Fragment {
         petCardAdapter = new PetCardAdapter();
         petCardRecycleView.setAdapter(petCardAdapter);
 
+        googleId = GoogleSignIn.getLastSignedInAccount(activity).getId();
+
         favouritePetsId = new ArrayList<>();
         loadFavouriteId();
 
@@ -106,7 +107,7 @@ public class SearchFragment extends Fragment {
                 }
                 String address = "" + addressSpinner.getSelectedItem();
                 String gender = translateGender(radioGroup);
-                String purpose = translatePurpose("" + purposeSpinner.getSelectedItem());
+                String purpose = PetInfoUtils.formatPurposeToEnum("" + purposeSpinner.getSelectedItem());
                 String type = "" + (typeSpinner.getSelectedItem() != null ? typeSpinner.getSelectedItem() : "");
                 petCardAdapter.clearItems();
 
@@ -129,7 +130,7 @@ public class SearchFragment extends Fragment {
                         @Override
                         public void onResponse(String response) {
                             try {
-                                petCardAdapter.setItems(getPetsFromJSON(response));
+                                petCardAdapter.setItems(PetInfoUtils.getPetsFromJSON(response, null, googleId, 2));
                             } catch (JSONException e) {
                                 Log.e("JSON", "Got error during json parsing" + e.toString());
 
@@ -223,65 +224,6 @@ public class SearchFragment extends Fragment {
         } else {
             return "";
         }
-    }
-
-    private String translatePurpose(String purpose) {
-        if (purpose.equals("Прогулка")) {
-            return "WALKING";
-        }
-        if (purpose.equals("Вязка")) {
-            return "BREEDING";
-        }
-        if (purpose.equals("Переливание крови")) {
-            return "DONORSHIP";
-        }
-        if (purpose.equals("Дружба")) {
-            return "FRIENDSHIP";
-        }
-        if (purpose.equals("-")) {
-            return "NOTHING";
-        }
-        return "";
-    }
-
-    private Collection<PetInfo> getPetsFromJSON(String jsonString) throws JSONException {
-        String googleId = GoogleSignIn.getLastSignedInAccount(activity).getId();
-        Collection<PetInfo> pets = new ArrayList<>();
-        JSONArray jArray = new JSONArray(jsonString);
-        for (int i = 0; i < jArray.length(); i++) {
-            JSONObject jsonObject = jArray.getJSONObject(i);
-            Long id = jsonObject.getLong("petId");
-            String name = jsonObject.getString("name");
-            String age = jsonObject.getString("age");
-            String breed = jsonObject.getString("breed");
-            String gender = jsonObject.getString("gender");
-            String animalType = jsonObject.getJSONObject("animalType").getString("type");
-            String purpose = jsonObject.getString("purpose");
-            String comment = jsonObject.getString("comment");
-            boolean isFavourite = favouritePetsId.contains(id);
-
-            List<Bitmap> icons = new ArrayList<>();
-            JSONArray images = jsonObject.getJSONArray("petPhotos");
-            if (images != null && images.length() > 0) {
-                //  Set first photo as icon
-                String imageStr = images.getJSONObject(0).getString("photo");
-                byte[] imageBytes = Base64.decode(imageStr, Base64.DEFAULT);
-                Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                icons.add(image);
-            }
-            PetInfo petInfo = new PetInfo(id, name, breed, age, gender, animalType, purpose, comment, icons, 2, isFavourite);
-            pets.add(petInfo);
-
-            JSONObject ownerInfo = jsonObject.getJSONObject("owner");
-            String ownerId = ownerInfo.getString("googleId");
-            String ownerName = ownerInfo.getString("firstName") + " " + ownerInfo.getString("lastName");
-            String ownerEmail = ownerInfo.getString("email");
-            String ownerIconURL = ownerInfo.getString("photoUrl");
-            petInfo.setOwnerInfo(ownerId, ownerName, ownerEmail, ownerIconURL);
-
-            petInfo.setCurrentUserInfo(googleId);
-        }
-        return pets;
     }
 
     private String form(String animalType) {

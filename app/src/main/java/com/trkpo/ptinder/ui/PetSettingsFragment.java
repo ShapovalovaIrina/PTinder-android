@@ -46,12 +46,12 @@ import com.synnapps.carouselview.ImageListener;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.pojo.PetInfo;
 import com.trkpo.ptinder.utils.Connection;
+import com.trkpo.ptinder.utils.PetInfoUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -129,34 +129,17 @@ public class PetSettingsFragment extends Fragment {
                     Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
                     return;
                 }
-                JSONObject requestObject = new JSONObject();
-                JSONObject jsonBodyWithPet = new JSONObject();
-                try {
-                    jsonBodyWithPet.put("name", petName.getText());
-                    jsonBodyWithPet.put("age", Integer.parseInt(petAge.getText().toString()));
-                    jsonBodyWithPet.put("gender", rgGender.getCheckedRadioButtonId() == 0 ? "FEMALE" : "MALE");
-                    jsonBodyWithPet.put("type", (String) petType.getSelectedItem());
-                    jsonBodyWithPet.put("breed", "" + petBreed.getText());
-                    jsonBodyWithPet.put("purpose", translatePurpose(petPurpose.getSelectedItem().toString()));
-                    jsonBodyWithPet.put("comment", petComment.getText());
-
-                    JSONArray jsonWithPhotos = new JSONArray();
-                    if (imagesBitmap != null) {
-                        for (Bitmap image : imagesBitmap) {
-                            byte[] imageBytes = getByteArrayFromBitmap(image);
-                            String imageStr = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-                            JSONObject jsonPhoto = new JSONObject();
-                            jsonPhoto.put("photo", imageStr);
-                            jsonWithPhotos.put(jsonPhoto);
-                        }
-                    }
-                    requestObject.put("photos", jsonWithPhotos);
-                    requestObject.put("type", (String) petType.getSelectedItem());
-                    requestObject.put("googleId", googleId);
-                    requestObject.put("pet", jsonBodyWithPet);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                JSONObject requestObject = PetInfoUtils.setPetToJSON(
+                        petName.getText().toString(),
+                        petAge.getText().toString(),
+                        rgGender.getCheckedRadioButtonId() == 0 ? "FEMALE" : "MALE",
+                        petType.getSelectedItem().toString(),
+                        petBreed.getText().toString(),
+                        petPurpose.getSelectedItem().toString(),
+                        petComment.getText().toString(),
+                        imagesBitmap,
+                        googleId
+                );
                 final String requestBody = requestObject.toString();
                 Log.i("REGISTRATION", "Going to register pet with request: " + requestBody);
 
@@ -360,6 +343,7 @@ public class PetSettingsFragment extends Fragment {
         petPurpose.setSelection(2);
     }
 
+//    TODO вынести в ютилс
     private PetInfo getPetsFromJSON(String jsonString) throws JSONException {
             JSONObject jsonObject = new JSONObject(jsonString);
             Long id = jsonObject.getLong("petId");
@@ -382,31 +366,6 @@ public class PetSettingsFragment extends Fragment {
                 }
             }
             return new PetInfo(id, name, breed, age, gender, animalType, purpose, comment, icons, 1, false);
-    }
-
-    private String translatePurpose(String purpose) {
-        if (purpose.equals("Прогулка")) {
-            return "WALKING";
-        }
-        if (purpose.equals("Вязка")) {
-            return "BREEDING";
-        }
-        if (purpose.equals("Переливание крови")) {
-            return "DONORSHIP";
-        }
-        if (purpose.equals("Дружба")) {
-            return "FRIENDSHIP";
-        }
-        if (purpose.equals("-")) {
-            return "NOTHING";
-        }
-        return "";
-    }
-
-    private byte[] getByteArrayFromBitmap(Bitmap bitmap) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
-        return bos.toByteArray();
     }
 
     private void initUserInfo() {
