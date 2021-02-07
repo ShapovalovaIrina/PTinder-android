@@ -45,6 +45,20 @@ public class PetInfo implements Serializable {
         this.isFavourite = isFavourite;
     }
 
+    public PetInfo() {
+        this.id = Long.valueOf("0");
+        this.name = "";
+        this.breed = "";
+        this.age = "";
+        this.gender = "";
+        this.animalType = "";
+        this.purpose = "";
+        this.comment = "";
+        this.icons = new ArrayList<>();
+        this.direction = 0;
+        this.isFavourite = false;
+    }
+
     public void setCurrentUserInfo(String currentUserId) {
         this.currentUserId = currentUserId;
     }
@@ -108,7 +122,7 @@ public class PetInfo implements Serializable {
         return purpose;
     }
 
-    public void setPurpose(String gender) {
+    public void setPurpose(String purpose) {
         this.purpose = purpose;
     }
 

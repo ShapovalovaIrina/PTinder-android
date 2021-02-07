@@ -1,10 +1,7 @@
 package com.trkpo.ptinder.ui;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,16 +22,10 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
-import com.trkpo.ptinder.pojo.PetInfo;
 import com.trkpo.ptinder.utils.Connection;
+import com.trkpo.ptinder.utils.PetInfoUtils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
 
@@ -79,7 +70,7 @@ public class FavouriteFragment extends Fragment {
                     public void onResponse(String response) {
                         try {
                             Log.d("VOLLEY", "Making get request (load pets): response - " + response.toString());
-                            petCardAdapter.setItems(getPetsFromJSON(response));
+                            petCardAdapter.setItems(PetInfoUtils.getPetsFromJSON(response, null, googleId, 3));
                             petCardAdapter.setFavouriteFragment(true);
                         } catch (JSONException e) {
                             Log.e("VOLLEY", "Making get request (load pets): json error - " + e.toString());
@@ -94,83 +85,5 @@ public class FavouriteFragment extends Fragment {
             }
         });
         queue.add(stringRequest);
-    }
-
-    private Collection<PetInfo> getPetsFromJSON(String jsonString) throws JSONException {
-        Collection<PetInfo> pets = new ArrayList<>();
-        JSONArray jArray = new JSONArray(jsonString);
-        for (int i = 0; i < jArray.length(); i++) {
-            JSONObject jsonObject = jArray.getJSONObject(i);
-            Long id = jsonObject.getLong("petId");
-            String name = jsonObject.getString("name");
-            String breed = jsonObject.getString("breed");
-            String age = formAge(jsonObject.getInt("age"));
-            String gender = jsonObject.getString("gender");
-            String animalType = jsonObject.getJSONObject("animalType").getString("type");
-            String purpose = formatPurpose(jsonObject.getString("purpose"));
-            String comment = jsonObject.getString("comment");
-            boolean isFavourite = true;
-
-            List<Bitmap> icons = new ArrayList<>();
-            JSONArray images = jsonObject.getJSONArray("petPhotos");
-            if (images != null) {
-                for (int j = 0; j < images.length(); j++) {
-                    String imageStr = images.getJSONObject(j).getString("photo");
-                    byte[] imageBytes = Base64.decode(imageStr, Base64.DEFAULT);
-                    Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                    icons.add(image);
-                }
-            }
-            PetInfo petInfo = new PetInfo(id, name, breed, age, gender, animalType, purpose, comment, icons, 3, isFavourite);
-            pets.add(petInfo);
-
-            JSONObject ownerInfo = jsonObject.getJSONObject("owner");
-            String ownerId = ownerInfo.getString("googleId");
-            String ownerName = ownerInfo.getString("firstName") + " " + ownerInfo.getString("lastName");
-            String ownerEmail = ownerInfo.getString("email");
-            String ownerIconURL = ownerInfo.getString("photoUrl");
-            petInfo.setOwnerInfo(ownerId, ownerName, ownerEmail, ownerIconURL);
-
-            petInfo.setCurrentUserInfo(googleId);
-        }
-        return pets;
-    }
-
-    private String formAge(Integer age) {
-        String year = "";
-        switch (age) {
-            case 1:
-                year = " год";
-                break;
-            case 2:
-            case 3:
-            case 4:
-                year = " года";
-                break;
-            default:
-                year = " лет";
-        }
-        return age + year;
-    }
-
-    private String formatPurpose(String purpose) {
-        switch (purpose) {
-            case "NOTHING":
-                purpose = "Не указана";
-                break;
-            case "WALKING":
-                purpose = "Прогулка";
-                break;
-            case "FRIENDSHIP":
-                purpose = "Дружба";
-                break;
-            case "DONORSHIP":
-                purpose = "Переливание крови";
-                break;
-            case "BREEDING":
-                purpose = "Вязка";
-                break;
-        }
-        return purpose;
     }
 }
