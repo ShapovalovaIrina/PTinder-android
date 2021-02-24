@@ -25,6 +25,7 @@ import com.trkpo.ptinder.adapter.FeedCardAdapter;
 import com.trkpo.ptinder.config.FeedTask;
 import com.trkpo.ptinder.pojo.Feed;
 import com.trkpo.ptinder.utils.Connection;
+import com.trkpo.ptinder.utils.FeedUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -76,7 +77,7 @@ public class FeedFragment extends Fragment {
                     @Override
                     public void onResponse(String response) {
                         try {
-                            feedCardAdapter.setItems(getNewsFromJSON(response));
+                            feedCardAdapter.setItems(FeedUtils.getNewsFromJSON(response));
                         } catch (JSONException e) {
                             Log.e("VOLLEY", "Making get request (load pets): json error - " + e.toString());
                             Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
@@ -91,26 +92,4 @@ public class FeedFragment extends Fragment {
         });
         queue.add(stringRequest);
     }
-
-    private Collection<Feed> getNewsFromJSON(String response) throws JSONException {
-        List<Feed> collectedFeed = new ArrayList<>();
-        JSONArray jArray = new JSONArray(response);
-        for (int i = 0; i < jArray.length(); i++) {
-            JSONObject topic = jArray.getJSONObject(i);
-            String author = topic.getString("author");
-            String imageUrl = topic.getString("content");
-            String rScore = topic.getString("score");
-            String title = topic.getString("title");
-            Bitmap img = null;
-            try {
-                img = new FeedTask().execute(imageUrl).get();
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-            }
-            collectedFeed.add(new Feed(author, rScore, title, img));
-        }
-        return collectedFeed;
-    }
-
-
 }

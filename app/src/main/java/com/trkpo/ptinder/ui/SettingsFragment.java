@@ -97,60 +97,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (activity != null) {
-                    if (!Connection.hasConnection(activity)) {
-                        Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    RequestQueue queue = Volley.newRequestQueue(activity);
-                    JSONObject jsonObject = new JSONObject();
-                    try {
-                        jsonObject.put("firstName", firstName.getText());
-                        jsonObject.put("lastName", lastName.getText());
-                        jsonObject.put("gender", gender.getCheckedRadioButtonId() == 0 ? "FEMALE" : "MALE");
-                        jsonObject.put("email", email.getText());
-                        jsonObject.put("number", phone.getText());
-                        jsonObject.put("address", location.getText());
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    final String requestBody = jsonObject.toString();
-                    StringRequest stringRequest = new StringRequest(Request.Method.PUT, USERS_PATH + "/" + googleId, new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Log.i("VOLLEY", response);
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.e("VOLLEY", error.toString());
-                        }
-                    }) {
-                        @Override
-                        public String getBodyContentType() {
-                            return "application/json; charset=utf-8";
-                        }
-
-                        @Override
-                        public byte[] getBody() throws AuthFailureError {
-                            try {
-                                return requestBody == null ? null : requestBody.getBytes("utf-8");
-                            } catch (UnsupportedEncodingException uee) {
-                                VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
-                                return null;
-                            }
-                        }
-
-                        @Override
-                        protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                            String responseString = "";
-                            if (response != null) {
-                                responseString = String.valueOf(response.statusCode);
-                            }
-                            return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
-                        }
-                    };
-                    queue.add(stringRequest);
+                    updateUser();
                 }
             }
         });
@@ -158,48 +105,7 @@ public class SettingsFragment extends Fragment {
         deleteUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!Connection.hasConnection(activity)) {
-                    Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                RequestQueue queue = Volley.newRequestQueue(activity);
-                final String requestBody = "";
-                StringRequest stringRequest = new StringRequest(Request.Method.DELETE, USERS_PATH + "/" + googleId, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.i("volley", response);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("VOLLEY", error.toString());
-                    }
-                }) {
-                    @Override
-                    public String getBodyContentType() {
-                        return "application/json; charset=utf-8";
-                    }
-
-                    @Override
-                    public byte[] getBody() throws AuthFailureError {
-                        try {
-                            return requestBody == null ? null : requestBody.getBytes("utf-8");
-                        } catch (UnsupportedEncodingException uee) {
-                            VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
-                            return null;
-                        }
-                    }
-
-                    @Override
-                    protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                        String responseString = "";
-                        if (response != null) {
-                            responseString = String.valueOf(response.statusCode); // can get more details such as response.headers
-                        }
-                        return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
-                    }
-                };
-                queue.add(stringRequest);
+                deleteUser();
                 startActivity(new Intent(activity, LoginActivity.class));
             }
         });
@@ -212,6 +118,108 @@ public class SettingsFragment extends Fragment {
         });
 
         return root;
+    }
+
+    private void updateUser() {
+        if (!Connection.hasConnection(activity)) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        RequestQueue queue = Volley.newRequestQueue(activity);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("firstName", firstName.getText());
+            jsonObject.put("lastName", lastName.getText());
+            jsonObject.put("gender", gender.getCheckedRadioButtonId() == 0 ? "FEMALE" : "MALE");
+            jsonObject.put("email", email.getText());
+            jsonObject.put("number", phone.getText());
+            jsonObject.put("address", location.getText());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        final String requestBody = jsonObject.toString();
+        StringRequest stringRequest = new StringRequest(Request.Method.PUT, USERS_PATH + "/" + googleId, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.i("VOLLEY", response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("VOLLEY", error.toString());
+            }
+        }) {
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                try {
+                    return requestBody == null ? null : requestBody.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                    return null;
+                }
+            }
+
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                String responseString = "";
+                if (response != null) {
+                    responseString = String.valueOf(response.statusCode);
+                }
+                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+            }
+        };
+        queue.add(stringRequest);
+    }
+
+    private void deleteUser() {
+        if (!Connection.hasConnection(activity)) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        RequestQueue queue = Volley.newRequestQueue(activity);
+        final String requestBody = "";
+        StringRequest stringRequest = new StringRequest(Request.Method.DELETE, USERS_PATH + "/" + googleId, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.i("volley", response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("VOLLEY", error.toString());
+            }
+        }) {
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                try {
+                    return requestBody == null ? null : requestBody.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                    return null;
+                }
+            }
+
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                String responseString = "";
+                if (response != null) {
+                    responseString = String.valueOf(response.statusCode); // can get more details such as response.headers
+                }
+                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+            }
+        };
+        queue.add(stringRequest);
     }
 
     private void signOut() {
