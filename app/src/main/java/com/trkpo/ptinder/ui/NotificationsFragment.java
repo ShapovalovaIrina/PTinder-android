@@ -28,6 +28,7 @@ import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.NotificationCardAdapter;
 import com.trkpo.ptinder.pojo.Notification;
 import com.trkpo.ptinder.utils.Connection;
+import com.trkpo.ptinder.utils.NotificationUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -89,7 +90,7 @@ public class NotificationsFragment extends Fragment {
                     public void onResponse(String response) {
                         try {
                             Log.d("VOLLEY", "Get notifications: " + response);
-                            notificationCardAdapter.setItems(getNotificationsFromJSON(response));
+                            notificationCardAdapter.setItems(NotificationUtils.getNotificationsFromJSON(response));
                         } catch (JSONException e) {
                             Log.e("VOLLEY", "Making get request (load notifications): json error - " + e.toString());
                             Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
@@ -103,22 +104,5 @@ public class NotificationsFragment extends Fragment {
             }
         });
         queue.add(stringRequest);
-    }
-
-    private Collection<Notification> getNotificationsFromJSON(String response) throws JSONException {
-        List<Notification> notifications = new ArrayList<>();
-        JSONArray jArray = new JSONArray(response);
-
-        for (int i = 0; i < jArray.length(); i++) {
-            JSONObject jsonNotification = jArray.getJSONObject(i);
-            String title = jsonNotification.getString("type");
-            String id = jsonNotification.getString("id");
-            String text = jsonNotification.getString("text");
-            boolean isRead = jsonNotification.getBoolean("read");
-            String addresseeGoogleId = jsonNotification.getJSONObject("addressee").getString("googleId");
-            String addresseeFromGoogleId = jsonNotification.getString("addresseeFromId");
-            notifications.add(new Notification(id, title, text, isRead, addresseeGoogleId, addresseeFromGoogleId));
-        }
-        return notifications;
     }
 }
