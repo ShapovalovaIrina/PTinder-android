@@ -32,6 +32,7 @@ import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
 import com.trkpo.ptinder.config.PhotoTask;
 import com.trkpo.ptinder.utils.Connection;
+import com.trkpo.ptinder.utils.GetRequest;
 import com.trkpo.ptinder.utils.PetInfoUtils;
 
 import org.json.JSONArray;
@@ -60,7 +61,6 @@ public class UserProfileFragment extends Fragment {
     private TextView email;
     private RecyclerView petCardRecycleView;
     private PetCardAdapter petCardAdapter;
-    private String googleId;
     private Button addPetBtn;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -83,8 +83,10 @@ public class UserProfileFragment extends Fragment {
             }
         });
 
+
         try {
-            userIcon.setImageBitmap(new PhotoTask().execute(USER_ICON_URL).get());
+            if (USER_ICON_URL != null)
+                userIcon.setImageBitmap(new PhotoTask().execute(USER_ICON_URL).get());
         } catch (ExecutionException | InterruptedException e) {
             Log.e("BITMAP", "Got error during bitmap parsing" + e.toString());
         }
@@ -102,45 +104,35 @@ public class UserProfileFragment extends Fragment {
         return root;
     }
 
-    private void showInfo(String googleId) {
-        if (!Connection.hasConnection(activity)) {
-            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
-            return;
-        }
-        RequestQueue queue = Volley.newRequestQueue(activity);
-        String url = USERS_PATH + "/" + googleId;
-
-        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject jsonResponse) {
-                        try {
-                            username.setText(jsonResponse.getString("firstName") + " " + jsonResponse.getString("lastName"));
-                            location.setText(jsonResponse.getString("address"));
-                            email.setText(jsonResponse.getString("email"));
-                            if (!jsonResponse.getString("number").equals("")) {
-                                phone.setText(jsonResponse.getString("number"));
-                            } else {
-                                phone.setText("-");
-                            }
-                        } catch (JSONException e) {
-                            Log.e("VOLLEY", "Making get request (get user by google id): json error - " + e.toString());
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", "Making get request (get user by google id): request error - " + error.toString());
-            }
-        });
-        queue.add(stringRequest);
-    }
-
     private void initUserInfo() {
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(activity);
         if (signInAccount != null) {
             showInfo(signInAccount.getId());
-            googleId = signInAccount.getId();
+        }
+    }
+
+    public void showInfo(String googleId, String ... optUrl) {
+        if (!Connection.hasConnection(activity)) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        String url = optUrl.length == 0 ? USERS_PATH + "/" + googleId : optUrl[0];
+        try {
+            String response = new GetRequest().execute(url).get();
+            JSONObject jsonResponse = new JSONObject(response);
+            Log.d("Logs", "Get user info. Url " + url);
+            String name = jsonResponse.getString("firstName") + " " + jsonResponse.getString("lastName");
+            username.setText(name);
+            location.setText(jsonResponse.getString("address"));
+            email.setText(jsonResponse.getString("email"));
+            if (!jsonResponse.getString("number").equals("")) {
+                phone.setText(jsonResponse.getString("number"));
+            } else {
+                phone.setText("-");
+            }
+        } catch (JSONException | ExecutionException | InterruptedException error) {
+            error.printStackTrace();
         }
     }
 
@@ -151,70 +143,72 @@ public class UserProfileFragment extends Fragment {
         petCardAdapter = new PetCardAdapter();
         petCardRecycleView.setAdapter(petCardAdapter);
 
-        loadFavouriteId();
+        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(activity);
+        if (signInAccount != null) {
+            loadFavouriteId(signInAccount.getId());
+        }
     }
 
-    private void loadFavouriteId() {
+    public void loadFavouriteId(String googleId, String ... optUrl) {
         if (!Connection.hasConnection(activity)) {
             Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
-        RequestQueue queue = Volley.newRequestQueue(activity);
-        String url = FAVOURITE_PATH + "/user/id/" + googleId;
 
-        JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        try {
-                            Log.d("VOLLEY", "Making get request (load favourite pets id): response - " + response.toString());
-                            List<Long> favouritePetsId = new ArrayList<>();
-                            for (int i = 0; i < response.length(); i++) {
-                                favouritePetsId.add(Long.valueOf(response.get(i).toString()));
-                            }
-                            loadPets(favouritePetsId);
-                        } catch (JSONException e) {
-                            Log.e("VOLLEY", "Making get request (load favourite pets id): json error - " + e.toString());
-                            Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", "Making get request (load favourite pets id): request error - " + error.toString());
-                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+        String url = optUrl.length == 0 ? FAVOURITE_PATH + "/user/id/" + googleId : optUrl[0];
+        try {
+            String stringResponse = new GetRequest().execute(url).get();
+            JSONArray response = new JSONArray(stringResponse);
+            Log.d("VOLLEY", "Making get request (load favourite pets id): response - " + response.toString());
+            List<Long> favouritePetsId = new ArrayList<>();
+            for (int i = 0; i < response.length(); i++) {
+                favouritePetsId.add(Long.valueOf(response.get(i).toString()));
             }
-        });
-        queue.add(stringRequest);
+            if (optUrl.length == 0)
+                loadPets(googleId, favouritePetsId);
+            else
+                loadPets(googleId, favouritePetsId, optUrl[0]);
+        } catch (JSONException | ExecutionException | InterruptedException error) {
+            error.printStackTrace();
+            Toast.makeText(activity, "Error: " + error.toString(), Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private void loadPets(final List<Long> favouritePetsId) {
+    public void loadPets(String googleId, List<Long> favouritePetsId, String ... optUrl) {
         if (!Connection.hasConnection(activity)) {
             Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
-        RequestQueue queue = Volley.newRequestQueue(activity);
-        String url = PETS_PATH + "/owner/" + googleId;
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            Log.d("VOLLEY", "Making get request (load pets): response - " + response.toString());
-                            petCardAdapter.setItems(PetInfoUtils.getPetsFromJSON(response, favouritePetsId, googleId, 1));
-                        } catch (JSONException e) {
-                            Log.e("VOLLEY", "Making get request (load pets): json error - " + e.toString());
-                            Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
-                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        queue.add(stringRequest);
+        String url = optUrl.length == 0 ? PETS_PATH + "/owner/" + googleId : optUrl[0];
+        Log.d("Logs", "Get user pets. Url " + url);
+        try {
+            String response = new GetRequest().execute(url).get();
+            Log.d("VOLLEY", "Making get request (load pets): response - " + response);
+            petCardAdapter.setItems(PetInfoUtils.getPetsFromJSON(response, favouritePetsId, googleId, 1));
+        } catch (JSONException | ExecutionException | InterruptedException error) {
+            error.printStackTrace();
+            Toast.makeText(activity, "JSON exception: " + error.toString(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public String getUsername() {
+        return username.getText().toString();
+    }
+
+    public String getLocation() {
+        return location.getText().toString();
+    }
+
+    public String getPhone() {
+        return phone.getText().toString();
+    }
+
+    public String getEmail() {
+        return email.getText().toString();
+    }
+
+    public PetCardAdapter getPetCardAdapter() {
+        return petCardAdapter;
     }
 }
