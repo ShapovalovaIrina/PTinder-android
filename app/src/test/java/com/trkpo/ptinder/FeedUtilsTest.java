@@ -3,7 +3,6 @@ package com.trkpo.ptinder;
 import android.graphics.Bitmap;
 
 import com.trkpo.ptinder.pojo.Feed;
-import com.trkpo.ptinder.pojo.Notification;
 import com.trkpo.ptinder.utils.FeedUtils;
 
 import org.json.JSONArray;

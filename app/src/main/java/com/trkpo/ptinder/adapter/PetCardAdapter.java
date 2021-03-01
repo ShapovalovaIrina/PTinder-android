@@ -182,6 +182,10 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
         return petsList.size();
     }
 
+    public List<PetInfo> getPetsList() {
+        return petsList;
+    }
+
     public void setItems(Collection<PetInfo> pets) {
         petsList.addAll(pets);
         notifyDataSetChanged();
