@@ -1,4 +1,4 @@
-package com.trkpo.ptinder;
+package com.trkpo.ptinder.utils;
 
 import com.trkpo.ptinder.pojo.PetInfo;
 import com.trkpo.ptinder.utils.PetInfoUtils;
@@ -16,7 +16,7 @@ import static com.trkpo.ptinder.utils.PetInfoUtils.formatPurposeFromEnum;
 import static com.trkpo.ptinder.utils.PetInfoUtils.formatPurposeToEnum;
 import static org.junit.Assert.*;
 
-public class PetInfoUtilsUnitTest {
+public class PetInfoUtilsTest {
     private Long id;
     private String name;
     private String breed;

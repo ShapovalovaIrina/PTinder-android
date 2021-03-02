@@ -56,7 +56,9 @@ public class FavouriteFragment extends Fragment {
     }
 
     public void loadPets(String googleId, String ... optUrl) {
-        if (!Connection.hasConnection(activity)) {
+        /* Variable for test cases*/
+        boolean connectionPermission = optUrl.length == 2 ? Boolean.valueOf(optUrl[1]) : true;
+        if (!Connection.hasConnection(activity) || !connectionPermission) {
             Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }

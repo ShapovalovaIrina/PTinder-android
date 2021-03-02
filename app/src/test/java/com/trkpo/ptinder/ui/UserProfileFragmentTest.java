@@ -1,9 +1,7 @@
-package com.trkpo.ptinder;
+package com.trkpo.ptinder.ui;
 
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.runner.AndroidJUnit4;
-
-import com.trkpo.ptinder.ui.UserProfileFragment;
 
 import org.junit.After;
 import org.junit.Before;
@@ -11,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -95,6 +94,37 @@ public class UserProfileFragmentTest {
         uf.onFragment(fragment -> {
             assertEquals(fragment.getPetCardAdapter().getItemCount(), 1);
             assertTrue(fragment.getPetCardAdapter().getPetsList().get(0).isFavourite());
+        });
+    }
+
+    @Test
+    public void noConnectionTest() {
+        String googleId = "1";
+
+        FragmentScenario<UserProfileFragment> uf = FragmentScenario.launch(UserProfileFragment.class);
+        uf.onFragment(fragment -> {
+            fragment.showInfo(googleId, "", "false");
+            fragment.loadFavouriteId(googleId, "", "false");
+            fragment.loadPets(googleId, new ArrayList<>(), "", "false");
+            assertEquals(fragment.getPetCardAdapter().getItemCount(), 0);
+        });
+    }
+
+    @Test
+    public void incorrectJson() {
+        String googleId = "1";
+        server.enqueue(new MockResponse().setBody("Incorrect text"));
+        server.enqueue(new MockResponse().setBody("Incorrect text"));
+        server.enqueue(new MockResponse().setBody("Incorrect text"));
+        String url = server.url("/").toString();
+
+        FragmentScenario<UserProfileFragment> uf = FragmentScenario.launch(UserProfileFragment.class);
+        uf.onFragment(fragment -> fragment.loadFavouriteId(googleId, url));
+        uf.onFragment(fragment -> {
+            fragment.showInfo(googleId, url);
+            fragment.loadFavouriteId(googleId, url);
+            fragment.loadPets(googleId, new ArrayList<>(), url);
+            assertEquals(fragment.getPetCardAdapter().getItemCount(), 0);
         });
     }
 }

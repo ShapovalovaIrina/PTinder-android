@@ -112,7 +112,9 @@ public class UserProfileFragment extends Fragment {
     }
 
     public void showInfo(String googleId, String ... optUrl) {
-        if (!Connection.hasConnection(activity)) {
+        /* Variable for test cases*/
+        boolean connectionPermission = optUrl.length == 2 ? Boolean.valueOf(optUrl[1]) : true;
+        if (!Connection.hasConnection(activity) || !connectionPermission) {
             Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
@@ -150,7 +152,9 @@ public class UserProfileFragment extends Fragment {
     }
 
     public void loadFavouriteId(String googleId, String ... optUrl) {
-        if (!Connection.hasConnection(activity)) {
+        /* Variable for test cases*/
+        boolean connectionPermission = optUrl.length == 2 ? Boolean.valueOf(optUrl[1]) : true;
+        if (!Connection.hasConnection(activity) ||!connectionPermission) {
             Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
@@ -164,10 +168,7 @@ public class UserProfileFragment extends Fragment {
             for (int i = 0; i < response.length(); i++) {
                 favouritePetsId.add(Long.valueOf(response.get(i).toString()));
             }
-            if (optUrl.length == 0)
-                loadPets(googleId, favouritePetsId);
-            else
-                loadPets(googleId, favouritePetsId, optUrl[0]);
+            loadPets(googleId, favouritePetsId, optUrl);
         } catch (JSONException | ExecutionException | InterruptedException error) {
             error.printStackTrace();
             Toast.makeText(activity, "Error: " + error.toString(), Toast.LENGTH_SHORT).show();
@@ -175,7 +176,9 @@ public class UserProfileFragment extends Fragment {
     }
 
     public void loadPets(String googleId, List<Long> favouritePetsId, String ... optUrl) {
-        if (!Connection.hasConnection(activity)) {
+        /* Variable for test cases*/
+        boolean connectionPermission = optUrl.length == 2 ? Boolean.valueOf(optUrl[1]) : true;
+        if (!Connection.hasConnection(activity) || !connectionPermission) {
             Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }

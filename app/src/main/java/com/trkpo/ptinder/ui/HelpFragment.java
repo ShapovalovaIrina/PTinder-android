@@ -23,4 +23,8 @@ public class HelpFragment extends Fragment {
 
         return root;
     }
+
+    public View getRoot() {
+        return root;
+    }
 }
