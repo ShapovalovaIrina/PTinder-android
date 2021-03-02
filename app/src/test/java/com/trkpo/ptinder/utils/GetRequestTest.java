@@ -1,4 +1,4 @@
-package com.trkpo.ptinder;
+package com.trkpo.ptinder.utils;
 
 import androidx.test.runner.AndroidJUnit4;
 

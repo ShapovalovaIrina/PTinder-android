@@ -179,6 +179,10 @@ public class NotificationCardAdapter extends RecyclerView.Adapter<NotificationCa
         notifyDataSetChanged();
     }
 
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
     public void clearItems() {
         notifications.clear();
         notifyDataSetChanged();

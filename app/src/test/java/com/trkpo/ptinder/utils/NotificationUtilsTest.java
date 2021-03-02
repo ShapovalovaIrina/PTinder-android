@@ -1,4 +1,4 @@
-package com.trkpo.ptinder;
+package com.trkpo.ptinder.utils;
 
 import com.trkpo.ptinder.pojo.Notification;
 import com.trkpo.ptinder.utils.NotificationUtils;

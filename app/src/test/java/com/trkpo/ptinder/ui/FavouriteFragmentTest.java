@@ -1,9 +1,9 @@
-package com.trkpo.ptinder;
+package com.trkpo.ptinder.ui;
 
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.runner.AndroidJUnit4;
 
-import com.trkpo.ptinder.ui.FavouriteFragment;
+import com.trkpo.ptinder.adapter.PetCardAdapter;
 
 import org.junit.After;
 import org.junit.Before;
@@ -96,6 +96,29 @@ public class FavouriteFragmentTest {
             assertEquals(fragment.getPetCardAdapter().getItemCount(), 1);
             fragment.getPetCardAdapter().clearItems();
             assertEquals(fragment.getPetCardAdapter().getItemCount(), 0);
+        });
+    }
+
+    @Test
+    public void incorrectJsonBody() {
+        server.enqueue(new MockResponse().setBody("[{\"petId\": 1}]"));
+        String url = server.url("/").toString();
+
+        FragmentScenario<FavouriteFragment> uf = FragmentScenario.launch(FavouriteFragment.class);
+        uf.onFragment(fragment -> {
+            fragment.loadPets(googleId, url);
+            assertEquals(fragment.getPetCardAdapter().getItemCount(), 0);
+        });
+    }
+
+
+    @Test
+    public void noConnectionTest() {
+        FragmentScenario<FavouriteFragment> uf = FragmentScenario.launch(FavouriteFragment.class);
+        uf.onFragment(fragment -> {
+            fragment.loadPets(googleId, "", "false");
+            PetCardAdapter adapter = fragment.getPetCardAdapter();
+            assertEquals(adapter.getItemCount(), 0);
         });
     }
 }
