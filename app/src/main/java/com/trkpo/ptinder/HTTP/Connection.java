@@ -1,4 +1,4 @@
-package com.trkpo.ptinder.utils;
+package com.trkpo.ptinder.HTTP;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

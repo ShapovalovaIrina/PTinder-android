@@ -1,7 +1,6 @@
 package com.trkpo.ptinder.ui;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,32 +13,17 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.FeedCardAdapter;
-import com.trkpo.ptinder.config.FeedTask;
-import com.trkpo.ptinder.pojo.Feed;
-import com.trkpo.ptinder.utils.Connection;
+import com.trkpo.ptinder.HTTP.Connection;
 import com.trkpo.ptinder.utils.FeedUtils;
-import com.trkpo.ptinder.utils.GetRequest;
-import com.trkpo.ptinder.utils.NotificationUtils;
+import com.trkpo.ptinder.HTTP.GetRequest;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static com.trkpo.ptinder.config.Constants.NEWS_PATH;
-import static com.trkpo.ptinder.config.Constants.NOTIFICATIONS_PATH;
 
 public class FeedFragment extends Fragment {
 

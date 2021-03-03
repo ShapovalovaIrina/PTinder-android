@@ -16,8 +16,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.NotificationCardAdapter;
-import com.trkpo.ptinder.utils.Connection;
-import com.trkpo.ptinder.utils.GetRequest;
+import com.trkpo.ptinder.HTTP.Connection;
+import com.trkpo.ptinder.HTTP.GetRequest;
 import com.trkpo.ptinder.utils.NotificationUtils;
 
 import org.json.JSONException;

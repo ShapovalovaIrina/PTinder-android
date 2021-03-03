@@ -45,7 +45,7 @@ import com.synnapps.carouselview.ImageClickListener;
 import com.synnapps.carouselview.ImageListener;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.pojo.PetInfo;
-import com.trkpo.ptinder.utils.Connection;
+import com.trkpo.ptinder.HTTP.Connection;
 import com.trkpo.ptinder.utils.PetInfoUtils;
 
 import org.json.JSONArray;

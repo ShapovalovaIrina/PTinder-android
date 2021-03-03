@@ -21,19 +21,15 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.trkpo.ptinder.R;
-import com.trkpo.ptinder.config.PhotoTask;
 import com.trkpo.ptinder.pojo.PetInfo;
-import com.trkpo.ptinder.utils.Connection;
+import com.trkpo.ptinder.HTTP.Connection;
 
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
-import static com.trkpo.ptinder.config.Constants.USERS_PATH;
-import static com.trkpo.ptinder.config.Constants.USER_ICON_URL;
 
 public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHolder> {
     private List<PetInfo> petsList = new ArrayList<>();

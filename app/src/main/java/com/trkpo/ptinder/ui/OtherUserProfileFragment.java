@@ -16,30 +16,22 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.trkpo.ptinder.HTTP.DeleteRequest;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
 import com.trkpo.ptinder.config.PhotoTask;
-import com.trkpo.ptinder.utils.Connection;
+import com.trkpo.ptinder.HTTP.Connection;
+import com.trkpo.ptinder.HTTP.GetRequest;
 import com.trkpo.ptinder.utils.PetInfoUtils;
+import com.trkpo.ptinder.HTTP.PostRequest;
+import com.trkpo.ptinder.HTTP.PostRequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -55,9 +47,6 @@ public class OtherUserProfileFragment extends Fragment {
     private Activity activity;
     private View root;
 
-    private String currentUserGoogleId;
-
-    private String userGoogleId;
     private ImageView userIcon;
     private ImageView userSubscribe;
     private ImageView requestUserContacts;
@@ -73,6 +62,9 @@ public class OtherUserProfileFragment extends Fragment {
 
     private boolean isSubscr;
 
+    private String optUrl;
+    private boolean connectionPermission;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_other_user_profile, container, false);
@@ -86,19 +78,23 @@ public class OtherUserProfileFragment extends Fragment {
         emailLayout = root.findViewById(R.id.other_user_profile_email_layout);
         userSubscribe = root.findViewById(R.id.user_subscribe);
         requestUserContacts = root.findViewById(R.id.request_for_user_contacts);
+        optUrl = null;
+        connectionPermission = true;
 
-        currentUserGoogleId = GoogleSignIn.getLastSignedInAccount(activity).getId();
+        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(activity);
+        String currentUserGoogleId = signInAccount != null ? signInAccount.getId() : null;
+        String userGoogleId = (String) (getArguments() != null ? getArguments().getString("googleId") : null);
 
-        initUserInfo();
+        initUserInfo(currentUserGoogleId, userGoogleId);
 
         userSubscribe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!isSubscr) {
-                    subscribeOnUser();
+                    subscribeOnUser(currentUserGoogleId, userGoogleId);
                 } else {
                     if (activity != null) {
-                        unsubscribeOnUser();
+                        unsubscribeOnUser(currentUserGoogleId, userGoogleId);
                     }
                 }
             }
@@ -107,273 +103,228 @@ public class OtherUserProfileFragment extends Fragment {
         requestUserContacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                requestUserContacts();
+                requestUserContacts(currentUserGoogleId, userGoogleId);
             }
         });
 
-        initRecycleView();
+        initRecycleView(currentUserGoogleId, userGoogleId);
 
         return root;
     }
 
-    private void requestUserContacts() {
-        if (!Connection.hasConnection(activity)) {
-            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
-            return;
-        }
-        RequestQueue queue = Volley.newRequestQueue(activity);
-        String url = CONTACT_PATH + "/request/" + currentUserGoogleId + "/" + userGoogleId;
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("VOLLEY", "Success response (request user info) from " + currentUserGoogleId + " to " + userGoogleId);
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", "Not Success response (request user info): " + error.toString());
-            }
-        });
-        queue.add(stringRequest);
-    }
-
-    private void subscribeOnUser() {
-        if (!Connection.hasConnection(activity)) {
-            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
-            return;
-        }
-        JSONObject requestObject = new JSONObject();
-        try {
-            requestObject.put("googleId", userGoogleId);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        final String requestBody = requestObject.toString();
-
-        if (activity != null) {
-            RequestQueue queue = Volley.newRequestQueue(activity);
-
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, SUBSCRIPTION_PATH + "/" + currentUserGoogleId, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    Log.i("SUBSCRIPTION", "Successfully subscribed on user " + userGoogleId);
-                    isSubscr = true;
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e("VOLLEY", error.toString());
-                }
-            }) {
-                @Override
-                public String getBodyContentType() {
-                    return "application/json; charset=utf-8";
-                }
-
-                @Override
-                public byte[] getBody() throws AuthFailureError {
-                    try {
-                        return requestBody == null ? null : requestBody.getBytes("utf-8");
-                    } catch (UnsupportedEncodingException uee) {
-                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
-                        return null;
-                    }
-                }
-
-                @Override
-                protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                    String responseString = "";
-                    if (response != null) {
-                        responseString = String.valueOf(response.statusCode);
-                    }
-                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
-                }
-            };
-            queue.add(stringRequest);
-            userSubscribe.setColorFilter(userIcon.getContext().getResources().getColor(R.color.colorIsSubscribed));
-        }
-        isSubscr = true;
-    }
-
-    private void unsubscribeOnUser() {
-        if (!Connection.hasConnection(activity)) {
-            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
-            return;
-        }
-        RequestQueue queue = Volley.newRequestQueue(activity);
-        String url = SUBSCRIPTION_PATH + "/" + currentUserGoogleId + "/" + userGoogleId;
-
-        StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        isSubscr = false;
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("VOLLEY", "Not Success response (delete from favourite): " + error.toString());
-            }
-        });
-        queue.add(stringRequest);
-        isSubscr = false;
-        userSubscribe.setColorFilter(userIcon.getContext().getResources().getColor(R.color.colorNotFavourite));
-    }
-
-    private void checkSubscription() {
-        if (activity != null) {
-            if (!Connection.hasConnection(activity)) {
-                Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
-                return;
-            }
-            RequestQueue queue = Volley.newRequestQueue(activity);
-            String url = SUBSCRIPTION_PATH + "/check/" + currentUserGoogleId + "/" + userGoogleId;
-
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            isSubscr = response.contains("true");
-                            if (isSubscr) {
-                                userSubscribe.setColorFilter(userIcon.getContext().getResources().getColor(R.color.colorIsSubscribed));
-                            } else {
-                                userSubscribe.setColorFilter(userIcon.getContext().getResources().getColor(R.color.colorNotFavourite));
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
-                    Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
-                }
-            });
-            queue.add(stringRequest);
+    public void initUserInfo(String currentUserGoogleId, String userGoogleId) {
+        if (currentUserGoogleId != null && userGoogleId != null) {
+            checkSubscription(currentUserGoogleId, userGoogleId);
+            showInfo(currentUserGoogleId, userGoogleId);
         }
     }
 
-    private void showInfo() {
-        if (!Connection.hasConnection(activity)) {
-            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
-            return;
-        }
-        RequestQueue queue = Volley.newRequestQueue(activity);
-        String url = USERS_PATH + "/" + userGoogleId;
-
-        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject jsonResponse) {
-                        try {
-                            username.setText(jsonResponse.getString("firstName") + " " + jsonResponse.getString("lastName"));
-                            location.setText(jsonResponse.getString("address"));
-                            try {
-                                userIcon.setImageBitmap(new PhotoTask().execute(jsonResponse.getString("photoUrl")).get());
-                            } catch (ExecutionException | InterruptedException e) {
-                                Log.e("BITMAP", "Got error during bitmap parsing" + e.toString());
-                            }
-                            boolean isContactInfoPublic = jsonResponse.getBoolean("contactInfoPublic");
-                            if (isContactInfoPublic) {
-                                email.setText(jsonResponse.getString("email"));
-                                if (!jsonResponse.getString("number").equals("")) {
-                                    phone.setText(jsonResponse.getString("number"));
-                                } else {
-                                    phone.setText("-");
-                                }
-                                emailLayout.setVisibility(View.VISIBLE);
-                                phoneLayout.setVisibility(View.VISIBLE);
-                            }
-                        } catch (JSONException e) {
-                            Log.e("VOLLEY", "Making get request (get user by google id): json error - " + e.toString());
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", "Making get request (get user by google id): request error - " + error.toString());
-            }
-        });
-        queue.add(stringRequest);
-    }
-
-    private void initUserInfo() {
-        userGoogleId = getArguments().getString("googleId");
-        checkSubscription();
-        showInfo();
-    }
-
-    private void initRecycleView() {
+    private void initRecycleView(String currentUserGoogleId, String userGoogleId) {
         petCardRecycleView = root.findViewById(R.id.pet_cards_recycle_view);
         petCardRecycleView.setLayoutManager(new LinearLayoutManager(activity));
 
         petCardAdapter = new PetCardAdapter();
         petCardRecycleView.setAdapter(petCardAdapter);
 
-        loadFavouriteId();
+        if (currentUserGoogleId != null && userGoogleId != null)
+            loadFavouriteId(currentUserGoogleId, userGoogleId);
     }
 
-    private void loadFavouriteId() {
-        if (!Connection.hasConnection(activity)) {
+    public void requestUserContacts(String currentUserGoogleId, String userGoogleId) {
+        if (!Connection.hasConnection(activity) || !connectionPermission) {
             Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
-        RequestQueue queue = Volley.newRequestQueue(activity);
-        String url = FAVOURITE_PATH + "/user/id/" + currentUserGoogleId;
 
-        JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        try {
-                            Log.d("VOLLEY", "Making get request (load favourite pets id): response - " + response.toString());
-                            List<Long> favouritePetsId = new ArrayList<>();
-                            for (int i = 0; i < response.length(); i++) {
-                                favouritePetsId.add(Long.valueOf(response.get(i).toString()));
-                            }
-                            loadPets(favouritePetsId);
-                        } catch (JSONException e) {
-                            Log.e("VOLLEY", "Making get request (load favourite pets id): json error - " + e.toString());
-                            Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", "Making get request (load favourite pets id): request error - " + error.toString());
-                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+        String url = optUrl == null ? CONTACT_PATH + "/request/" + currentUserGoogleId + "/" + userGoogleId : optUrl;
+        if (optUrl != null) resetOptUrlAndConnectionPermission();
+        try {
+            String response = new PostRequest().execute(new PostRequestParams(url, null)).get();
+            if (!response.equals("")) Log.d("VOLLEY", "Success response (request user info) from " + currentUserGoogleId + " to " + userGoogleId);
+        } catch (ExecutionException | InterruptedException error) {
+            Log.e("VOLLEY", "Not Success response (request user info): " + error.toString());
+        }
+    }
+
+    public void subscribeOnUser(String currentUserGoogleId, String userGoogleId) {
+        if (!Connection.hasConnection(activity) | !connectionPermission) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        String url = optUrl == null ? SUBSCRIPTION_PATH + "/" + currentUserGoogleId : optUrl;
+        if (optUrl != null) resetOptUrlAndConnectionPermission();
+        JSONObject requestObject = new JSONObject();
+        try {
+            requestObject.put("googleId", userGoogleId);
+            String response = new PostRequest().execute(new PostRequestParams(url, requestObject.toString())).get();
+            if (!response.equals("")) {
+                Log.i("SUBSCRIPTION", "Successfully subscribed on user " + userGoogleId);
+                isSubscr = true;
             }
-        });
-        queue.add(stringRequest);
+        } catch (ExecutionException | InterruptedException | JSONException error) {
+            Log.e("VOLLEY", error.toString());
+        }
+        userSubscribe.setColorFilter(userIcon.getContext().getResources().getColor(R.color.colorIsSubscribed));
+        isSubscr = true;
     }
 
-    private void loadPets(final List<Long> favouritePetsId) {
-        if (!Connection.hasConnection(activity)) {
+    public void unsubscribeOnUser(String currentUserGoogleId, String userGoogleId) {
+        if (!Connection.hasConnection(activity) || !connectionPermission) {
             Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
-        RequestQueue queue = Volley.newRequestQueue(activity);
-        String url = PETS_PATH + "/owner/" + userGoogleId;
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            Log.d("VOLLEY", "Making get request (load pets): response - " + response.toString());
-                            petCardAdapter.setItems(PetInfoUtils.getPetsFromJSON(response, favouritePetsId, currentUserGoogleId, 4));
-                        } catch (JSONException e) {
-                            Log.e("VOLLEY", "Making get request (load pets): json error - " + e.toString());
-                            Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+        String url = optUrl == null ? SUBSCRIPTION_PATH + "/" + currentUserGoogleId + "/" + userGoogleId : optUrl;
+        if (optUrl != null) resetOptUrlAndConnectionPermission();
+        try {
+            String response = new DeleteRequest().execute(url).get();
+            if (!response.equals("")) {
+                Log.i("SUBSCRIPTION", "Successfully unsubscribed from user " + userGoogleId);
+                isSubscr = false;
+            }
+        } catch (ExecutionException | InterruptedException error) {
+            Log.e("VOLLEY", error.toString());
+        }
+
+        isSubscr = false;
+        userSubscribe.setColorFilter(userIcon.getContext().getResources().getColor(R.color.colorNotFavourite));
+    }
+
+    public void checkSubscription(String currentUserGoogleId, String userGoogleId) {
+        if (activity != null) {
+            if (!Connection.hasConnection(activity) || !connectionPermission) {
+                Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            String url = optUrl == null ? SUBSCRIPTION_PATH + "/check/" + currentUserGoogleId + "/" + userGoogleId : optUrl;
+            if (optUrl != null) resetOptUrlAndConnectionPermission();
+            try {
+                String response = new GetRequest().execute(url).get();
+                isSubscr = response.contains("true");
+                if (isSubscr) {
+                    userSubscribe.setColorFilter(userIcon.getContext().getResources().getColor(R.color.colorIsSubscribed));
+                } else {
+                    userSubscribe.setColorFilter(userIcon.getContext().getResources().getColor(R.color.colorNotFavourite));
+                }
+            } catch (ExecutionException | InterruptedException error) {
                 Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
-                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
             }
-        });
-        queue.add(stringRequest);
+        }
+    }
+
+    public void showInfo(String currentUserGoogleId, String userGoogleId) {
+        if (!Connection.hasConnection(activity) || !connectionPermission) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        String url = optUrl == null ? USERS_PATH + "/" + userGoogleId : optUrl;
+        if (optUrl != null) resetOptUrlAndConnectionPermission();
+        try {
+            String stringJsonResponse = new GetRequest().execute(url).get();
+            JSONObject jsonResponse = new JSONObject(stringJsonResponse);
+            username.setText(jsonResponse.getString("firstName") + " " + jsonResponse.getString("lastName"));
+            location.setText(jsonResponse.getString("address"));
+            String photoUrl = jsonResponse.getString("photoUrl");
+            if (!photoUrl.equals("")) {
+                userIcon.setImageBitmap(new PhotoTask().execute(photoUrl).get());
+            }
+            boolean isContactInfoPublic = jsonResponse.getBoolean("contactInfoPublic");
+            if (isContactInfoPublic) {
+                email.setText(jsonResponse.getString("email"));
+                if (!jsonResponse.getString("number").equals("")) {
+                    phone.setText(jsonResponse.getString("number"));
+                } else {
+                    phone.setText("-");
+                }
+                emailLayout.setVisibility(View.VISIBLE);
+                phoneLayout.setVisibility(View.VISIBLE);
+            }
+        } catch (ExecutionException | InterruptedException | JSONException error) {
+            Log.e("VOLLEY", "Making get request (get user by google id): request error - " + error.toString());
+        }
+    }
+
+    public void loadFavouriteId(String currentUserGoogleId, String userGoogleId) {
+        if (!Connection.hasConnection(activity) || !connectionPermission) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        String url = optUrl == null ? FAVOURITE_PATH + "/user/id/" + currentUserGoogleId : optUrl;
+        try {
+            String stringResponse = new GetRequest().execute(url).get();
+            Log.d("VOLLEY", "Making get request (load favourite pets id): response - " + stringResponse);
+            JSONArray response = new JSONArray(stringResponse);
+            List<Long> favouritePetsId = new ArrayList<>();
+            for (int i = 0; i < response.length(); i++) {
+                favouritePetsId.add(Long.valueOf(response.get(i).toString()));
+            }
+            loadPets(favouritePetsId, currentUserGoogleId, userGoogleId);
+        } catch (ExecutionException | InterruptedException | JSONException error) {
+            Log.e("VOLLEY", "Making get request (load favourite pets id): error - " + error.toString());
+        }
+        if (optUrl != null) resetOptUrlAndConnectionPermission();
+    }
+
+    public void loadPets(final List<Long> favouritePetsId, String currentUserGoogleId, String userGoogleId) {
+        if (!Connection.hasConnection(activity) || !connectionPermission) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        String url = optUrl == null ? PETS_PATH + "/owner/" + userGoogleId : optUrl;
+        if (optUrl != null) resetOptUrlAndConnectionPermission();
+        try {
+            String response = new GetRequest().execute(url).get();
+            Log.d("VOLLEY", "Making get request (load pets): response - " + response);
+            petCardAdapter.setItems(PetInfoUtils.getPetsFromJSON(response, favouritePetsId, currentUserGoogleId, 4));
+        } catch (ExecutionException | InterruptedException | JSONException error) {
+            Log.e("VOLLEY", "Making get request (load pets): error - " + error.toString());
+        }
+    }
+
+    public String getUsername() {
+        return username.getText().toString();
+    }
+
+    public String getLocation() {
+        return location.getText().toString();
+    }
+
+    public String getPhone() {
+        return phone.getText().toString();
+    }
+
+    public String getEmail() {
+        return email.getText().toString();
+    }
+
+    public boolean isSubscr() {
+        return isSubscr;
+    }
+
+    public PetCardAdapter getPetCardAdapter() {
+        return petCardAdapter;
+    }
+
+    public ImageView getUserSubscribe() {
+        return userSubscribe;
+    }
+
+    public ImageView getRequestUserContacts() {
+        return requestUserContacts;
+    }
+
+    public void setOptUrlAndConnectionPermission(String optUrl, boolean connectionPermission) {
+        this.optUrl = optUrl;
+        this.connectionPermission = connectionPermission;
+    }
+
+    public void resetOptUrlAndConnectionPermission() {
+        optUrl = null;
+        connectionPermission = true;
     }
 }

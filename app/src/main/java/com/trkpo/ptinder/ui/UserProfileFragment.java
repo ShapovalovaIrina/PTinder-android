@@ -18,21 +18,13 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
 import com.trkpo.ptinder.config.PhotoTask;
-import com.trkpo.ptinder.utils.Connection;
-import com.trkpo.ptinder.utils.GetRequest;
+import com.trkpo.ptinder.HTTP.Connection;
+import com.trkpo.ptinder.HTTP.GetRequest;
 import com.trkpo.ptinder.utils.PetInfoUtils;
 
 import org.json.JSONArray;

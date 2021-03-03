@@ -32,9 +32,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.trkpo.ptinder.R;
-import com.trkpo.ptinder.utils.Connection;
+import com.trkpo.ptinder.HTTP.Connection;
 
-import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 import static com.trkpo.ptinder.config.Constants.USERS_PATH;
 
 public class LoginActivity extends AppCompatActivity {
