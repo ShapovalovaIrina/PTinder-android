@@ -1,21 +1,19 @@
 package com.trkpo.ptinder.ui;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.Network;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.trkpo.ptinder.adapter.NotificationCardAdapter;
-import com.trkpo.ptinder.config.Constants;
 import com.trkpo.ptinder.pojo.Notification;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,6 +24,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
+@Config(sdk = {Build.VERSION_CODES.O_MR1})
 public class NotificationsFragmentTest {
     private String notificationBody = "[" +
                 "{ " +

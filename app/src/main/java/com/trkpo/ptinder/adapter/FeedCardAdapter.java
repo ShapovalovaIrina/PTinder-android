@@ -71,5 +71,9 @@ public class FeedCardAdapter extends RecyclerView.Adapter<FeedCardAdapter.ViewHo
         feeds.clear();
         notifyDataSetChanged();
     }
+
+    public List<Feed> getFeeds() {
+        return feeds;
+    }
 }
 
