@@ -42,7 +42,7 @@ import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.activity.LoginActivity;
 import com.trkpo.ptinder.adapter.SmallPetAdapter;
 import com.trkpo.ptinder.pojo.PetInfo;
-import com.trkpo.ptinder.utils.Connection;
+import com.trkpo.ptinder.HTTP.Connection;
 
 import org.json.JSONArray;
 import org.json.JSONException;

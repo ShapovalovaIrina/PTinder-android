@@ -26,14 +26,11 @@ import com.synnapps.carouselview.ImageListener;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.config.PhotoTask;
 import com.trkpo.ptinder.pojo.PetInfo;
-import com.trkpo.ptinder.utils.Connection;
+import com.trkpo.ptinder.HTTP.Connection;
 
 import java.util.concurrent.ExecutionException;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-
 import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
-import static com.trkpo.ptinder.config.Constants.USER_ICON_URL;
 
 public class PetProfileFragment extends Fragment {
     private PetInfo petInfo;

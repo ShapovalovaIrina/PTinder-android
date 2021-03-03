@@ -17,9 +17,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
-import com.trkpo.ptinder.utils.Connection;
+import com.trkpo.ptinder.HTTP.Connection;
 import com.trkpo.ptinder.utils.PetInfoUtils;
-import com.trkpo.ptinder.utils.GetRequest;
+import com.trkpo.ptinder.HTTP.GetRequest;
 
 import org.json.JSONException;
 
