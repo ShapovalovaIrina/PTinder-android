@@ -19,17 +19,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.adapter.PetCardAdapter;
 import com.trkpo.ptinder.utils.Connection;
+import com.trkpo.ptinder.utils.GetRequest;
 import com.trkpo.ptinder.utils.PetInfoUtils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,16 +39,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
-import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 import static com.trkpo.ptinder.config.Constants.SEARCH_PATH;
 
 public class SearchFragment extends Fragment {
     private Activity activity;
     private View root;
-
-    String googleId;
 
     private Spinner addressSpinner;
     private Spinner typeSpinner;
@@ -67,6 +60,8 @@ public class SearchFragment extends Fragment {
 
     private RecyclerView petCardRecycleView;
     private PetCardAdapter petCardAdapter;
+    private ArrayAdapter<String> addressAdapter;
+    private ArrayAdapter<String> typeAdapter;
 
     private List<Long> favouritePetsId;
 
@@ -90,59 +85,26 @@ public class SearchFragment extends Fragment {
         petCardAdapter = new PetCardAdapter();
         petCardRecycleView.setAdapter(petCardAdapter);
 
-        googleId = GoogleSignIn.getLastSignedInAccount(activity).getId();
+        addressAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_item);
+        addressSpinner.setAdapter(addressAdapter);
+
+        typeAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_item);
+
 
         favouritePetsId = new ArrayList<>();
-        loadFavouriteId();
-
-        setAddresses();
-        setTypes();
+        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(activity);
+        if (signInAccount != null) {
+            loadFavouriteId(signInAccount.getId());
+            setAddresses();
+            setTypes();
+        }
 
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!Connection.hasConnection(activity)) {
-                    Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                String address = "" + addressSpinner.getSelectedItem();
-                String gender = translateGender(radioGroup);
-                String purpose = PetInfoUtils.formatPurposeToEnum("" + purposeSpinner.getSelectedItem());
-                String type = "" + (typeSpinner.getSelectedItem() != null ? typeSpinner.getSelectedItem() : "");
-                petCardAdapter.clearItems();
-
-                if (activity != null) {
-                    RequestQueue queue = Volley.newRequestQueue(activity);
-                    String url = "";
-                    try {
-                        url = SEARCH_PATH
-                                + "?" + "address=" + encodeValue(address)
-                                + "&" + "gender=" + gender
-                                + "&" + "purpose=" + purpose
-                                + "&" + "type=" + type
-                                + "&" + "minAge=" + minAge.getText()
-                                + "&" + "maxAge=" + maxAge.getText();
-                    } catch (UnsupportedEncodingException e) {
-                        Log.e("ENCODING", "Got error during url encoding " + e.toString());
-                    }
-
-                    StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            try {
-                                petCardAdapter.setItems(PetInfoUtils.getPetsFromJSON(response, null, googleId, 2));
-                            } catch (JSONException e) {
-                                Log.e("JSON", "Got error during json parsing" + e.toString());
-
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.e("VOLLEY", error.toString());
-                        }
-                    });
-                    queue.add(stringRequest);
+                GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(activity);
+                if (signInAccount != null) {
+                    showResults(signInAccount.getId());
                 }
             }
         });
@@ -150,59 +112,84 @@ public class SearchFragment extends Fragment {
         return root;
     }
 
-    private void setAddresses() {
-        if (!Connection.hasConnection(activity)) {
+    public void showResults(String googleId, String ... optUrl) {
+        /* Variable for test cases*/
+        boolean connectionPermission = optUrl.length != 2 || Boolean.parseBoolean(optUrl[1]);
+        if (!Connection.hasConnection(activity) || !connectionPermission) {
             Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
-        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        RequestQueue queue = Volley.newRequestQueue(activity);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, SEARCH_PATH + "/address",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.i("INFO", "GOT " + response);
-                        adapter.addAll(getAddrFromJSON(response));
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", "Making get request (search address): request error - " + error.toString());
-                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+
+        if (activity != null) {
+            String address = "" + addressSpinner.getSelectedItem();
+            String gender = translateGender(radioGroup);
+            String purpose = PetInfoUtils.formatPurposeToEnum("" + purposeSpinner.getSelectedItem());
+            String type = "" + (typeSpinner.getSelectedItem() != null ? typeSpinner.getSelectedItem() : "");
+            petCardAdapter.clearItems();
+
+            String url = "";
+            try {
+                url = SEARCH_PATH
+                        + "?" + "address=" + encodeValue(address)
+                        + "&" + "gender=" + gender
+                        + "&" + "purpose=" + purpose
+                        + "&" + "type=" + type
+                        + "&" + "minAge=" + minAge.getText()
+                        + "&" + "maxAge=" + maxAge.getText();
+            } catch (UnsupportedEncodingException e) {
+                Log.e("ENCODING", "Got error during url encoding " + e.toString());
             }
-        });
-        queue.add(stringRequest);
-        addressSpinner.setAdapter(adapter);
+            url = optUrl.length == 0 ? url : optUrl[0];
+
+            try {
+                String response = new GetRequest().execute(url).get();
+                Log.i("INFO", "GOT " + response);
+                petCardAdapter.setItems(PetInfoUtils.getPetsFromJSON(response, null, googleId, 2));
+            } catch (ExecutionException | InterruptedException | JSONException error) {
+                error.printStackTrace();
+            }
+        }
     }
 
-    private void setTypes() {
-        if (!Connection.hasConnection(activity)) {
+    public void setAddresses(String ... optUrl) {
+        /* Variable for test cases*/
+        boolean connectionPermission = optUrl.length != 2 || Boolean.parseBoolean(optUrl[1]);
+        if (!Connection.hasConnection(activity) || !connectionPermission) {
             Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
-        final ArrayAdapter<String> typeAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_item);
+
+        addressAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        String url = optUrl.length == 0 ? SEARCH_PATH + "/address" : optUrl[0];
+        try {
+            String response = new GetRequest().execute(url).get();
+            Log.i("INFO", "GOT " + response);
+            addressAdapter.addAll(getAddrFromJSON(response));
+        } catch (ExecutionException | InterruptedException error) {
+            error.printStackTrace();
+        }
+    }
+
+    public void setTypes(String ... optUrl) {
+        /* Variable for test cases*/
+        boolean connectionPermission = optUrl.length != 2 || Boolean.parseBoolean(optUrl[1]);
+        if (!Connection.hasConnection(activity) || !connectionPermission) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        RequestQueue queue = Volley.newRequestQueue(activity);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, PETS_PATH + "/types",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.i("INFO", "GOT " + response);
-                        try {
-                            typeAdapter.addAll(getTypesFromJSON(response));
-                        } catch (JSONException e) {
-                            Log.e("JSON", "Got error during json parsing" + e.toString());
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", "Making get request (load types): request error - " + error.toString());
-                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        queue.add(stringRequest);
+
+        String url = optUrl.length == 0 ? SEARCH_PATH + "/types" : optUrl[0];
+        try {
+            String response = new GetRequest().execute(url).get();
+            Log.i("INFO", "GOT " + response);
+            typeAdapter.addAll(getTypesFromJSON(response));
+        } catch (JSONException | ExecutionException | InterruptedException error) {
+            error.printStackTrace();
+        }
+
         typeSpinner.setAdapter(typeAdapter);
     }
 
@@ -217,7 +204,7 @@ public class SearchFragment extends Fragment {
         return types;
     }
 
-    private String translateGender(RadioGroup gender) {
+    public String translateGender(RadioGroup gender) {
         RadioButton myRadioButton = root.findViewById(gender.getCheckedRadioButtonId());
         if (myRadioButton != null) {
             return myRadioButton.getText().equals("Мужской") ? "MALE" : "FEMALE";
@@ -230,7 +217,7 @@ public class SearchFragment extends Fragment {
         return animalType != null ? StringUtils.substringBetween(animalType, "\"type\":\"", "\"") : "";
     }
 
-    private Collection<String> getAddrFromJSON(String response) {
+    public Collection<String> getAddrFromJSON(String response) {
         ArrayList<String> list = new ArrayList<>();
         list.add("-");
         response = response.replaceAll("\"", "");
@@ -244,36 +231,44 @@ public class SearchFragment extends Fragment {
         return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
     }
 
-    private void loadFavouriteId() {
-        if (!Connection.hasConnection(activity)) {
+    public void loadFavouriteId(String googleId, String ... optUrl) {
+        /* Variable for test cases*/
+        boolean connectionPermission = optUrl.length != 2 || Boolean.parseBoolean(optUrl[1]);
+        if (!Connection.hasConnection(activity) || !connectionPermission) {
             Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
-        RequestQueue queue = Volley.newRequestQueue(activity);
-        String googleId = GoogleSignIn.getLastSignedInAccount(activity).getId();
-        String url = FAVOURITE_PATH + "/user/id/" + googleId;
 
-        JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        try {
-                            Log.d("VOLLEY", "Making get request (load favourite pets id): response - " + response.toString());
-                            for (int i = 0; i < response.length(); i++) {
-                                favouritePetsId.add(Long.valueOf(response.get(i).toString()));
-                            }
-                        } catch (JSONException e) {
-                            Log.e("VOLLEY", "Making get request (load favourite pets id): json error - " + e.toString());
-                            Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", "Making get request (load favourite pets id): request error - " + error.toString());
-                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+        String url = optUrl.length == 0 ? FAVOURITE_PATH + "/user/id/" + googleId : optUrl[0];
+        try {
+            String response = new GetRequest().execute(url).get();
+            JSONArray responseArray = new JSONArray(response);
+            Log.i("INFO", "GOT " + response);
+            for (int i = 0; i < responseArray.length(); i++) {
+                favouritePetsId.add(Long.valueOf(responseArray.get(i).toString()));
             }
-        });
-        queue.add(stringRequest);
+        } catch (JSONException | ExecutionException | InterruptedException error) {
+            error.printStackTrace();
+        }
+    }
+
+    public ArrayAdapter<String> getAddressAdapter() {
+        return addressAdapter;
+    }
+
+    public PetCardAdapter getPetCardAdapter() {
+        return petCardAdapter;
+    }
+
+    public ArrayAdapter<String> getTypeAdapter() {
+        return typeAdapter;
+    }
+
+    public List<Long> getFavouritePetsId() {
+        return favouritePetsId;
+    }
+
+    public RadioGroup getRadioGroup() {
+        return radioGroup;
     }
 }
