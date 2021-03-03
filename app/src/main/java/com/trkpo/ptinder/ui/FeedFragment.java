@@ -65,45 +65,34 @@ public class FeedFragment extends Fragment {
         feedCardAdapter = new FeedCardAdapter();
         feedCardRecycleView.setAdapter(feedCardAdapter);
 
-        loadFeeds();
+        setUpUrlForRequest();
     }
 
-    private void loadFeeds() {
-        String optUrl = (String) getArguments().getSerializable("optUrl");
-//        boolean connectionPermission = optUrl.length == 2 ? Boolean.valueOf(optUrl[1]) : true;
-        if (!Connection.hasConnection(activity)) {
+    public void loadFeeds(String... testUrl) {
+        boolean connectionPermission = testUrl.length == 2 ? Boolean.valueOf(testUrl[1]) : true;
+        if (!Connection.hasConnection(activity) || !connectionPermission) {
             Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
+        String url = testUrl.length == 0 ? NEWS_PATH : testUrl[0];
         try {
-            String response = new GetRequest().execute(NEWS_PATH).get();
+            String response = new GetRequest().execute(url).get();
             Log.d("VOLLEY", "Get news: " + response);
             feedCardAdapter.setItems(FeedUtils.getNewsFromJSON(response));
         } catch (JSONException | ExecutionException | InterruptedException error) {
             error.printStackTrace();
             Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
         }
+    }
 
-//        RequestQueue queue = Volley.newRequestQueue(activity);
-//
-//        StringRequest stringRequest = new StringRequest(Request.Method.GET, NEWS_PATH,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        try {
-//                            feedCardAdapter.setItems(FeedUtils.getNewsFromJSON(response));
-//                        } catch (JSONException e) {
-//                            Log.e("VOLLEY", "Making get request (load pets): json error - " + e.toString());
-//                            Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
-//                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//        queue.add(stringRequest);
+    public FeedCardAdapter getFeedCardAdapter() {
+        return feedCardAdapter;
+    }
+
+    private void setUpUrlForRequest() {
+        if (getArguments() != null) {
+            String optUrl = (String) getArguments().getSerializable("optUrl");
+            loadFeeds(optUrl);
+        }
     }
 }

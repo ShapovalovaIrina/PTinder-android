@@ -1,8 +1,5 @@
 package com.trkpo.ptinder.ui;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.Network;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -10,7 +7,6 @@ import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.trkpo.ptinder.adapter.NotificationCardAdapter;
-import com.trkpo.ptinder.config.Constants;
 import com.trkpo.ptinder.pojo.Notification;
 
 import org.junit.After;

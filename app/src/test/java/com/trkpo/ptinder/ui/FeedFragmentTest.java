@@ -5,8 +5,8 @@ import android.os.Build;
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.runner.AndroidJUnit4;
 
-import com.trkpo.ptinder.adapter.NotificationCardAdapter;
-import com.trkpo.ptinder.pojo.Notification;
+import com.trkpo.ptinder.adapter.FeedCardAdapter;
+import com.trkpo.ptinder.pojo.Feed;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,30 +40,60 @@ public class FeedFragmentTest {
     private String feedBody = "[\n" +
             "  {\n" +
             "    \"author\":\"Rick\",\n" +
-            "    \"content\":\"Test content\",\n" +
+            "    \"content\":\"https://fraufluger.ru/wp-content/uploads/2020/09/kosh.jpg\",\n" +
             "    \"score\":\"111\",\n" +
             "    \"title\":\"Test title\"\n" +
             "  }, {\n" +
             "    \"author\":\"Jon\",\n" +
-            "    \"content\":\"Test content\",\n" +
+            "    \"content\":\"https://fraufluger.ru/wp-content/uploads/2020/09/kosh.jpg\",\n" +
             "    \"score\":\"222\",\n" +
             "    \"title\":\"Test title\"\n" +
             "  }, {\n" +
             "    \"author\":\"Bob\",\n" +
-            "    \"content\":\"Test content\",\n" +
+            "    \"content\":\"https://fraufluger.ru/wp-content/uploads/2020/09/kosh.jpg\",\n" +
             "    \"score\":\"333\",\n" +
             "    \"title\":\"Test title\"\n" +
             "  }\n" +
             "  ]";
 
     @Test
-    public void loadNotificationsIsCorrect() {
+    public void loadFeedsIsCorrect() {
         server.enqueue(new MockResponse().setBody(feedBody));
         String url = server.url("/").toString();
 
         FragmentScenario<FeedFragment> uf = FragmentScenario.launch(FeedFragment.class);
         uf.onFragment(fragment -> {
+            fragment.loadFeeds(url);
+            FeedCardAdapter adapter = fragment.getFeedCardAdapter();
+            List<Feed> feeds = adapter.getFeeds();
 
+            assertEquals(3, adapter.getItemCount());
+            adapter.clearItems();
+            assertEquals(0, adapter.getItemCount());
+            adapter.setItems(feeds);
+        });
+    }
+
+    @Test
+    public void testIncorrectJson() {
+        server.enqueue(new MockResponse().setBody("[{\"id\": \"1\"}]"));
+        String url = server.url("/").toString();
+
+        FragmentScenario<FeedFragment> uf = FragmentScenario.launch(FeedFragment.class);
+        uf.onFragment(fragment -> {
+            fragment.loadFeeds(url);
+            FeedCardAdapter adapter = fragment.getFeedCardAdapter();
+            assertEquals(0, adapter.getItemCount());
+        });
+    }
+
+    @Test
+    public void testNoConnection() {
+        FragmentScenario<FeedFragment> uf = FragmentScenario.launch(FeedFragment.class);
+        uf.onFragment(fragment -> {
+            fragment.loadFeeds( "", "false");
+            FeedCardAdapter adapter = fragment.getFeedCardAdapter();
+            assertEquals(0, adapter.getItemCount());
         });
     }
 
