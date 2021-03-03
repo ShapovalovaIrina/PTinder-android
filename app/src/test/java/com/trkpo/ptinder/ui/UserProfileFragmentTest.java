@@ -1,5 +1,7 @@
 package com.trkpo.ptinder.ui;
 
+import android.os.Build;
+
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.runner.AndroidJUnit4;
 
@@ -7,6 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
+@Config(sdk = {Build.VERSION_CODES.O_MR1})
 public class UserProfileFragmentTest {
     private String userBody = "{ " +
                 "\"firstName\": \"first Name\"," +

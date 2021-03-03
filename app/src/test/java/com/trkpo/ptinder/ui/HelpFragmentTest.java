@@ -1,5 +1,6 @@
 package com.trkpo.ptinder.ui;
 
+import android.os.Build;
 import android.widget.TextView;
 
 import androidx.fragment.app.testing.FragmentScenario;
@@ -9,10 +10,12 @@ import com.trkpo.ptinder.R;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
+@Config(sdk = {Build.VERSION_CODES.O_MR1})
 public class HelpFragmentTest {
     @Test
     public void correctHelpFragmentCreating() {

@@ -26,6 +26,8 @@ import com.trkpo.ptinder.config.FeedTask;
 import com.trkpo.ptinder.pojo.Feed;
 import com.trkpo.ptinder.utils.Connection;
 import com.trkpo.ptinder.utils.FeedUtils;
+import com.trkpo.ptinder.utils.GetRequest;
+import com.trkpo.ptinder.utils.NotificationUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +39,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static com.trkpo.ptinder.config.Constants.NEWS_PATH;
+import static com.trkpo.ptinder.config.Constants.NOTIFICATIONS_PATH;
 
 public class FeedFragment extends Fragment {
 
@@ -66,30 +69,41 @@ public class FeedFragment extends Fragment {
     }
 
     private void loadFeeds() {
+        String optUrl = (String) getArguments().getSerializable("optUrl");
+//        boolean connectionPermission = optUrl.length == 2 ? Boolean.valueOf(optUrl[1]) : true;
         if (!Connection.hasConnection(activity)) {
             Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
-        RequestQueue queue = Volley.newRequestQueue(activity);
+        try {
+            String response = new GetRequest().execute(NEWS_PATH).get();
+            Log.d("VOLLEY", "Get news: " + response);
+            feedCardAdapter.setItems(FeedUtils.getNewsFromJSON(response));
+        } catch (JSONException | ExecutionException | InterruptedException error) {
+            error.printStackTrace();
+            Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+        }
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, NEWS_PATH,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            feedCardAdapter.setItems(FeedUtils.getNewsFromJSON(response));
-                        } catch (JSONException e) {
-                            Log.e("VOLLEY", "Making get request (load pets): json error - " + e.toString());
-                            Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
-                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        queue.add(stringRequest);
+//        RequestQueue queue = Volley.newRequestQueue(activity);
+//
+//        StringRequest stringRequest = new StringRequest(Request.Method.GET, NEWS_PATH,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        try {
+//                            feedCardAdapter.setItems(FeedUtils.getNewsFromJSON(response));
+//                        } catch (JSONException e) {
+//                            Log.e("VOLLEY", "Making get request (load pets): json error - " + e.toString());
+//                            Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
+//                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//        queue.add(stringRequest);
     }
 }
