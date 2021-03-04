@@ -1,5 +1,6 @@
 package com.trkpo.ptinder.ui;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,42 +15,48 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
+import com.trkpo.ptinder.HTTP.Connection;
+import com.trkpo.ptinder.HTTP.DeleteRequest;
+import com.trkpo.ptinder.HTTP.PostRequest;
+import com.trkpo.ptinder.HTTP.PostRequestParams;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.config.PhotoTask;
 import com.trkpo.ptinder.pojo.PetInfo;
-import com.trkpo.ptinder.HTTP.Connection;
 
 import java.util.concurrent.ExecutionException;
 
 import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
 
 public class PetProfileFragment extends Fragment {
+    private Activity activity;
     private PetInfo petInfo;
     private FloatingActionButton favourite;
+    private TextView petName;
+    private TextView petType;
+    private TextView petBreed;
+    private TextView petAge;
+    private TextView petPurpose;
+    private TextView petComment;
+    private ImageView petGender;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_pet_profile, container, false);
+        activity = getActivity();
 
         petInfo = (PetInfo) getArguments().getSerializable("petInfo");
 
         CarouselView petIcons = root.findViewById(R.id.carousel_view);
-        TextView petName = root.findViewById(R.id.full_pet_info_name);
-        TextView petType = root.findViewById(R.id.full_pet_info_type);
-        TextView petBreed = root.findViewById(R.id.full_pet_info_breed);
-        TextView petAge = root.findViewById(R.id.full_pet_info_age);
-        TextView petPurpose = root.findViewById(R.id.full_pet_info_purpose);
-        TextView petComment = root.findViewById(R.id.full_pet_info_comment);
-        ImageView petGender = root.findViewById(R.id.full_pet_info_gender);
+        petName = root.findViewById(R.id.full_pet_info_name);
+        petType = root.findViewById(R.id.full_pet_info_type);
+        petBreed = root.findViewById(R.id.full_pet_info_breed);
+        petAge = root.findViewById(R.id.full_pet_info_age);
+        petPurpose = root.findViewById(R.id.full_pet_info_purpose);
+        petComment = root.findViewById(R.id.full_pet_info_comment);
+        petGender = root.findViewById(R.id.full_pet_info_gender);
         favourite = root.findViewById(R.id.full_pet_info_favourite);
 
         if (petInfo.getIconsAmount() > 0) {
@@ -103,9 +110,9 @@ public class PetProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (petInfo.isFavourite()) {
-                    deleteFromFavourite(view);
+                    deleteFromFavourite();
                 } else {
-                    addToFavourite(view);
+                    addToFavourite();
                 }
             }
         });
@@ -119,56 +126,46 @@ public class PetProfileFragment extends Fragment {
         return root;
     }
 
-    private void addToFavourite(View view) {
-        if (!Connection.hasConnection(view.getContext())) {
-            Toast.makeText(view.getContext(), "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+    public void addToFavourite(String ... optUrl) {
+        boolean connectionPermission = optUrl.length != 2 || Boolean.parseBoolean(optUrl[1]);
+        if (!Connection.hasConnection(activity) | !connectionPermission) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
-        RequestQueue queue = Volley.newRequestQueue(view.getContext());
-        String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getCurrentUserId();
 
-        StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("VOLLEY", "Success response (add to favourite). " +
-                                "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getCurrentUserId());
-                        petInfo.setFavourite(true);
-                        setFavouriteColor();
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("VOLLEY", "Not Success response (add to favourite): " + error.toString());
+        String url = optUrl.length == 0 ? FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getCurrentUserId() : optUrl[0];
+        try {
+            String response = new PostRequest().execute(new PostRequestParams(url, "")).get();
+            if (!response.equals("")) {
+                Log.d("VOLLEY", "Success response (add to favourite). " +
+                        "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getCurrentUserId());
+                petInfo.setFavourite(true);
+                setFavouriteColor();
             }
-        });
-        queue.add(jsonObjectRequest);
+        } catch (ExecutionException | InterruptedException error) {
+            Log.d("VOLLEY", "Not Success response (add to favourite): " + error.toString());
+        }
     }
 
-    private void deleteFromFavourite(View view) {
-        if (!Connection.hasConnection(view.getContext())) {
-            Toast.makeText(view.getContext(), "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+    public void deleteFromFavourite(String ... optUrl) {
+        boolean connectionPermission = optUrl.length != 2 || Boolean.parseBoolean(optUrl[1]);
+        if (!Connection.hasConnection(activity) | !connectionPermission) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
-        RequestQueue queue = Volley.newRequestQueue(view.getContext());
-        String url = FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getCurrentUserId();
 
-        StringRequest jsonObjectRequest = new StringRequest(Request.Method.DELETE, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("VOLLEY", "Success response (delete from favourite)" +
-                                "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getCurrentUserId());
-                        petInfo.setFavourite(false);
-                        setFavouriteColor();
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("VOLLEY", "Not Success response (delete from favourite): " + error.toString());
+        String url = optUrl.length == 0 ? FAVOURITE_PATH + "/" + petInfo.getId() + "/user/" + petInfo.getCurrentUserId() : optUrl[0];
+        try {
+            String response = new DeleteRequest().execute(url).get();
+            if (!response.equals("")) {
+                Log.d("VOLLEY", "Success response (delete from favourite)" +
+                        "Pet id: " + petInfo.getId() + ", user id: " + petInfo.getCurrentUserId());
+                petInfo.setFavourite(false);
+                setFavouriteColor();
             }
-        });
-        queue.add(jsonObjectRequest);
+        } catch (ExecutionException | InterruptedException error) {
+            Log.d("VOLLEY", "Not Success response (delete from favourite): " + error.toString());
+        }
     }
 
     private void setFavouriteColor() {
@@ -177,5 +174,29 @@ public class PetProfileFragment extends Fragment {
         } else {
             favourite.setColorFilter(favourite.getContext().getResources().getColor(R.color.colorNotFavourite));
         }
+    }
+
+    public TextView getPetName() {
+        return petName;
+    }
+
+    public TextView getPetType() {
+        return petType;
+    }
+
+    public TextView getPetBreed() {
+        return petBreed;
+    }
+
+    public TextView getPetAge() {
+        return petAge;
+    }
+
+    public TextView getPetPurpose() {
+        return petPurpose;
+    }
+
+    public TextView getPetComment() {
+        return petComment;
     }
 }
