@@ -11,26 +11,19 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.HTTP.Connection;
+import com.trkpo.ptinder.HTTP.GetRequest;
+import com.trkpo.ptinder.HTTP.PostRequest;
+import com.trkpo.ptinder.HTTP.PostRequestParams;
+import com.trkpo.ptinder.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.ExecutionException;
 
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 
@@ -45,79 +38,7 @@ public class AnimalTypeDialogFragment {
         builder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (!Connection.hasConnection(context)) {
-                    Toast.makeText(context, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                adapter.clear();
-                JSONObject requestObject = new JSONObject();
-                try {
-                    requestObject.put("type", "" + typeName.getText());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                final String requestBody = requestObject.toString();
-                Log.i("REGISTRATION", "Going to register new animal type with request: " + requestBody);
-
-                if (context != null) {
-                    RequestQueue queue = Volley.newRequestQueue(context);
-
-                    StringRequest stringRequest = new StringRequest(Request.Method.POST, PETS_PATH + "/types", new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Log.i("VOLLEY", response);
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.e("VOLLEY", error.toString());
-                        }
-                    }) {
-                        @Override
-                        public String getBodyContentType() {
-                            return "application/json; charset=utf-8";
-                        }
-
-                        @Override
-                        public byte[] getBody() throws AuthFailureError {
-                            try {
-                                return requestBody == null ? null : requestBody.getBytes("utf-8");
-                            } catch (UnsupportedEncodingException uee) {
-                                VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
-                                return null;
-                            }
-                        }
-
-                        @Override
-                        protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                            String responseString = "";
-                            if (response != null) {
-                                responseString = String.valueOf(response.statusCode);
-                            }
-                            return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
-                        }
-                    };
-
-                    StringRequest stringGetRequest = new StringRequest(Request.Method.GET, PETS_PATH + "/types",
-                            new Response.Listener<String>() {
-                                @Override
-                                public void onResponse(String response) {
-                                    try {
-                                        adapter.addAll(getTypesFromJSON(response));
-                                    } catch (JSONException e) {
-                                        Log.e("VOLLEY", "Making get request (load pets): json error - " + e.toString());
-                                    }
-                                }
-                            }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
-                        }
-                    });
-
-                    queue.add(stringRequest);
-                    queue.add(stringGetRequest);
-                }
+                saveType(context, adapter, (String) typeName.getText());
                 dialog.dismiss();
             }
         });
@@ -134,7 +55,48 @@ public class AnimalTypeDialogFragment {
         alertDialog.show();
     }
 
-    private static Collection<String> getTypesFromJSON(String response) throws JSONException {
+    public static void saveType(final Context context, final ArrayAdapter adapter, String newType, String ... optUrl) {
+        boolean connectionPermission = optUrl.length != 2 || Boolean.parseBoolean(optUrl[1]);
+        if (!Connection.hasConnection(context) | !connectionPermission) {
+            Toast.makeText(context, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        String url = optUrl.length == 0 ? PETS_PATH + "/types" : optUrl[0];
+        adapter.clear();
+        View view = LayoutInflater.from(context).inflate(R.layout.alert_layout, null);
+
+        JSONObject requestObject = new JSONObject();
+        try {
+            requestObject.put("type", newType);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        final String requestBody = requestObject.toString();
+        Log.i("REGISTRATION", "Going to register new animal type with request: " + requestBody);
+
+        if (context != null) {
+            try {
+                String response = new PostRequest().execute(new PostRequestParams(url, requestBody)).get();
+                if (!response.equals("")) {
+                    Log.i("VOLLEY", response);
+                }
+            } catch (ExecutionException | InterruptedException error) {
+                Log.e("VOLLEY", "Making post request (save type): request error - " + error.toString());
+                Toast.makeText(context, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+
+            try {
+                String response = new GetRequest().execute(url).get();
+                adapter.addAll(getTypesFromJSON(response));
+            } catch (ExecutionException | InterruptedException | JSONException error) {
+                Log.e("VOLLEY", "Making get request (load type): request error - " + error.toString());
+                Toast.makeText(context, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public static Collection<String> getTypesFromJSON(String response) throws JSONException {
         Collection<String> types = new ArrayList<>();
         JSONArray jArray = new JSONArray(response);
         for (int i = 0; i < jArray.length(); i++) {
