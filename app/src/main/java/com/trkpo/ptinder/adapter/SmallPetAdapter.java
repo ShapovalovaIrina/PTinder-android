@@ -77,5 +77,9 @@ public class SmallPetAdapter extends RecyclerView.Adapter<SmallPetAdapter.ViewHo
         petsList.clear();
         notifyDataSetChanged();
     }
+
+    public List<PetInfo> getItems() {
+        return petsList;
+    }
 }
 

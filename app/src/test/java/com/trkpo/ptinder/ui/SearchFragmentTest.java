@@ -1,6 +1,7 @@
 package com.trkpo.ptinder.ui;
 
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.widget.RadioGroup;
 
 import androidx.fragment.app.testing.FragmentScenario;
@@ -11,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.robolectric.annotation.Config;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -23,6 +25,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
+@Config(sdk = {Build.VERSION_CODES.O_MR1})
 public class SearchFragmentTest {
     final private String addressBody = "[\"Москва\",\"Санкт-Петербург\",\"Мурманск\",\"Кировск\"]";
     final private String favouriteBody = "[\"4\", \"8\", \"15\", \"16\", \"23\", \"42\"]";
