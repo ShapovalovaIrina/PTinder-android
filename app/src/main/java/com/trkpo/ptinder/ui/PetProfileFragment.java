@@ -128,7 +128,7 @@ public class PetProfileFragment extends Fragment {
 
     public void addToFavourite(String ... optUrl) {
         boolean connectionPermission = optUrl.length != 2 || Boolean.parseBoolean(optUrl[1]);
-        if (!Connection.hasConnection(activity) | !connectionPermission) {
+        if (!Connection.hasConnection(activity) || !connectionPermission) {
             Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
