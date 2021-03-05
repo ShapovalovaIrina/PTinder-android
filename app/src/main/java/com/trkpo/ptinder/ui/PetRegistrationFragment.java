@@ -160,11 +160,11 @@ public class PetRegistrationFragment extends Fragment {
             try {
                 adapter.addAll(getTypesFromJSON(response));
             } catch (JSONException e) {
-                Log.e("VOLLEY", "Making get request (load pets): json error - " + e.toString());
+                Log.e("VOLLEY", "Making get request (load types): json error - " + e.toString());
                 Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
             }
         } catch (ExecutionException | InterruptedException error) {
-            Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
+            Log.e("VOLLEY", "Making get request (load types): request error - " + error.toString());
             Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
         }
 
@@ -250,7 +250,7 @@ public class PetRegistrationFragment extends Fragment {
                 navController.navigateUp();
             }
         } catch (ExecutionException | InterruptedException error) {
-            Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
+            Log.e("VOLLEY", "Making post request (save pet): request error - " + error.toString());
             Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
         }
     }
