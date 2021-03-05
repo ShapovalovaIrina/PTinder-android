@@ -62,6 +62,7 @@ public class OtherUserProfileFragment extends Fragment {
 
     private boolean isSubscr;
 
+    /* Variable for testing*/
     private String optUrl;
     private boolean connectionPermission;
 
