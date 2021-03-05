@@ -43,6 +43,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageClickListener;
 import com.synnapps.carouselview.ImageListener;
+import com.trkpo.ptinder.HTTP.GetRequest;
+import com.trkpo.ptinder.HTTP.PostRequest;
+import com.trkpo.ptinder.HTTP.PostRequestParams;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.HTTP.Connection;
 import com.trkpo.ptinder.utils.PetInfoUtils;
@@ -56,8 +59,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static android.app.Activity.RESULT_OK;
+import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 
 public class PetRegistrationFragment extends Fragment {
@@ -99,7 +104,9 @@ public class PetRegistrationFragment extends Fragment {
 
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        setTypes(adapter);
+        if (googleId != null) {
+            setTypes(adapter);
+        }
 
         addPetTypeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,101 +140,34 @@ public class PetRegistrationFragment extends Fragment {
         savePetBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                if (!Connection.hasConnection(activity)) {
-                    Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                JSONObject requestObject = PetInfoUtils.setPetToJSON(
-                        petName.getText().toString(),
-                        petAge.getText().toString(),
-                        rgGender.getCheckedRadioButtonId() == 0 ? "FEMALE" : "MALE",
-                        petType.getSelectedItem().toString(),
-                        petBreed.getText().toString(),
-                        petPurpose.getSelectedItem().toString(),
-                        petComment.getText().toString(),
-                        imagesBitmap,
-                        googleId
-                );
-                final String requestBody = requestObject.toString();
-                Log.i("REGISTRATION", "Going to register pet with request: " + requestBody);
-
-                if (activity != null) {
-                    RequestQueue queue = Volley.newRequestQueue(activity);
-
-                    StringRequest stringRequest = new StringRequest(Request.Method.POST, PETS_PATH, new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Log.i("VOLLEY", response);
-                            NavController navController = Navigation.findNavController(v);
-                            navController.navigateUp();
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.e("VOLLEY", error.toString());
-                            NavController navController = Navigation.findNavController(v);
-                            navController.navigateUp();
-                        }
-                    }) {
-                        @Override
-                        public String getBodyContentType() {
-                            return "application/json; charset=utf-8";
-                        }
-
-                        @Override
-                        public byte[] getBody() throws AuthFailureError {
-                            try {
-                                return requestBody == null ? null : requestBody.getBytes("utf-8");
-                            } catch (UnsupportedEncodingException uee) {
-                                VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
-                                return null;
-                            }
-                        }
-
-                        @Override
-                        protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                            String responseString = "";
-                            if (response != null) {
-                                responseString = String.valueOf(response.statusCode);
-                            }
-                            return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
-                        }
-                    };
-                    queue.add(stringRequest);
-                }
+                savePet(googleId);
             }
         });
 
         return root;
     }
 
-    private void setTypes(final ArrayAdapter<String> adapter) {
-        if (!Connection.hasConnection(activity)) {
+    public void setTypes(final ArrayAdapter<String> adapter, String... optUrl) {
+        boolean connectionPermission = optUrl.length != 2 || Boolean.parseBoolean(optUrl[1]);
+        if (!Connection.hasConnection(activity) | !connectionPermission) {
             Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
-        final RequestQueue queue = Volley.newRequestQueue(activity);
-        final String url = PETS_PATH + "/types";
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            adapter.addAll(getTypesFromJSON(response));
-                        } catch (JSONException e) {
-                            Log.e("VOLLEY", "Making get request (load pets): json error - " + e.toString());
-                            Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
-                Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+        String url = optUrl.length == 0 ? PETS_PATH + "/types" : optUrl[0];
+        try {
+            String response = new GetRequest().execute(url).get();
+            try {
+                adapter.addAll(getTypesFromJSON(response));
+            } catch (JSONException e) {
+                Log.e("VOLLEY", "Making get request (load pets): json error - " + e.toString());
+                Toast.makeText(activity, "JSON exception: " + e.toString(), Toast.LENGTH_SHORT).show();
             }
-        });
-        queue.add(stringRequest);
+        } catch (ExecutionException | InterruptedException error) {
+            Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
+            Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+        }
+
         petType.setAdapter(adapter);
     }
 
@@ -280,6 +220,41 @@ public class PetRegistrationFragment extends Fragment {
                 });
     }
 
+    public void savePet(String googleId, String... optUrl) {
+        boolean connectionPermission = optUrl.length != 2 || Boolean.parseBoolean(optUrl[1]);
+        if (!Connection.hasConnection(activity) | !connectionPermission) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        JSONObject requestObject = PetInfoUtils.setPetToJSON(
+                petName.getText().toString(),
+                petAge.getText().toString(),
+                rgGender.getCheckedRadioButtonId() == 0 ? "FEMALE" : "MALE",
+                petType.getSelectedItem().toString(),
+                petBreed.getText().toString(),
+                petPurpose.getSelectedItem().toString(),
+                petComment.getText().toString(),
+                imagesBitmap,
+                googleId
+        );
+        final String requestBody = requestObject.toString();
+        Log.i("REGISTRATION", "Going to register pet with request: " + requestBody);
+
+        String url = optUrl.length == 0 ? PETS_PATH : optUrl[0];
+        try {
+            String response = new PostRequest().execute(new PostRequestParams(url, requestBody)).get();
+            if (!response.equals("")) {
+                Log.i("VOLLEY", response);
+                NavController navController = Navigation.findNavController(root);
+                navController.navigateUp();
+            }
+        } catch (ExecutionException | InterruptedException error) {
+            Log.e("VOLLEY", "Making get request (load pets): request error - " + error.toString());
+            Toast.makeText(activity, "Request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private Collection<String> getTypesFromJSON(String response) throws JSONException {
         Collection<String> types = new ArrayList<>();
         JSONArray jArray = new JSONArray(response);
@@ -298,5 +273,37 @@ public class PetRegistrationFragment extends Fragment {
         if (signInAccount != null) {
             googleId = signInAccount.getId();
         }
+    }
+
+    public ArrayAdapter<String> getPetTypeAdapter() {
+        return (ArrayAdapter<String>) petType.getAdapter();
+    }
+
+    public TextView getPetName() {
+        return petName;
+    }
+
+    public TextView getPetAge() {
+        return petAge;
+    }
+
+    public RadioGroup getRgGender() {
+        return rgGender;
+    }
+
+    public Spinner getPetType() {
+        return petType;
+    }
+
+    public TextView getPetBreed() {
+        return petBreed;
+    }
+
+    public Spinner getPetPurpose() {
+        return petPurpose;
+    }
+
+    public TextView getPetComment() {
+        return petComment;
     }
 }
