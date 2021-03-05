@@ -1,6 +1,7 @@
 package com.trkpo.ptinder.utils;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
 
@@ -59,13 +60,13 @@ public class PetInfoUtils {
     }
 
     public static Collection<PetInfo> getPetsFromJSON(
-            String jsonString,
+            String jsonArrayString,
             List<Long> favouritePetsId,
             String googleId,
             Integer direction) throws JSONException {
-        Log.d("getPetsFromJSON", jsonString);
+        Log.d("getPetsFromJSON", jsonArrayString);
         Collection<PetInfo> pets = new ArrayList<>();
-        JSONArray jArray = new JSONArray(jsonString);
+        JSONArray jArray = new JSONArray(jsonArrayString);
         for (int i = 0; i < jArray.length(); i++) {
             JSONObject jsonObject = jArray.getJSONObject(i);
             Long id = jsonObject.getLong("petId");
@@ -102,6 +103,33 @@ public class PetInfoUtils {
             petInfo.setCurrentUserInfo(googleId);
         }
         return pets;
+    }
+
+    public static PetInfo getPetFromJSON(
+            String jsonObjectString,
+            int direction,
+            boolean isFavourite) throws JSONException {
+        JSONObject jsonObject = new JSONObject(jsonObjectString);
+        Long id = jsonObject.getLong("petId");
+        String name = jsonObject.getString("name");
+        String breed = jsonObject.getString("breed");
+        String age = String.valueOf(jsonObject.getInt("age"));
+        String gender = jsonObject.getString("gender");
+        String animalType = jsonObject.getJSONObject("animalType").getString("type");
+        String purpose = jsonObject.getString("purpose");
+        String comment = jsonObject.getString("comment");
+
+        List<Bitmap> icons = new ArrayList<>();
+        JSONArray images = jsonObject.getJSONArray("petPhotos");
+        if (images != null) {
+            for (int j = 0; j < images.length(); j++) {
+                String imageStr = images.getJSONObject(j).getString("photo");
+                byte[] imageBytes = Base64.decode(imageStr, Base64.DEFAULT);
+                Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                icons.add(image);
+            }
+        }
+        return new PetInfo(id, name, breed, age, gender, animalType, purpose, comment, icons, direction, isFavourite);
     }
 
     public static String formAge(Integer age) {
