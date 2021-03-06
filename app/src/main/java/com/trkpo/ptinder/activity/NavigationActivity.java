@@ -22,6 +22,8 @@ import com.google.android.material.navigation.NavigationView;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.config.PhotoTask;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.ExecutionException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -50,7 +52,8 @@ public class NavigationActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        setUserInfo(navigationView.getHeaderView(0));
+        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+        if (signInAccount != null) setUserInfo(navigationView.getHeaderView(0),signInAccount);
     }
 
     @Override
@@ -62,14 +65,18 @@ public class NavigationActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("googleId", signInAccount.getId());
-                NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
-                navController.navigate(R.id.nav_notifications, bundle);
+                if (signInAccount != null) menuItemClick(activity, signInAccount);
                 return false;
             }
         });
         return true;
+    }
+
+    public void menuItemClick(Activity activity, @NotNull GoogleSignInAccount signInAccount) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("googleId", signInAccount.getId());
+        NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
+        navController.navigate(R.id.nav_notifications, bundle);
     }
 
     @Override
@@ -79,8 +86,7 @@ public class NavigationActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
-    private void setUserInfo(View view) {
-        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+    public void setUserInfo(View view, GoogleSignInAccount signInAccount) {
         if (signInAccount != null) {
             TextView username = view.findViewById(R.id.username_nav_header);
             CircleImageView user_icon = view.findViewById(R.id.user_icon_nav_header);

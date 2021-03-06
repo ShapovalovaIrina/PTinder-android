@@ -2,4 +2,4 @@
 Mobile app for finding pets
 
 ## Тестовое покрытие
-72% classes, 73% lines covered
+74% classes, 75% lines covered
