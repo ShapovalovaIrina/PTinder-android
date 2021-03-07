@@ -12,27 +12,26 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.trkpo.ptinder.HTTP.GetRequest;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.HTTP.Connection;
+
+import java.util.concurrent.ExecutionException;
 
 import static com.trkpo.ptinder.config.Constants.USERS_PATH;
 
@@ -42,6 +41,12 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private Activity activity;
+
+    private SignInButton signInButton;
+
+    /* Variable for testing*/
+    private String optUrl;
+    private boolean connectionPermission;
 
     @Override
     public void onStart() {
@@ -56,23 +61,29 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.login_activity);
         this.activity = this;
 
+        FirebaseApp.initializeApp(this);
         mAuth = FirebaseAuth.getInstance();
         createRequest();
 
-        findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
+        signInButton = findViewById(R.id.sign_in_button);
+        signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!Connection.hasConnection(activity)) {
-                    Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                if (currentUser != null) {
-                    isUserExists();
-                } else {
-                    signIn();
-                }
+                onClickAction();
             }
         });
+    }
+
+    public void onClickAction() {
+        if (!Connection.hasConnection(activity) || !connectionPermission) {
+            Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (currentUser != null) {
+            isUserExists(GoogleSignIn.getLastSignedInAccount(getApplicationContext()));
+        } else {
+            signIn();
+        }
     }
 
     private void createRequest() {
@@ -116,7 +127,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            isUserExists();
+                            isUserExists(GoogleSignIn.getLastSignedInAccount(getApplicationContext()));
                         } else {
                             // If sign in fails, display a message to the user.
                             Snackbar.make(findViewById(R.id.login_activity), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
@@ -131,40 +142,32 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
-    private void isUserExists() {
-        if (!Connection.hasConnection(this)) {
+    public void isUserExists(GoogleSignInAccount signInAccount) {
+        if (signInAccount == null) return;
+
+        if (!Connection.hasConnection(this) || !connectionPermission) {
             Toast.makeText(this, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
-        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
-        if (signInAccount == null) return;
-        String googleId = signInAccount.getId();
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = USERS_PATH + "/exists/" + googleId;
 
-        Log.d("VOLLEY", "Making get Response (is user exists): ");
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        if (response.equals("true")) {
-                            Log.d("VOLLEY", "Making get request (is user exists): user exists in DB");
-                            startNavigationActivity();
-                        } else if (response.equals("false")){
-                            Log.d("VOLLEY", "Making get request (is user exists): user dost NOT exists in DB");
-                            startLoginUserActivity();
-                        } else {
-                            Log.e("VOLLEY", "Making get request (is user exists): INCORRECT RESPONSE - " + response);
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", "Making get request (is user exists): request error - " + error.toString());
-                Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
+        String googleId = signInAccount.getId();
+        String url = optUrl == null ? USERS_PATH + "/exists/" + googleId : optUrl;
+        if (optUrl != null) resetOptUrlAndConnectionPermission();
+        try {
+            String response = new GetRequest().execute(url).get();
+            if (response.equals("true")) {
+                Log.d("VOLLEY", "Making get request (is user exists): user exists in DB");
+                startNavigationActivity();
+            } else if (response.equals("false")){
+                Log.d("VOLLEY", "Making get request (is user exists): user dost NOT exists in DB");
+                startLoginUserActivity();
+            } else {
+                Log.e("VOLLEY", "Making get request (is user exists): INCORRECT RESPONSE - " + response);
             }
-        });
-        queue.add(stringRequest);
+        } catch (ExecutionException | InterruptedException error) {
+            Log.e("VOLLEY", "Making get request (is user exists): request error - " + error.toString());
+            Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void startLoginUserActivity() {
@@ -179,4 +182,21 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
+    public void setCurrentUser(FirebaseUser currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public void setOptUrlAndConnectionPermission(String optUrl, boolean connectionPermission) {
+        this.optUrl = optUrl;
+        this.connectionPermission = connectionPermission;
+    }
+
+    public void resetOptUrlAndConnectionPermission() {
+        optUrl = null;
+        connectionPermission = true;
+    }
+
+    public String getOptUrl() {
+        return optUrl;
+    }
 }
