@@ -275,6 +275,10 @@ public class SettingsFragment extends Fragment {
         return pets;
     }
 
+    public RecyclerView getSmallPetRecycleView() {
+        return smallPetRecycleView;
+    }
+
     public void setOptUrlAndConnectionPermission(String optUrl, boolean connectionPermission) {
         this.optUrl = optUrl;
         this.connectionPermission = connectionPermission;

@@ -73,6 +73,10 @@ public class FeedFragment extends Fragment {
         return feedCardAdapter;
     }
 
+    public RecyclerView getFeedCardRecycleView() {
+        return feedCardRecycleView;
+    }
+
     private void setUpUrlForRequest() {
         if (getArguments() != null) {
             String optUrl = (String) getArguments().getSerializable("optUrl");
