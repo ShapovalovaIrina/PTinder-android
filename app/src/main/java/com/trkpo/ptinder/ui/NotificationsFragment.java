@@ -88,4 +88,8 @@ public class NotificationsFragment extends Fragment {
     public NotificationCardAdapter getNotificationCardAdapter() {
         return notificationCardAdapter;
     }
+
+    public RecyclerView getNotificationCardRecycleView() {
+        return notificationCardRecycleView;
+    }
 }

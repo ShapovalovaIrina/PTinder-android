@@ -1,5 +1,6 @@
 package com.trkpo.ptinder.adapter;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.trkpo.ptinder.HTTP.DeleteRequest;
+import com.trkpo.ptinder.HTTP.PostRequest;
+import com.trkpo.ptinder.HTTP.PostRequestParams;
 import com.trkpo.ptinder.R;
 import com.trkpo.ptinder.pojo.Notification;
 import com.trkpo.ptinder.HTTP.Connection;
@@ -27,12 +31,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
 import static com.trkpo.ptinder.config.Constants.NOTIFICATIONS_PATH;
 import static com.trkpo.ptinder.config.Constants.CONTACT_PATH;
 
 public class NotificationCardAdapter extends RecyclerView.Adapter<NotificationCardAdapter.ViewHolder> {
     private List<Notification> notifications = new ArrayList<>();
+
+    /* Variable for testing*/
+    private String optUrl;
+    private boolean connectionPermission;
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private Notification notificationInfo;
@@ -59,11 +69,11 @@ public class NotificationCardAdapter extends RecyclerView.Adapter<NotificationCa
                 @Override
                 public void onClick(View v) {
                     if (notificationInfo.getTitle().equals("CONTACT_INFO_REQUEST")) {
-                        responseUserContacts(v);
+                        responseUserContacts(v.getContext(), notificationInfo);
                     } else {
-                        markAsRead(v);
+                        markAsRead(v.getContext(), notificationInfo);
+                        btnsLayout.setVisibility(View.INVISIBLE);
                     }
-                    deleteNotificationById(notificationInfo.getId());
                 }
             });
         }
@@ -73,77 +83,11 @@ public class NotificationCardAdapter extends RecyclerView.Adapter<NotificationCa
             if (notificationInfo.isRead()) {
                 this.btnsLayout.setVisibility(View.INVISIBLE);
             }
-            switch (notificationInfo.getTitle()) {
-                case "CONTACT_INFO_REQUEST":
-                    this.title.setText("Новый запрос доступа к контактной информации");
-                    this.denyBtn.setVisibility(View.VISIBLE);
-                    this.acceptBtn.setText("Принять");
-                    break;
-                case "CONTACT_INFO_ANSWER":
-                    this.title.setText("Ответ на Ваш запрос доступа к контактной информации");
-                    break;
-                case "NEW_PET":
-                    this.title.setText("Новые питомцы у пользователей, на которых вы подписаны");
-                    break;
-                case "EDIT_PET":
-                    this.title.setText("Изменения в анкетах питомцев пользователей, на которых вы подписаны");
-                    break;
-                case "EDIT_FAVOURITE":
-                    this.title.setText("Изменения в анкетах Ваших избранных питомцев");
+            this.text.setText(formTitle(notificationInfo));
+            if (notificationInfo.getTitle().equals("CONTACT_INFO_REQUEST")) {
+                this.denyBtn.setVisibility(View.VISIBLE);
+                this.acceptBtn.setText("Принять");
             }
-            this.text.setText(notificationInfo.getText());
-        }
-
-        private void markAsRead(View view) {
-            if (!Connection.hasConnection(view.getContext())) {
-                Toast.makeText(view.getContext(), "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
-                return;
-            }
-            RequestQueue queue = Volley.newRequestQueue(view.getContext());
-            String url = NOTIFICATIONS_PATH + "/" + notificationInfo.getId();
-
-            StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Log.d("VOLLEY", "Success response (read notification). " +
-                                    "Notification id: " + notificationInfo.getId());
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.d("VOLLEY", "Not Success response (read notification) " + error.toString());
-                }
-            });
-            queue.add(jsonObjectRequest);
-            btnsLayout.setVisibility(View.INVISIBLE);
-        }
-
-        private void responseUserContacts(View view) {
-            if (!Connection.hasConnection(view.getContext())) {
-                Toast.makeText(view.getContext(), "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
-                return;
-            }
-            RequestQueue queue = Volley.newRequestQueue(view.getContext());
-            String url = CONTACT_PATH + "/response/" +
-                    notificationInfo.getAddresseeGoogleId() + "/" +
-                    notificationInfo.getAddresseeFromGoogleId() + "/" +
-                    notificationInfo.getId();
-
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Log.d("VOLLEY", "Success response (response user info) from " +
-                                    notificationInfo.getAddresseeGoogleId() + " to " + notificationInfo.getAddresseeFromGoogleId());
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e("VOLLEY", "Not Success response (response user info): " + error.toString());
-                }
-            });
-            queue.add(stringRequest);
         }
     }
 
@@ -163,6 +107,62 @@ public class NotificationCardAdapter extends RecyclerView.Adapter<NotificationCa
     @Override
     public int getItemCount() {
         return notifications.size();
+    }
+
+    public void markAsRead(Context context, Notification notificationInfo) {
+        if (!Connection.hasConnection(context) || !connectionPermission) {
+            Toast.makeText(context, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        String url = optUrl == null ? NOTIFICATIONS_PATH + "/" + notificationInfo.getId() : optUrl;
+        if (optUrl != null) resetOptUrlAndConnectionPermission();
+        try {
+            String response = new PostRequest().execute(new PostRequestParams(url, "")).get();
+            Log.d("VOLLEY", "Success response (read notification). " +
+                    "Notification id: " + notificationInfo.getId());
+            deleteNotificationById(notificationInfo.getId());
+        } catch (ExecutionException | InterruptedException | IllegalStateException error) {
+            Log.d("VOLLEY", "Not Success response (read notification) " + error.toString());
+        }
+    }
+
+    public void responseUserContacts(Context context, Notification notificationInfo) {
+        if (!Connection.hasConnection(context) || !connectionPermission) {
+            Toast.makeText(context, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        String url = CONTACT_PATH + "/response/" +
+                notificationInfo.getAddresseeGoogleId() + "/" +
+                notificationInfo.getAddresseeFromGoogleId() + "/" +
+                notificationInfo.getId();
+        url = optUrl == null ? url : optUrl;
+
+        if (optUrl != null) resetOptUrlAndConnectionPermission();
+        try {
+            String response = new PostRequest().execute(new PostRequestParams(url, "")).get();
+            Log.d("VOLLEY", "Success response (response user info) from " +
+                    notificationInfo.getAddresseeGoogleId() + " to " + notificationInfo.getAddresseeFromGoogleId());
+            deleteNotificationById(notificationInfo.getId());
+        } catch (ExecutionException | InterruptedException | IllegalStateException error) {
+            Log.e("VOLLEY", "Not Success response (response user info): " + error.toString());
+        }
+    }
+
+    public String formTitle(Notification notificationInfo) {
+        switch (notificationInfo.getTitle()) {
+            case "CONTACT_INFO_REQUEST":
+                return "Новый запрос доступа к контактной информации";
+            case "CONTACT_INFO_ANSWER":
+                return "Ответ на Ваш запрос доступа к контактной информации";
+            case "NEW_PET":
+                return "Новые питомцы у пользователей, на которых вы подписаны";
+            case "EDIT_PET":
+                return "Изменения в анкетах питомцев пользователей, на которых вы подписаны";
+            case "EDIT_FAVOURITE":
+                return "Изменения в анкетах Ваших избранных питомцев";
+        }
+        return notificationInfo.getTitle();
     }
 
     public void setItems(Collection<Notification> notifications) {
@@ -198,5 +198,15 @@ public class NotificationCardAdapter extends RecyclerView.Adapter<NotificationCa
             notifications.remove(position);
             notifyDataSetChanged();
         }
+    }
+
+    public void setOptUrlAndConnectionPermission(String optUrl, boolean connectionPermission) {
+        this.optUrl = optUrl;
+        this.connectionPermission = connectionPermission;
+    }
+
+    public void resetOptUrlAndConnectionPermission() {
+        optUrl = null;
+        connectionPermission = true;
     }
 }
