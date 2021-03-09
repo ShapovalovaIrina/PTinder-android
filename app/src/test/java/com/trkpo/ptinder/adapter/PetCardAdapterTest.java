@@ -17,11 +17,13 @@ import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 @Config(sdk = {Build.VERSION_CODES.O_MR1})
@@ -77,6 +79,28 @@ public class PetCardAdapterTest {
             adapter.addToFavourite(fragment.getView(),petInfo, favourite, petImage);
 
             assertTrue(petInfo.isFavourite());
+        });
+    }
+
+    @Test
+    public void petAdapterDeletePetById() {
+        server.enqueue(new MockResponse().setBody("Not empty body"));
+        String url = server.url("/").toString();
+
+        PetInfo petInfo = new PetInfo();
+        ImageView petImage = Mockito.mock(ImageView.class);
+
+        FragmentScenario<OtherUserProfileFragment> uf = FragmentScenario.launch(OtherUserProfileFragment.class);
+        uf.onFragment(fragment -> {
+            Mockito.when(petImage.getContext()).thenReturn(fragment.getContext());
+
+            PetCardAdapter adapter = fragment.getPetCardAdapter();
+            adapter.setOptUrlAndConnectionPermission(url, true);
+
+            adapter.setItems(Collections.singleton(petInfo));
+            assertTrue(adapter.getPetsList().contains(petInfo));
+            adapter.deletePetById(0L);
+            assertFalse(adapter.getPetsList().contains(petInfo));
         });
     }
 
