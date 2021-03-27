@@ -62,6 +62,7 @@ public class FeedFragment extends Fragment {
         try {
             String response = new GetRequest().execute(url).get();
             Log.d("VOLLEY", "Get news: " + response);
+
             feedCardAdapter.setItems(FeedUtils.getNewsFromJSON(response));
         } catch (JSONException | ExecutionException | InterruptedException error) {
             error.printStackTrace();
@@ -81,6 +82,8 @@ public class FeedFragment extends Fragment {
         if (getArguments() != null) {
             String optUrl = (String) getArguments().getSerializable("optUrl");
             loadFeeds(optUrl);
+        } else {
+            loadFeeds();
         }
     }
 }
