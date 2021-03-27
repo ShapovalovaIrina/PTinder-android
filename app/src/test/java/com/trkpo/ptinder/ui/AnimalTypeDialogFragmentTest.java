@@ -1,5 +1,7 @@
 package com.trkpo.ptinder.ui;
 
+import android.os.Build;
+
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.runner.AndroidJUnit4;
 
@@ -12,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +30,7 @@ import static com.trkpo.ptinder.ui.AnimalTypeDialogFragment.showOpenDialog;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
+@Config(sdk = {Build.VERSION_CODES.O_MR1})
 public class AnimalTypeDialogFragmentTest {
     private final MockWebServer server = new MockWebServer();
 

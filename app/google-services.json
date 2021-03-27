@@ -39,6 +39,14 @@
           }
         },
         {
+          "client_id": "440416255739-jai1b78cg3o6ijuqebgf1kd940ninh1m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.trkpo.ptinder",
+            "certificate_hash": "9cf997f24f4ab97350147398149b912c16e28caf"
+          }
+        },
+        {
           "client_id": "440416255739-7bhd4ag7pa636qobcn6jbpf8rssjboq6.apps.googleusercontent.com",
           "client_type": 3
         }

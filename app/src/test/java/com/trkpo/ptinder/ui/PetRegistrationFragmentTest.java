@@ -1,5 +1,6 @@
 package com.trkpo.ptinder.ui;
 
+import android.os.Build;
 import android.widget.ArrayAdapter;
 
 import androidx.fragment.app.testing.FragmentScenario;
@@ -12,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +25,7 @@ import okhttp3.mockwebserver.RecordedRequest;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
+@Config(sdk = {Build.VERSION_CODES.O_MR1})
 public class PetRegistrationFragmentTest {
     String googleId = "1";
     final String typesBody =

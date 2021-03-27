@@ -45,6 +45,7 @@ public class LoginUserInfoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_user_info);
+        connectionPermission = true;
 
         cityEdit = findViewById(R.id.editPersonCity);
         phoneEdit = findViewById(R.id.editPersonPhone);
