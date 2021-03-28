@@ -26,19 +26,23 @@ public class NewsScenarioTest {
     @Rule
     public ActivityTestRule<NavigationActivity> navigationActivityActivityTestRule = new ActivityTestRule<>(NavigationActivity.class);
 
+    TestUtils testUtils;
+
     @Before
     public void setUp() throws Exception {
-
+        testUtils = new TestUtils();
     }
 
     @Test
-    public void useAppContext() throws InterruptedException {
+    public void testUserCanGet15Feeds() throws InterruptedException {
         onView(withId(R.id.sign_in_button)).perform(click());
+        testUtils.registration();
         onView(withId(R.id.drawer_layout)).perform(open());
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_feed));
         Thread.sleep(5000);
         RecyclerView recyclerView = (RecyclerView) navigationActivityActivityTestRule.getActivity().findViewById(R.id.feed_cards_recycle_view);
         int feedsAmount = recyclerView.getAdapter().getItemCount();
         assertThat(feedsAmount, is(15));
+        testUtils.deleteTestUser();
     }
 }
