@@ -32,6 +32,10 @@ jobs:
         run: echo ${ANDROID_SDK_ROOT}
       - name : Is avgmanager exist
         run: ls ${ANDROID_SDK_ROOT}/tools/bin
+      - name: List available SDK packages
+        run: ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager --list
+      - name: Create avd
+        run: ${ANDROID_SDK_ROOT}/tools/bin/avdmanager create avd -n  -k "system-images;android-25;google_apis;x86"
 #      - name: Grant execute permission for docker script
 #        run: chmod +x docker/docker.sh
 #      - name: Start docker containers
