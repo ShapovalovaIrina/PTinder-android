@@ -51,14 +51,14 @@ jobs:
       - name: Create avd
         run: echo no | ${ANDROID_SDK_ROOT}/tools/bin/avdmanager create avd -n testAVD -k "system-images;android-29;google_apis;x86"
 
-      - name: Kill adb
-        run: ${ANDROID_SDK_ROOT}/platform-tools/adb kill-server
+      - name: Start adb
+        run: ${ANDROID_SDK_ROOT}/platform-tools/adb start-server
 
       - name: Start emulator
-        run: ${ANDROID_SDK_ROOT}/emulator/emulator -avd testAVD -port 5557 -no-window -no-boot-anim -no-audio -verbose &
+        run: ${ANDROID_SDK_ROOT}/emulator/emulator -avd testAVD -no-window -no-boot-anim -no-audio -verbose &
 
-      - name: Start adb
-        run: ${ANDROID_SDK_ROOT}/platform-tools/adb start-server && ${ANDROID_SDK_ROOT}/platform-tools/adb devices
+      - name: Adb devices
+        run: ${ANDROID_SDK_ROOT}/platform-tools/adb devices
 
       - name: Run staff
         run: docker/ui_test_on_emulator.sh
