@@ -38,7 +38,7 @@ public class PetsScenariosTest {
 
     @Test
     public void testCreateNewPetScenario() throws InterruptedException {
-        onView(withId(R.id.sign_in_button)).perform(click());
+        activityActivityTestRule.getActivity().isUserExists("1");
         testUtils.registration();
         onView(withId(R.id.add_pet)).perform(click());
         onView(withId(R.id.pet_name)).perform(typeText("Barsik"));

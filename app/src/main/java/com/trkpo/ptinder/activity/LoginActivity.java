@@ -81,8 +81,13 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
         if (currentUser != null) {
-            isUserExists(GoogleSignIn.getLastSignedInAccount(getApplicationContext()));
+            System.out.println("current user exist");
+            GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+            if (googleSignInAccount != null) {
+                isUserExists(googleSignInAccount.getId());
+            }
         } else {
+            System.out.println("current DOES NOT user exist");
             signIn();
         }
     }
@@ -108,6 +113,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
+            System.out.println("onActivityResult");
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 // Google Sign In was successful, authenticate with Firebase
@@ -121,14 +127,19 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void firebaseAuthWithGoogle(String idToken) {
+        System.out.println("Firebase auth with google");
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        System.out.println("onComplete");
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            isUserExists(GoogleSignIn.getLastSignedInAccount(getApplicationContext()));
+                            GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+                            if (googleSignInAccount != null) {
+                                isUserExists(googleSignInAccount.getId());
+                            }
                         } else {
                             // If sign in fails, display a message to the user.
                             Snackbar.make(findViewById(R.id.login_activity), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
@@ -143,15 +154,16 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
-    public void isUserExists(GoogleSignInAccount signInAccount) {
-        if (signInAccount == null) return;
+    public void isUserExists(String googleId) {
+//        System.out.println("is user exists");
+//        if (signInAccount == null) return;
 
         if (!Connection.hasConnection(this) || !connectionPermission) {
             Toast.makeText(this, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
         }
 
-        String googleId = signInAccount.getId();
+//        String googleId = signInAccount.getId();
         String url = optUrl == null ? USERS_PATH + "/exists/" + googleId : optUrl;
         if (optUrl != null) resetOptUrlAndConnectionPermission();
         try {

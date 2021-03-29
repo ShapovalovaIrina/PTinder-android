@@ -66,17 +66,17 @@ public class LoginActivityTest {
         ActivityScenario<LoginActivity> scenario = ActivityScenario.launch(LoginActivity.class);
         scenario.onActivity(activity -> {
             activity.setOptUrlAndConnectionPermission(url, true);
-            activity.isUserExists(signInAccount);
+            activity.isUserExists(signInAccount.getId());
             /* If opt url (which was set previously to url value) is null, that means postUserInfo method was called */
             assertNull(activity.getOptUrl());
 
             activity.setOptUrlAndConnectionPermission(url, true);
-            activity.isUserExists(signInAccount);
+            activity.isUserExists(signInAccount.getId());
             /* If opt url (which was set previously to url value) is null, that means postUserInfo method was called */
             assertNull(activity.getOptUrl());
 
             activity.setOptUrlAndConnectionPermission(url, true);
-            activity.isUserExists(signInAccount);
+            activity.isUserExists(signInAccount.getId());
             /* If opt url (which was set previously to url value) is null, that means postUserInfo method was called */
             assertNull(activity.getOptUrl());
         });
@@ -84,7 +84,7 @@ public class LoginActivityTest {
 
     @Test
     public void noConnection() {
-        GoogleSignInAccount signInAccount = Mockito.mock(GoogleSignInAccount.class);
+//        GoogleSignInAccount signInAccount = Mockito.mock(GoogleSignInAccount.class);
         ActivityScenario<LoginActivity> scenario = ActivityScenario.launch(LoginActivity.class);
         scenario.onActivity(activity -> {
             activity.setOptUrlAndConnectionPermission("", false);
@@ -94,7 +94,7 @@ public class LoginActivityTest {
             assertEquals("", activity.getOptUrl());
 
             activity.setOptUrlAndConnectionPermission("", false);
-            activity.isUserExists(signInAccount);
+            activity.isUserExists("1");
             /* If opt url (which was set previously to url value) is null, that means postUserInfo method was called
              * In our case it should not be called*/
             assertEquals("", activity.getOptUrl());

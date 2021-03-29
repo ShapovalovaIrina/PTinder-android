@@ -13,6 +13,8 @@ services:
     # Expose port 8080. It means port 8080 on host -> port 8080 on container
     ports:
       - 8080:8080
+    deploy:
+      replicas: 1
     networks:
       - backend_network
 
@@ -24,6 +26,8 @@ services:
       - POSTGRES_DB=ptinder
     ports:
       - 5432:5432
+    deploy:
+      replicas: 1
     # On container network this container with have alias pghost
     networks:
       backend_network:

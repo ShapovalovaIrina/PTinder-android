@@ -35,7 +35,7 @@ public class NewsScenarioTest {
 
     @Test
     public void testUserCanGet15Feeds() throws InterruptedException {
-        onView(withId(R.id.sign_in_button)).perform(click());
+        activityActivityTestRule.getActivity().isUserExists("1");
         testUtils.registration();
         onView(withId(R.id.drawer_layout)).perform(open());
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_feed));
