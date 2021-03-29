@@ -30,10 +30,10 @@ echo "Emulator \"is ready\""
 #
 # Unlock emulator screen
 #
-${ANDROID_HOME}/platform-tools/adb shell input keyevent 82 &
-${ANDROID_HOME}/platform-tools/adb shell input keyevent 4 &
-
-echo "Successfully finish unlock emulator screen"
+#${ANDROID_HOME}/platform-tools/adb shell input keyevent 82 &
+#${ANDROID_HOME}/platform-tools/adb shell input keyevent 4 &
+#
+#echo "Successfully finish unlock emulator screen"
 
 # emulator isn't ready yet, wait 1 min more
 # prevents APK installation error
@@ -41,12 +41,9 @@ sleep 60
 
 echo "Successfully start emulator"
 
-# run Android UI tests
-./gradlew connectedAndroidTest
-
 #
 # Kill running emulators
 #
-${ANDROID_HOME}/platform-tools/adb devices | grep emulator | cut -f1 | while read line; do ${ANDROID_HOME}/platform-tools/adb -s $line emu kill; done
-
-echo "Successfully kill emulator"
+#${ANDROID_HOME}/platform-tools/adb devices | grep emulator | cut -f1 | while read line; do ${ANDROID_HOME}/platform-tools/adb -s $line emu kill; done
+#
+#echo "Successfully kill emulator"
