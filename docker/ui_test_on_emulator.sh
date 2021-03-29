@@ -25,7 +25,7 @@ set -eu
 
 sleep 60
 
-echo "Emulator \"is ready\""
+echo "Emulator \"is ready\"
 
 #
 # Unlock emulator screen
@@ -42,7 +42,7 @@ sleep 60
 echo "Successfully start emulator"
 
 # run Android UI tests
-#./gradlew connectedAndroidTest
+./gradlew connectedAndroidTest
 
 #
 # Kill running emulators
