@@ -32,7 +32,7 @@ jobs:
         run: chmod +x docker/docker.sh
       - name: Start docker containers
         run: docker/docker.sh
-#      - name: "Run UI Tests"
-#        uses: vgaidarji/android-github-actions-emulator@latest
+      - name: "Run UI Tests"
+        uses: vgaidarji/android-github-actions-emulator@latest
 
 
