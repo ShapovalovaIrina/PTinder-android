@@ -28,8 +28,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: "Init swarm"
+        run: docker swarm init
       - name: "Build the stack"
-        run: docker-compose -f docker/docker-compose.yml up -d
+        run: docker stack deploy -c docker/docker-compose.yml app
       - name: "Running docker containers"
         run: docker container ls
 #      - name: "Run UI Tests"
