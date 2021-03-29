@@ -43,7 +43,7 @@ jobs:
       - name: Agree licenses
         run: ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager --licenses
       - name: Create avd
-        run: ${ANDROID_SDK_ROOT}/tools/bin/avdmanager create avd -n testAVD -k "system-images;android-29;google_apis;x86"
+        run: echo no | ${ANDROID_SDK_ROOT}/tools/bin/avdmanager create avd -n testAVD -k "system-images;android-29;google_apis;x86"
 #      - name: Grant execute permission for docker script
 #        run: chmod +x docker/docker.sh
 #      - name: Start docker containers
