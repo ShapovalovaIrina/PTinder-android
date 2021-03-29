@@ -33,6 +33,6 @@ jobs:
       - name: Start docker containers
         run: docker/docker.sh
       - name: "Run UI Tests"
-        uses: vgaidarji/android-github-actions-emulator@latest
+        uses: vgaidarji/android-github-actions-emulator@v1.0.1
 
 

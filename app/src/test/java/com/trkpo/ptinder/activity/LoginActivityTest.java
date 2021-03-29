@@ -84,7 +84,6 @@ public class LoginActivityTest {
 
     @Test
     public void noConnection() {
-//        GoogleSignInAccount signInAccount = Mockito.mock(GoogleSignInAccount.class);
         ActivityScenario<LoginActivity> scenario = ActivityScenario.launch(LoginActivity.class);
         scenario.onActivity(activity -> {
             activity.setOptUrlAndConnectionPermission("", false);
