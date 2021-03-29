@@ -45,9 +45,6 @@ jobs:
       - name: Download SDK
         run: ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager "system-images;android-29;google_apis;x86"
 
-      - name: Download adb
-        run: ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager adb
-
       - name: Agree licenses
         run: ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager --licenses
 
