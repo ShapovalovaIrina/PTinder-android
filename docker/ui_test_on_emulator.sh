@@ -25,7 +25,7 @@ set -eu
 
 sleep 60
 
-echo "Emulator \"is ready\"
+echo "Emulator \"is ready\""
 
 #
 # Unlock emulator screen
