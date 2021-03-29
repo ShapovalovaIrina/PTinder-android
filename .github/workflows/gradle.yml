@@ -38,8 +38,10 @@ jobs:
         run: ls ${ANDROID_SDK_ROOT}/tools/bin
       - name: JAVA_HOME value
         run: echo ${JAVA_HOME}
-#      - name: Set JAVA_HOME
-#        run: export JAVA_HOME=${JAVA_HOME_8_X64}
+      - name: Download SDK
+        run: ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager "system-images;android-29;google_apis;x86"
+      - name: Agree licenses
+        run: ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager --licenses
       - name: Create avd
         run: ${ANDROID_SDK_ROOT}/tools/bin/avdmanager create avd -n testAVD -k "system-images;android-29;google_apis;x86"
 #      - name: Grant execute permission for docker script
