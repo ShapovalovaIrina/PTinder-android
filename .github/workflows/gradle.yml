@@ -32,20 +32,33 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: android sdk
-        run: echo ${ANDROID_SDK_ROOT}
+
+      - name: Grant execute permission for script
+        run: chmod +x docker/docker.sh && chmod +x docker/ui_test_on_emulator.sh
+
       - name : Is avgmanager exist
-        run: ls ${ANDROID_SDK_ROOT}/tools/bin
+        run: ls ${ANDROID_SDK_ROOT}/tools/bin && ls ls ${ANDROID_SDK_ROOT}
+
       - name: JAVA_HOME value
         run: echo ${JAVA_HOME}
+
       - name: Download SDK
         run: ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager "system-images;android-29;google_apis;x86"
+
       - name: Agree licenses
         run: ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager --licenses
+
       - name: Create avd
         run: echo no | ${ANDROID_SDK_ROOT}/tools/bin/avdmanager create avd -n testAVD -k "system-images;android-29;google_apis;x86"
-#      - name: Grant execute permission for docker script
-#        run: chmod +x docker/docker.sh
+
+      - name: List AVD
+        run: ${ANDROID_SDK_ROOT}/tools/android list avd
+
+      - name: Start emulator
+        run: ${ANDROID_SDK_ROOT}/emulator/emulator -avd testAVD -no-window -no-boot-anim -no-audio -verbose &
+
+      - name: Run staff & UI tests
+        run: docker/ui_test_on_emulator.sh
 #      - name: Start docker containers
 #        run: docker/docker.sh
 #      - name: "Run UI Tests"
