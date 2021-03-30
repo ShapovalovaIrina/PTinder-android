@@ -110,6 +110,37 @@ public class UsersScenariosTest {
         } catch (ExecutionException | InterruptedException error) {
             Log.e("VOLLEY", error.toString());
         }
+    }
+
+    @Test
+    public void testUserCanUnsubscribeFromAnyUserScenario() {
+        testUtils.addUserWithGoogleId("1");
+        testUtils.addUserWithGoogleId("2");
+        testUtils.addUserWithGoogleId("3");
+        String url = SUBSCRIPTION_PATH + "/" + "1";
+        JSONObject requestObject = new JSONObject();
+        try {
+            requestObject.put("googleId", "2");
+            String request = new PostRequest().execute(new PostRequestParams(url, requestObject.toString())).get();
+            String response = new GetRequest().execute(SUBSCRIPTION_PATH + "/check/1/2").get();
+            assertTrue(Boolean.parseBoolean(response));
+            response = new GetRequest().execute(SUBSCRIPTION_PATH + "/check/1/3").get();
+            assertFalse(Boolean.parseBoolean(response));
+        } catch (ExecutionException | InterruptedException | JSONException error) {
+            Log.e("VOLLEY", error.toString());
+        }
+
+        // unsubscribe
+        url = SUBSCRIPTION_PATH + "/" + "1" + "/" + "3";
+        try {
+            String request = new DeleteRequest().execute(url).get();
+            String response = new GetRequest().execute(SUBSCRIPTION_PATH + "/check/1/2").get();
+            assertTrue(Boolean.parseBoolean(response));
+            response = new GetRequest().execute(SUBSCRIPTION_PATH + "/check/1/3").get();
+            assertFalse(Boolean.parseBoolean(response));
+        } catch (ExecutionException | InterruptedException error) {
+            Log.e("VOLLEY", error.toString());
+        }
 
     }
 
