@@ -24,17 +24,7 @@ jobs:
           eval "$(docker-machine env default)"
           docker swarm init --advertise-addr 192.168.99.100 --listen-addr 127.0.0.1
           docker stack deploy -c docker/docker-compose.yml app
-
-#      - name: Init swarm
-#        run: docker swarm init
-#      - name: Deploy swarm
-#        run: docker stack deploy -c docker/docker-compose.yml app
-      - name: Sleep for 40 seconds
-        uses: jakejarvis/wait-action@master
-        with:
-          time: '40s'
-#      - name: Docker containers
-#        run: docker container ls -a
+          docker stack ps app
 
       - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
