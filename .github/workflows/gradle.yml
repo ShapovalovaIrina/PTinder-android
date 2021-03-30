@@ -22,18 +22,19 @@ jobs:
           docker-machine create --driver virtualbox default
           docker-machine env default
           eval "$(docker-machine env default)"
-          docker run hello-world
+          docker swarm init
+          docker stack deploy -c docker/docker-compose.yml app
 
-      - name: Init swarm
-        run: docker swarm init
-      - name: Deploy swarm
-        run: docker stack deploy -c docker/docker-compose.yml app
+#      - name: Init swarm
+#        run: docker swarm init
+#      - name: Deploy swarm
+#        run: docker stack deploy -c docker/docker-compose.yml app
       - name: Sleep for 40 seconds
         uses: jakejarvis/wait-action@master
         with:
           time: '40s'
-      - name: Docker ps
-        run: docker stack ps app
+#      - name: Docker containers
+#        run: docker container ls -a
 
       - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
