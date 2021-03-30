@@ -18,7 +18,8 @@ jobs:
       - name: Install docker
         run: |
           brew install docker
-          sudo docker –-version
+          docker run hello-world
+          docker –-version
       - name: Init swarm
         run: docker swarm init
       - name: Deploy swarm
