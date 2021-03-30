@@ -17,9 +17,13 @@ jobs:
 
       - name: Install docker
         run: |
-          brew install --cask docker
+          brew install docker docker-machine
+          brew cask install virtualbox
+          docker-machine create --driver virtualbox default
+          docker-machine env default
+          eval "$(docker-machine env default)"
           docker run hello-world
-          docker –-version
+
       - name: Init swarm
         run: docker swarm init
       - name: Deploy swarm
