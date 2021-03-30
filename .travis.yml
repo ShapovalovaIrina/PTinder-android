@@ -3,8 +3,9 @@ jdk: oraclejdk8
 sudo: required
 env:
   global:
-    - ANDROID_API_LEVEL=25
-    - ANDROID_BUILD_TOOLS_VERSION=25.0.2
+    - ANDROID_API=24
+    - ANDROID_BUILD_TOOLS_VERSION=27.0.2
+    - ADB_INSTALL_TIMEOUT=5 # minutes
 
 services:
   - docker
@@ -19,24 +20,27 @@ android:
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
   components:
+    - tools
+    - platform-tools
     # The BuildTools version used by your project
     - build-tools-$ANDROID_BUILD_TOOLS_VERSION
     # The SDK version used to compile your project
-    - android-$ANDROID_API_LEVEL
+    - android-$ANDROID_API
+    - android-$ANDROID_API
     # Additional components
     - extra-google-google_play_services
     - extra-google-m2repository
     - extra-android-m2repository
-    - addon-google_apis-google-$ANDROID_API_LEVEL
-    - sys-img-armeabi-v7a-google_apis-25
+    - addon-google_apis-google-$ANDROID_API
+    - sys-img-armeabi-v7a-google_apis-$ANDROID_API
 
 before_script:
-  - echo no | android create avd --force -n test -t android-25 --abi google_apis/armeabi-v7a
-  - emulator -avd test -no-audio -no-window -no-boot-anim &
+  - echo no | android create avd --force -n test -t android-$ANDROID_API --abi google_apis/armeabi-v7a
+  - emulator -avd test -no-window -no-boot-anim &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
-  - docker stack ps app
-  - chmod +x gradlew
 
 script:
+  - docker stack ps app
+  - chmod +x gradlew
   - ./gradlew connectedAndroidTest
