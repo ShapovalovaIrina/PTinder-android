@@ -3,9 +3,9 @@ jdk: oraclejdk8
 sudo: required
 env:
   global:
-    - ANDROID_API=27
+    - ANDROID_API=29
     - EMULATOR_API=24
-    - ANDROID_BUILD_TOOLS=27.0.3
+    - ANDROID_BUILD_TOOLS=29.0.2
 
 services:
   - docker
@@ -13,6 +13,7 @@ services:
 before_install:
   - docker swarm init
   - docker stack deploy -c docker/docker-compose.yml app
+  - yes | sdkmanager "platforms;android-$ANDROID_API"
 
 android:
   components:
