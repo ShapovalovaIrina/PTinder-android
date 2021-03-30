@@ -34,4 +34,4 @@ jobs:
           disable-animations: true
           profile: Nexus 5X
           emulator-options: -no-window -no-boot-anim -no-audio
-          script: ./gradlew connectedAndroidCheck
+          script: chmod +x gradlew && ./gradlew connectedAndroidCheck
