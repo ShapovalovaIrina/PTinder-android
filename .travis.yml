@@ -3,9 +3,9 @@ jdk: oraclejdk8
 sudo: required
 env:
   global:
-    - ANDROID_API=24
-    - ANDROID_BUILD_TOOLS_VERSION=27.0.2
-    - ADB_INSTALL_TIMEOUT=5 # minutes
+    - ANDROID_API=27
+    - EMULATOR_API=24
+    - ANDROID_BUILD_TOOLS=27.0.2
 
 services:
   - docker
@@ -14,29 +14,34 @@ before_install:
   - docker swarm init
   - docker stack deploy -c docker/docker-compose.yml app
 
+  - yes | sdkmanager "platforms;android-27"
+  - openssl aes-256-cbc -K $encrypted_12e8842891a3_key -iv $encrypted_12e8842891a3_iv -in files/kau.tar.enc -out kau.tar -d
+  - tar xvf kau.tar
+
 android:
+  components:
+  - tools
+  - android-$EMULATOR_API
+  - platform-tools
+  - tools
+  - build-tools-$ANDROID_BUILD_TOOLS
+  - android-$ANDROID_API
+  - extra-google-m2repository
+  - extra-android-support
+  - extra-android-m2repository # for design library
+  - sys-img-armeabi-v7a-android-$EMULATOR_API
+
   licenses:
     - 'android-sdk-preview-license-.+'
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
-  components:
-    - tools
-    - platform-tools
-    # The BuildTools version used by your project
-    - build-tools-$ANDROID_BUILD_TOOLS_VERSION
-    # The SDK version used to compile your project
-    - android-$ANDROID_API
-    - android-$ANDROID_API
-    # Additional components
-    - extra-google-google_play_services
-    - extra-google-m2repository
-    - extra-android-m2repository
-    - addon-google_apis-google-$ANDROID_API
-    - sys-img-armeabi-v7a-google_apis-$ANDROID_API
 
 before_script:
-  - echo no | android create avd --force -n test -t android-$ANDROID_API --abi google_apis/armeabi-v7a
-  - emulator -avd test -no-window -no-boot-anim &
+  - echo "y" | android update sdk -a --no-ui --filter android-$EMULATOR_API
+  - echo "y" | android update sdk -a --no-ui --filter sys-img-armeabi-v7a-android-$EMULATOR_API
+  - android list targets | grep -E '^id:' | awk -F '"' '{$1=""; print $2}' # list all targets
+  - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi armeabi-v7a
+  - emulator -avd test -no-skin -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
 
@@ -44,3 +49,6 @@ script:
   - docker stack ps app
   - chmod +x gradlew
   - ./gradlew connectedAndroidTest
+
+notifications:
+  "email": false
