@@ -22,7 +22,7 @@ jobs:
           docker-machine create --driver virtualbox default
           docker-machine env default
           eval "$(docker-machine env default)"
-          docker swarm init
+          docker swarm init --advertise-addr 192.168.99.100 --listen-addr 127.0.0.1
           docker stack deploy -c docker/docker-compose.yml app
 
 #      - name: Init swarm
