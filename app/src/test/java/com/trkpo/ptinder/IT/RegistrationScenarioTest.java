@@ -66,6 +66,30 @@ public class RegistrationScenarioTest {
     }
 
     @Test
+    public void testCantAddExistingUser() {
+        try {
+            JSONObject postData = new JSONObject();
+            postData.put("firstName", "Ivan");
+            postData.put("lastName", "Ivanov");
+            postData.put("gender", "MALE");
+            postData.put("number", "88005553535");
+            postData.put("address", "Karaganda");
+            postData.put("email", "ii@m.com");
+            postData.put("photoUrl", "");
+            postData.put("contactInfoPublic", false);
+            postData.put("googleId", "1234");
+
+            new PostRequest().execute(new PostRequestParams(USERS_PATH, postData.toString())).get();
+            new PostRequest().execute(new PostRequestParams(USERS_PATH, postData.toString())).get();
+
+            JSONArray jArray = new JSONArray(utils.getAllUsersInJson());
+            assertEquals(1, jArray.length());
+        } catch (ExecutionException | InterruptedException | JSONException error) {
+            Log.d("VOLLEY", "Not Success response: " + error.toString());
+        }
+    }
+
+    @Test
     public void deleteUserTest() {
         utils.addUserWithGoogleId("1234");
         try {
