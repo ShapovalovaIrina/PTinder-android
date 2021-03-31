@@ -84,6 +84,7 @@ public class SettingsFragment extends Fragment {
         updateUser = root.findViewById(R.id.update_user);
         deleteUser = root.findViewById(R.id.delete_user);
         logoutUser = root.findViewById(R.id.logout);
+        connectionPermission = true;
 
         initUserInfo();
         initRecycleView();
