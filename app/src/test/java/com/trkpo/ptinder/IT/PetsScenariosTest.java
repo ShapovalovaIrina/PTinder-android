@@ -143,6 +143,27 @@ public class PetsScenariosTest {
         }
     }
 
+    @Test
+    public void testCanGetFulInfoAboutUnexistedPet() {
+        testUtils.addUserWithGoogleId("1");
+        testUtils.addPetForUser("1");
+        long petId = Long.MAX_VALUE;
+        String url = PETS_PATH + "/" + petId;
+        try {
+            String response = new GetRequest().execute(url).get();
+            PetInfo petInfo = getPetsFromJSON(response);
+            assertEquals("", petInfo.getName());
+            assertEquals("", petInfo.getAge());
+            assertEquals("", petInfo.getGender());
+            assertEquals("", petInfo.getAnimalType());
+            assertEquals("", petInfo.getBreed());
+            assertEquals("", petInfo.getPurpose());
+            assertEquals("", petInfo.getComment());
+        } catch (ExecutionException | InterruptedException | JSONException error) {
+            Log.e("VOLLEY", "Making get request (load pet): error - " + error.toString());
+        }
+    }
+
     private PetInfo getPetsFromJSON(String jsonString) throws JSONException {
         return PetInfoUtils.getPetFromJSON(jsonString, 1, false);
     }
