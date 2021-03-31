@@ -50,8 +50,8 @@ public class FavouriteScenarioTest {
             new PostRequest().execute(new PostRequestParams(url, "")).get();
 
             List<PetInfo> favourite = utils.getFavouriteForUser("1");
-            assertEquals(favourite.size(), 1);
-            assertEquals(favourite.get(0).getId(), petId);
+            assertEquals(1, favourite.size());
+            assertEquals(petId, favourite.get(0).getId());
         } catch (ExecutionException | InterruptedException error) {
             Log.d("VOLLEY", "Post request (add to favourite) error: " + error.toString());
         }
@@ -71,7 +71,7 @@ public class FavouriteScenarioTest {
             new DeleteRequest().execute(url).get();
 
             List<PetInfo> favourite = utils.getFavouriteForUser("1");
-            assertEquals(favourite.size(), 0);
+            assertEquals(0, favourite.size());
         } catch (ExecutionException | InterruptedException error) {
             Log.d("VOLLEY", "Delete request (delete from favourite) error: " + error.toString());
         }
