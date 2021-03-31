@@ -65,7 +65,7 @@ public class PetsScenariosTest {
                 "MALE",
                 "КОТ",
                 "",
-                "Walking",
+                "WALKING",
                 "",
                 null,
                 "1"
@@ -76,8 +76,8 @@ public class PetsScenariosTest {
         try {
             String response = new PutRequest().execute(new PostRequestParams(url, requestBody)).get();
             PetInfo updatedPet = testUtils.getPetsForUser("1").get(0);
-            assertEquals("Barsik", updatedPet.getName());
-            assertEquals("3 года", updatedPet.getAge());
+            assertEquals("NotBarsik", updatedPet.getName());
+            assertEquals("5 лет", updatedPet.getAge());
 
         } catch (ExecutionException | InterruptedException | IllegalStateException error) {
             Log.e("VOLLEY", "Making put request (update pet): error - " + error.toString());

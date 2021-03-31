@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 import static com.trkpo.ptinder.config.Constants.SERVER_PATH;
 import static com.trkpo.ptinder.config.Constants.USERS_PATH;
@@ -96,7 +97,17 @@ public class TestUtils {
         try {
             String response = new GetRequest().execute(url).get();
             return (List<PetInfo>) PetInfoUtils.getPetsFromJSON(response, null, googleId, 1);
+        } catch (JSONException | ExecutionException | InterruptedException error) {
+            error.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
 
+    public List<PetInfo> getFavouriteForUser(String googleId) {
+        String url = FAVOURITE_PATH + "/user/full/" + googleId;
+        try {
+            String response = new GetRequest().execute(url).get();
+            return (List<PetInfo>) PetInfoUtils.getPetsFromJSON(response, null, googleId, 1);
         } catch (JSONException | ExecutionException | InterruptedException error) {
             error.printStackTrace();
         }
