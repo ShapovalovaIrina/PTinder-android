@@ -58,6 +58,23 @@ public class FavouriteScenarioTest {
     }
 
     @Test
+    public void addToFavouriteNonExistentPetTest() {
+        utils.addUserWithGoogleId("1");
+        List<PetInfo> favourite = utils.getFavouriteForUser("1");
+        assertEquals(0, favourite.size());
+
+        try {
+            String url = FAVOURITE_PATH + "/" + "1" + "/user/1";
+            new PostRequest().execute(new PostRequestParams(url, "")).get();
+
+            favourite = utils.getFavouriteForUser("1");
+            assertEquals(0, favourite.size());
+        } catch (ExecutionException | InterruptedException error) {
+            Log.d("VOLLEY", "Post request (add to favourite) error: " + error.toString());
+        }
+    }
+
+    @Test
     public void deleteFromFavouriteTest() {
         utils.addUserWithGoogleId("1");
         utils.addUserWithGoogleId("2");
