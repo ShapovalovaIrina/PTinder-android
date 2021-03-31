@@ -25,7 +25,9 @@ import java.util.concurrent.ExecutionException;
 
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 import static com.trkpo.ptinder.config.Constants.SEARCH_PATH;
+import static com.trkpo.ptinder.config.Constants.USERS_PATH;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 @RunWith(AndroidJUnit4.class)
 @Config(sdk = {Build.VERSION_CODES.O_MR1})
@@ -117,6 +119,59 @@ public class PetsScenariosTest {
 
         } catch (ExecutionException | InterruptedException | JSONException error) {
             error.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testCanGetFulInfoAboutPet() {
+        testUtils.addUserWithGoogleId("1");
+        testUtils.addPetForUser("1");
+        Long petId = testUtils.getPetsForUser("1").get(0).getId();
+        String url = PETS_PATH + "/" + petId;
+        try {
+            String response = new GetRequest().execute(url).get();
+            PetInfo petInfo = getPetsFromJSON(response);
+            assertEquals("Barsik", petInfo.getName());
+            assertEquals("3", petInfo.getAge());
+            assertEquals("MALE", petInfo.getGender());
+            assertEquals("Кот", petInfo.getAnimalType());
+            assertEquals("-", petInfo.getBreed());
+            assertEquals("DONORSHIP", petInfo.getPurpose());
+            assertEquals("-", petInfo.getComment());
+        } catch (ExecutionException | InterruptedException | JSONException error) {
+            Log.e("VOLLEY", "Making get request (load pet): error - " + error.toString());
+        }
+    }
+
+    private PetInfo getPetsFromJSON(String jsonString) throws JSONException {
+        return PetInfoUtils.getPetFromJSON(jsonString, 1, false);
+    }
+
+    @Test
+    public void testCanGetFullInfoAboutPetOwner() {
+        testUtils.addUserWithGoogleId("1");
+        testUtils.addPetForUser("1");
+        Long petId = testUtils.getPetsForUser("1").get(0).getId();
+        String petUrl = PETS_PATH + "/" + petId;
+
+        try {
+            String response = new GetRequest().execute(petUrl).get();
+            JSONObject petObj = new JSONObject(response);
+            String ownerId = petObj.getJSONObject("owner").getString("googleId");
+            String url = USERS_PATH + "/" + ownerId;
+            String stringJsonResponse = new GetRequest().execute(url).get();
+            JSONObject jsonResponse = new JSONObject(stringJsonResponse);
+            assertEquals("Name", jsonResponse.getString("firstName"));
+            assertEquals("Surname", jsonResponse.getString("lastName"));
+            assertEquals("MALE", jsonResponse.getString("gender"));
+            assertEquals("-", jsonResponse.getString("number"));
+            assertEquals("Peter", jsonResponse.getString("address"));
+            assertEquals("-", jsonResponse.getString("email"));
+            assertEquals("https://i.picsum.photos/id/260/200/300.jpg?hmac=_VpBxDn0zencTyMnssCV14LkW80zG7vw2rw7WCQ2uVo", jsonResponse.getString("photoUrl"));
+            assertFalse(jsonResponse.getBoolean("contactInfoPublic"));
+
+        } catch (ExecutionException | InterruptedException | JSONException error) {
+            Log.e("VOLLEY", "Making get request (get user by google id): request error - " + error.toString());
         }
     }
 
