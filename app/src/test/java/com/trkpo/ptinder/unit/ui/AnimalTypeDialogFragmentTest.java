@@ -48,6 +48,7 @@ public class AnimalTypeDialogFragmentTest {
     @Test
     public void showOpenDialogIsCorrect() {
         String expectedType = "anotherType";
+        System.out.println();
         server.enqueue(new MockResponse().setBody(""));
         server.enqueue(new MockResponse().setBody("[{\"id\":1, \"type\":\"" + expectedType + "\"}]"));
         String url = server.url("/").toString();
