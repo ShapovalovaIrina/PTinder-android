@@ -8,6 +8,7 @@
     app:cardForegroundColor="#00FFFFFF">
 
     <LinearLayout
+        android:id="@+id/small_pet_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">

@@ -52,7 +52,12 @@ public class AndroidTestUtils {
         }
     }
 
-    public void addPetForUser(String googleId) {
+    public void addPetForUser(Activity activity) {
+        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(activity);
+        String googleId = "";
+        if (signInAccount != null) {
+            googleId = signInAccount.getId();
+        }
         JSONObject requestObject = PetInfoUtils.setPetToJSON(
                 "Barsik",
                 "3",

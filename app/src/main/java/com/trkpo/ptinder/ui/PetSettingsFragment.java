@@ -85,7 +85,6 @@ public class PetSettingsFragment extends Fragment {
         root = inflater.inflate(R.layout.fragment_pet_settings, container, false);
         activity = getActivity();
 
-        if (getArguments() != null) loadPet((Long) getArguments().getSerializable("petId"));
         petName = root.findViewById(R.id.pet_name);
         petAge = root.findViewById(R.id.pet_age);
         petBreed = root.findViewById(R.id.pet_breed);
@@ -97,6 +96,8 @@ public class PetSettingsFragment extends Fragment {
         deletePet = root.findViewById(R.id.delete_pet);
         optUrl = null;
         connectionPermission = true;
+
+        if (getArguments() != null) loadPet((Long) getArguments().getSerializable("petId"));
 
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(activity);
         googleId = signInAccount != null ? signInAccount.getId() : null;
@@ -186,6 +187,7 @@ public class PetSettingsFragment extends Fragment {
     }
 
     public void loadPet(Long petId) {
+        System.out.println("load pet");
         if (!Connection.hasConnection(activity) || !connectionPermission) {
             Toast.makeText(activity, "Отсутствует подключение к интернету. Невозможно обновить страницу.", Toast.LENGTH_LONG).show();
             return;
@@ -232,16 +234,15 @@ public class PetSettingsFragment extends Fragment {
                 petAge.getText().toString(),
                 rgGender.getCheckedRadioButtonId() == 0 ? "FEMALE" : "MALE",
 //                petType.getSelectedItem().toString(),
-                "Dog",
+                "Кот",
                 petBreed.getText().toString(),
-//                petPurpose.getSelectedItem().toString(),
-                "Walking",
+                PetInfoUtils.formatPurposeToEnum(petPurpose.getSelectedItem().toString()),
                 petComment.getText().toString(),
                 imagesBitmap,
                 googleId
         );
         final String requestBody = requestObject.toString();
-        Log.i("REGISTRATION", "Going to register pet with request: " + requestBody);
+        Log.i("PET UPDATE", "Going to update pet with request: " + requestBody);
 
         if (activity != null) {
             String url = optUrl == null ? PETS_PATH + "/" + petId : optUrl;
@@ -282,7 +283,27 @@ public class PetSettingsFragment extends Fragment {
         }
 
         petType.setSelection(1);
-        petPurpose.setSelection(2);
+        System.out.println(petInfo.getPurpose());
+        switch (petInfo.getPurpose()) {
+            case "NOTHING":
+                petPurpose.setSelection(0);
+                break;
+            case "WALKING":
+                petPurpose.setSelection(1);
+                break;
+            case "FRIENDSHIP":
+                petPurpose.setSelection(4);
+                break;
+            case "DONORSHIP":
+                petPurpose.setSelection(3);
+                break;
+            case "BREEDING":
+                petPurpose.setSelection(2);
+                break;
+            default:
+                System.out.println("incorrect purpose: " + petInfo.getPurpose());
+                break;
+        }
     }
 
     private PetInfo getPetsFromJSON(String jsonString) throws JSONException {
