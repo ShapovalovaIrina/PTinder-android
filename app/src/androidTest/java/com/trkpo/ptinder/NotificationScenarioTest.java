@@ -1,17 +1,11 @@
 package com.trkpo.ptinder;
 
-import android.view.View;
-
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.contrib.NavigationViewActions;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.rule.ActivityTestRule;
 
 import com.trkpo.ptinder.activity.LoginActivity;
 import com.trkpo.ptinder.activity.NavigationActivity;
-import com.trkpo.ptinder.adapter.FeedCardAdapter;
 import com.trkpo.ptinder.adapter.NotificationCardAdapter;
 import com.trkpo.ptinder.pojo.PetInfo;
 
@@ -25,12 +19,9 @@ import java.util.List;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.swipeDown;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.DrawerActions.open;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,21 +38,18 @@ public class NotificationScenarioTest {
     public AndroidTestUtils testUtils;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         testUtils = new AndroidTestUtils();
-        testUtils.deleteTestUser();
-        testUtils.deleteAllPets();
     }
 
     @After
     public void clean() {
-        System.out.println("Clean test resources");
         testUtils.deleteTestUser();
         testUtils.deleteAllPets();
     }
 
     @Test
-    public void getAndReadNotificationTest() throws InterruptedException {
+    public void getAndReadNotificationTest() {
         String name = "Barsik";
         String age = "3 года";
         String type = "Кот";

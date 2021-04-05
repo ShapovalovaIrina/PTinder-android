@@ -15,7 +15,6 @@ import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.swipeRight;
 import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -34,21 +33,18 @@ public class PetSettingsScenarioTest {
     public AndroidTestUtils testUtils;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         testUtils = new AndroidTestUtils();
-        testUtils.deleteAllPets();
-        testUtils.deleteTestUser();
     }
 
     @After
     public void clean() {
-        System.out.println("Clean test resources");
         testUtils.deleteAllPets();
         testUtils.deleteTestUser();
     }
 
     @Test
-    public void petSettingsTest() throws InterruptedException {
+    public void petSettingsTest() {
         String name = "Barsik";
         String age = "3 года";
         String type = "Кот";
@@ -94,13 +90,5 @@ public class PetSettingsScenarioTest {
         onView(withId(R.id.full_pet_info_breed)).check(matches(withText(breed)));
         onView(withId(R.id.full_pet_info_purpose)).check(matches(withText(purpose)));
         onView(withId(R.id.full_pet_info_comment)).check(matches(withText(updatedComment)));
-
-//        /* go back to user profile */
-//        onView(withId(R.id.drawer_layout)).perform(open());
-//        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_user_profile));
-//
-//        /* logout */
-//        onView(withId(R.id.settings_icon)).perform(click());
-//        onView(withId(R.id.logout)).perform(click());
     }
 }

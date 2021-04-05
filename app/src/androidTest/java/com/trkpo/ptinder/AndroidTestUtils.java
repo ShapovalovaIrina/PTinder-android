@@ -20,16 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.swipeUp;
-import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 import static com.trkpo.ptinder.config.Constants.SERVER_PATH;
 import static com.trkpo.ptinder.config.Constants.USERS_PATH;
-import static org.junit.Assert.assertEquals;
 
 public class AndroidTestUtils {
     private final String UTILS_PATH = SERVER_PATH + "/utils";
