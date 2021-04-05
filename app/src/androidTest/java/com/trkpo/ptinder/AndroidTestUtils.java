@@ -215,4 +215,47 @@ public class AndroidTestUtils {
             Log.e("VOLLEY", "Making put request (update pet): error - " + error.toString());
         }
     }
+
+    public void registrationWithDifferentCityAndAge(String googleId, String city) {
+        try {
+            JSONObject postData = new JSONObject();
+            postData.put("firstName", "Name");
+            postData.put("lastName", "Surname");
+            postData.put("gender", "MALE");
+            postData.put("number", "-");
+            postData.put("address", city);
+            postData.put("email", "-");
+            postData.put("username", "testUser");
+            postData.put("photoUrl", "https://i.picsum.photos/id/260/200/300.jpg?hmac=_VpBxDn0zencTyMnssCV14LkW80zG7vw2rw7WCQ2uVo");
+            postData.put("contactInfoPublic", false);
+            postData.put("googleId", googleId);
+
+            String response = new PostRequest().execute(new PostRequestParams(USERS_PATH, postData.toString())).get();
+            Log.d("VOLLEY", "Success response: " + response);
+        } catch (ExecutionException | InterruptedException | JSONException error) {
+            Log.d("VOLLEY", "Not Success response: " + error.toString());
+        }
+    }
+
+    public void updatePetAge(String googleId, Long petId, String age) {
+        JSONObject requestObject = PetInfoUtils.setPetToJSON(
+                "Barsik",
+                age,
+                "MALE",
+                "КОТ",
+                "",
+                "WALKING",
+                "",
+                null,
+                googleId
+        );
+        final String requestBody = requestObject.toString();
+
+        String url = PETS_PATH + "/" + petId;
+        try {
+            new PutRequest().execute(new PostRequestParams(url, requestBody)).get();
+        } catch (ExecutionException | InterruptedException | IllegalStateException error) {
+            Log.e("VOLLEY", "Making put request (update pet): error - " + error.toString());
+        }
+    }
 }
