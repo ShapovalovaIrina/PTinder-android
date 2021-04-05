@@ -1,15 +1,28 @@
 package com.trkpo.ptinder;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiObjectNotFoundException;
+import androidx.test.uiautomator.UiSelector;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.trkpo.ptinder.HTTP.DeleteRequest;
 import com.trkpo.ptinder.HTTP.GetRequest;
 import com.trkpo.ptinder.HTTP.PostRequest;
 import com.trkpo.ptinder.HTTP.PostRequestParams;
 import com.trkpo.ptinder.HTTP.PutRequest;
+import com.trkpo.ptinder.activity.LoginActivity;
 import com.trkpo.ptinder.pojo.PetInfo;
 import com.trkpo.ptinder.utils.PetInfoUtils;
 
@@ -20,6 +33,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static androidx.test.espresso.Espresso.closeSoftKeyboard;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.clearText;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static com.trkpo.ptinder.config.Constants.FAVOURITE_PATH;
 import static com.trkpo.ptinder.config.Constants.PETS_PATH;
 import static com.trkpo.ptinder.config.Constants.SERVER_PATH;
@@ -151,6 +171,15 @@ public class AndroidTestUtils {
         } catch (ExecutionException | InterruptedException | JSONException error) {
             Log.d("VOLLEY", "Not Success response: " + error.toString());
         }
+    }
+
+    public void registrationUI() {
+        onView(withId(R.id.editPersonCity)).perform(clearText(), typeText("Saint-Petersburg"));
+        closeSoftKeyboard();
+        onView(withId(R.id.radio_button_female)).perform(click());
+        onView(withId(R.id.editPersonPhone)).perform(clearText(), typeText("81234567890"));
+        closeSoftKeyboard();
+        onView(withId(R.id.login_submit_button)).perform(click());
     }
 
     public List<PetInfo> getPetsForUser(String googleId) {
