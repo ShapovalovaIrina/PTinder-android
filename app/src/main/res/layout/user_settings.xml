@@ -8,7 +8,7 @@
     tools:context=".ui.SettingsFragment">
 
     <LinearLayout
-        android:id="@+id/user_profile_linear_2"
+        android:id="@+id/user_profile_settings_linear_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">

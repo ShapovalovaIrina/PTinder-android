@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,19 +26,21 @@ public class SmallPetAdapter extends RecyclerView.Adapter<SmallPetAdapter.ViewHo
         private PetInfo petInfo;
         private TextView petName;
         private TextView petBreed;
+        private LinearLayout card;
 
         public ViewHolder(View itemView) {
             super(itemView);
             this.petName = itemView.findViewById(R.id.card_pet_name);
             this.petBreed = itemView.findViewById(R.id.card_pet_breed);
-
+            this.card = itemView.findViewById(R.id.small_pet_card);
         }
 
         public void bind(PetInfo petInfo) {
             this.petInfo = petInfo;
             petName.setText(petInfo.getName() != null ? petInfo.getName() : "");
             petBreed.setText(petInfo.getAnimalType() != null ? petInfo.getAnimalType() : "");
-            petName.setOnClickListener(this);
+//            petName.setOnClickListener(this);
+            card.setOnClickListener(this);
         }
 
         @Override

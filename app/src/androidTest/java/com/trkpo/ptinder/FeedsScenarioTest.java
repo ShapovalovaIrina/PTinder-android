@@ -55,6 +55,5 @@ public class FeedsScenarioTest {
         assertFalse(adapter.getFeeds().get(0).getTitle().isEmpty());
         assertFalse(adapter.getFeeds().get(0).getScore().isEmpty());
         assertFalse(adapter.getFeeds().get(0).getAuthor().isEmpty());
-        testUtils.deleteTestUser();
     }
 }
