@@ -83,7 +83,8 @@ public class NotificationCardAdapter extends RecyclerView.Adapter<NotificationCa
             if (notificationInfo.isRead()) {
                 this.btnsLayout.setVisibility(View.INVISIBLE);
             }
-            this.text.setText(formTitle(notificationInfo));
+            this.title.setText(formTitle(notificationInfo));
+            this.text.setText(notificationInfo.getText());
             if (notificationInfo.getTitle().equals("CONTACT_INFO_REQUEST")) {
                 this.denyBtn.setVisibility(View.VISIBLE);
                 this.acceptBtn.setText("Принять");
@@ -96,6 +97,7 @@ public class NotificationCardAdapter extends RecyclerView.Adapter<NotificationCa
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.notification_card, parent, false);
+        connectionPermission = true;
         return new ViewHolder(view);
     }
 

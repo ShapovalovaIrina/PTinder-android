@@ -63,7 +63,10 @@ public class NotificationsFragment extends Fragment {
         String googleId = (String) (getArguments() != null ? getArguments().getSerializable("googleId") : null);
         if (googleId != null) {
             String optUrl = (String) getArguments().getSerializable("optUrl");
-            loadNotifications(googleId, optUrl);
+            if (optUrl != null)
+                loadNotifications(googleId, optUrl);
+            else
+                loadNotifications(googleId);
         }
     }
 
