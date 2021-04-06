@@ -45,6 +45,7 @@ public class UserRegistrationScenarioTest {
 
     @Test
     public void userRegistrationTest() {
+        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(activityActivityTestRule.getActivity());
         onView(withId(R.id.sign_in_button)).perform(click());
 
         onView(withId(R.id.radio_button_female)).perform(click());
@@ -56,7 +57,6 @@ public class UserRegistrationScenarioTest {
 
         testUtils.registrationUI();
 
-        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(activityActivityTestRule.getActivity());
         String email = "";
         String username = "";
         if (signInAccount != null) {
