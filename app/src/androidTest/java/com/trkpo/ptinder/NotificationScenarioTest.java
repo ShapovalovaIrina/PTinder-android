@@ -1,12 +1,9 @@
 package com.trkpo.ptinder;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.contrib.NavigationViewActions;
 import androidx.test.rule.ActivityTestRule;
 
 import com.trkpo.ptinder.activity.LoginActivity;
-import com.trkpo.ptinder.activity.NavigationActivity;
-import com.trkpo.ptinder.adapter.NotificationCardAdapter;
 import com.trkpo.ptinder.pojo.PetInfo;
 
 import org.hamcrest.Matcher;
@@ -24,16 +21,11 @@ import static androidx.test.espresso.contrib.DrawerActions.open;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.is;
 
 public class NotificationScenarioTest {
     @Rule
     public ActivityTestRule<LoginActivity> loginActivityActivityTestRule = new ActivityTestRule<>(LoginActivity.class);
-
-    @Rule
-    public ActivityTestRule<NavigationActivity> navigationActivityActivityTestRule = new ActivityTestRule<>(NavigationActivity.class);
 
     public AndroidTestUtils testUtils;
 
@@ -70,7 +62,7 @@ public class NotificationScenarioTest {
         onView(withId(R.id.sign_in_button)).perform(click());
 
         /* add favourite pet for major user */
-        testUtils.addPetInFavouriteForCurrentUser(navigationActivityActivityTestRule.getActivity(), minorUserPets.get(0).getId());
+        testUtils.addPetInFavouriteForCurrentUser(loginActivityActivityTestRule.getActivity(), minorUserPets.get(0).getId());
 
         /* go back to favourite pets */
         onView(withId(R.id.drawer_layout)).perform(open());
@@ -91,18 +83,12 @@ public class NotificationScenarioTest {
         /* go to notifications, check them, read */
         onView(withId(R.id.notification)).perform(click());
 
-        RecyclerView recyclerView = (RecyclerView) navigationActivityActivityTestRule.getActivity().findViewById(R.id.notification_cards_recycle_view);
-        NotificationCardAdapter adapter = (NotificationCardAdapter) recyclerView.getAdapter();
-        int notificationAmount = adapter.getItemCount();
-        assertThat(notificationAmount, is(1));
+        onView(withId(R.id.notification_cards_recycle_view)).check(new RecyclerViewItemCountAssertion(1));
         onView(allOf(withId(R.id.notification_title))).check(matches(withText("Изменения в анкетах Ваших избранных питомцев")));
         onView(allOf(withId(R.id.notification_text))).check(matches(withText("Информация о Вашем избранном питомце Barsik была обновлена!")));
 
         onView(allOf(withId(R.id.accept_btn))).perform(click());
 
-        recyclerView = (RecyclerView) navigationActivityActivityTestRule.getActivity().findViewById(R.id.notification_cards_recycle_view);
-        adapter = (NotificationCardAdapter) recyclerView.getAdapter();
-        notificationAmount = adapter.getItemCount();
-        assertThat(notificationAmount, is(0));
+        onView(withId(R.id.notification_cards_recycle_view)).check(new RecyclerViewItemCountAssertion(0));
     }
 }
