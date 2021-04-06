@@ -4,7 +4,6 @@ import androidx.test.espresso.contrib.NavigationViewActions;
 import androidx.test.rule.ActivityTestRule;
 
 import com.trkpo.ptinder.activity.LoginActivity;
-import com.trkpo.ptinder.activity.NavigationActivity;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,9 +26,6 @@ public class PetSettingsScenarioTest {
     @Rule
     public ActivityTestRule<LoginActivity> loginActivityActivityTestRule = new ActivityTestRule<>(LoginActivity.class);
 
-    @Rule
-    public ActivityTestRule<NavigationActivity> navigationActivityActivityTestRule = new ActivityTestRule<>(NavigationActivity.class);
-
     public AndroidTestUtils testUtils;
 
     @Before
@@ -39,8 +35,8 @@ public class PetSettingsScenarioTest {
 
     @After
     public void clean() {
-        testUtils.deleteAllPets();
         testUtils.deleteTestUser();
+        testUtils.deleteAllPets();
     }
 
     @Test
